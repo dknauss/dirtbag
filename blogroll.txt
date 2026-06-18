@@ -1,0 +1,23 @@
+Dirtbag Blogroll
+================
+
+OPML:
+http://localhost:8887/wp-content/themes/dirtbag/blogroll.opml
+
+Links:
+
+- IndieWeb — https://indieweb.org/
+  rel: friend met colleague
+
+- Microformats — https://microformats.org/
+  rel: met colleague
+
+- Internet Archive — https://archive.org/
+  rel: muse
+
+- TEXTFILES.COM — https://textfiles.com/
+  rel: muse
+
+Notes:
+
+Links are the road. Some are friends, some are neighbours, some are just good exits.

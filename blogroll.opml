@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head>
+    <title>Dirtbag Blogroll</title>
+    <ownerName>Dirtbag</ownerName>
+    <ownerId>http://localhost:8887/</ownerId>
+  </head>
+  <body>
+    <outline text="IndieWeb" title="IndieWeb" type="rss" htmlUrl="https://indieweb.org/" xmlUrl="https://indieweb.org/" />
+    <outline text="Microformats" title="Microformats" type="rss" htmlUrl="https://microformats.org/" xmlUrl="https://microformats.org/" />
+    <outline text="Internet Archive" title="Internet Archive" type="rss" htmlUrl="https://archive.org/" xmlUrl="https://archive.org/services/collection-rss.php" />
+    <outline text="TEXTFILES.COM" title="TEXTFILES.COM" type="rss" htmlUrl="https://textfiles.com/" xmlUrl="https://textfiles.com/" />
+  </body>
+</opml>

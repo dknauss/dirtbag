@@ -1,0 +1,20 @@
+# Accessibility Conformance
+
+Target standard: WCAG 2.2 AA
+
+Dirtbag is a minimal WordPress block theme intended to preserve semantic HTML and native browser behaviour.
+
+Current commitments:
+- Page/post/archive title is the primary H1.
+- Header site title is not an H1 on inner documents.
+- A skip link targets main content.
+- Header and footer navigation are labelled.
+- Disclosure content uses native details/summary where practical.
+- Theme-authored JavaScript is avoided in v1.
+- CSS-allowed style variations provide visible hover/focus states for links, buttons, form controls, current navigation, and details summaries.
+
+Known considerations:
+- WordPress core blocks may enqueue their own CSS/JS for block behaviour.
+- User-selected colours and custom content can create contrast or heading-order issues outside the theme defaults.
+
+Contact: site owner

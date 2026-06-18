@@ -1,0 +1,32 @@
+Dirtbag Feeds and Plain-Text Doors
+==================================
+
+Posts RSS:
+http://localhost:8887/feed/
+
+Comments RSS:
+http://localhost:8887/comments/feed/
+
+Sitemap:
+http://localhost:8887/wp-sitemap.xml
+
+OPML blogroll:
+http://localhost:8887/wp-content/themes/dirtbag/blogroll.opml
+
+LLM context:
+http://localhost:8887/llms.txt
+
+About:
+http://localhost:8887/about.txt
+
+Colophon:
+http://localhost:8887/colophon.txt
+
+Blogroll text:
+http://localhost:8887/blogroll.txt
+
+Now text:
+http://localhost:8887/now.txt
+
+Security contact:
+http://localhost:8887/.well-known/security.txt
