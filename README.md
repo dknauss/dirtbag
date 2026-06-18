@@ -15,7 +15,7 @@ It favours plain markup, core WordPress blocks, web-safe fonts, style variations
 
 ## What it is
 
-Dirtbag is a distributable WordPress block theme for people who want a site that feels small, durable, and understandable.
+Dirtbag is a freely distributable WordPress block theme that's small, simple, durable, accessible, and understandable. Dirtbag is for people who want to get under the hood to tinker, with or without the aid of a diagnostic cart (AI) and complex tooling. All you need is a little HTML, curiosity, and a DIY independent streak. Future versions will explore style options with modern but minimalist approaches to CSS and JS.
 
 - **Block theme:** full-site editing templates, template parts, patterns, and `theme.json`.
 - **No build step:** edit files, run the package check, ship the theme.
