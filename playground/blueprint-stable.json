@@ -2,9 +2,9 @@
   "$schema": "https://playground.wordpress.net/blueprint-schema.json",
   "landingPage": "/",
   "meta": {
-    "title": "Dirtbag Theme \u2014 Stable Tag",
+    "title": "Dirtbag Theme — Stable Tag",
     "author": "Dan Knauss",
-    "description": "Preview the Dirtbag WordPress block theme pinned to the About h-card cleanup commit.",
+    "description": "Preview the Dirtbag WordPress block theme pinned to the canonical Studio sync commit.",
     "categories": [
       "theme",
       "block-theme"
@@ -21,7 +21,7 @@
       "themeData": {
         "resource": "git:directory",
         "url": "https://github.com/dknauss/dirtbag",
-        "ref": "ee5a40d9e0d590c17d52d3ac59a75eaaf38c6e5e",
+        "ref": "686a13b6f2cf29bb157b76993aa3fa7d12474d5d",
         "refType": "commit",
         "path": "/"
       },
