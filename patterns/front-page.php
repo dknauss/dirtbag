@@ -23,7 +23,7 @@
 <!-- wp:post-title {"isLink":true,"level":3,"className":"p-name"} /-->
 
 <!-- wp:group {"className":"post-meta","layout":{"type":"flex","flexWrap":"wrap"}} -->
-<div class="wp-block-group post-meta"><!-- wp:post-date {"metadata":{"bindings":{"datetime":{"source":"core/post-data","args":{"field":"date"}}}},"className":"dt-published u-url"} /-->
+<div class="wp-block-group post-meta"><!-- wp:post-date {"isLink":true,"className":"dt-published u-url"} /-->
 
 <!-- wp:post-excerpt {"moreText":"(cont...)"} /--></div>
 <!-- /wp:group -->
