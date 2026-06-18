@@ -7,6 +7,7 @@
  *
  * @package Dirtbag
  */
+
 ?>
 <!-- wp:comments {"className":"wp-block-comments-query-loop"} -->
 <div class="wp-block-comments wp-block-comments-query-loop">

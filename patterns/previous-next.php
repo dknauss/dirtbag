@@ -7,6 +7,7 @@
  *
  * @package Dirtbag
  */
+
 ?>
 <!-- wp:separator -->
 <hr class="wp-block-separator has-alpha-channel-opacity"/>

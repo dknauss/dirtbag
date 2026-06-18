@@ -1,4 +1,0 @@
-Contact: mailto:security@example.com
-Preferred-Languages: en
-Canonical: http://localhost:8887/.well-known/security.txt
-Policy: This local Dirtbag demo publishes a placeholder security contact. Replace it before production.

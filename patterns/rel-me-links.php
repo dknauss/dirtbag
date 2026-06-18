@@ -7,14 +7,16 @@
  *
  * @package Dirtbag
  */
+
 ?>
 <!-- wp:heading {"level":2} -->
 <h2 class="wp-block-heading"><?php esc_html_e( 'Elsewhere', 'dirtbag' ); ?></h2>
 <!-- /wp:heading -->
-<!-- wp:html -->
-<ul>
-<li><a href="https://github.com/" rel="me"><?php esc_html_e( 'GitHub', 'dirtbag' ); ?></a></li>
-<li><a href="https://mastodon.social/" rel="me"><?php esc_html_e( 'Mastodon', 'dirtbag' ); ?></a></li>
+<!-- wp:list -->
+<ul><!-- wp:list-item -->
+<li><a href="/" rel="me"><?php esc_html_e( 'Home', 'dirtbag' ); ?></a></li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
 <li><a href="mailto:hello@example.com" rel="me"><?php esc_html_e( 'Email', 'dirtbag' ); ?></a></li>
-</ul>
-<!-- /wp:html -->
+<!-- /wp:list-item --></ul>
+<!-- /wp:list -->

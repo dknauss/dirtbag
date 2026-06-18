@@ -1,9 +1,0 @@
-/* TEAM */
-Site: Dirtbag
-Built with: WordPress, block templates, web-safe colours, plain links
-
-/* THANKS */
-Open web people, IndieWeb people, public-domain icon people, and whoever kept RSS around.
-
-/* SITE */
-No build step. No bundled JavaScript runtime. Core blocks when they help.

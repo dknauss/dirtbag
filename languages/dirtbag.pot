@@ -1,0 +1,868 @@
+# Copyright (C) 2026 Dan Knauss
+# This file is distributed under the GNU General Public License v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Dirtbag 0.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/theme/Dirtbag\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-06-18T17:32:48+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: dirtbag\n"
+
+#. Theme Name of the theme
+#: style.css
+#: patterns/h-card-profile.php:18
+msgid "Dirtbag"
+msgstr ""
+
+#. Theme URI of the theme
+#: style.css
+msgid "https://github.com/danknauss/dirtbag"
+msgstr ""
+
+#. Description of the theme
+#: style.css
+msgid "A hyper-simple WordPress block theme with brutalist and minimalist global style modes."
+msgstr ""
+
+#. Author of the theme
+#: style.css
+msgid "Dan Knauss"
+msgstr ""
+
+#. Author URI of the theme
+#: style.css
+msgid "https://github.com/danknauss"
+msgstr ""
+
+#: patterns/accessible-table.php
+msgctxt "Pattern title"
+msgid "Accessible table"
+msgstr ""
+
+#: patterns/accessible-table.php
+msgctxt "Pattern description"
+msgid "A core Table block with figcaption and scoped headers."
+msgstr ""
+
+#: patterns/accessible-table.php:13
+msgid "Thing"
+msgstr ""
+
+#: patterns/accessible-table.php:13
+msgid "Why it matters"
+msgstr ""
+
+#: patterns/accessible-table.php:13
+msgid "Caption"
+msgstr ""
+
+#: patterns/accessible-table.php:13
+msgid "Explains the table before the cells do."
+msgstr ""
+
+#: patterns/accessible-table.php:13
+msgid "Headers"
+msgstr ""
+
+#: patterns/accessible-table.php:13
+msgid "Give each row and column a name."
+msgstr ""
+
+#: patterns/accessible-table.php:13
+msgid "Accessible table sample"
+msgstr ""
+
+#: patterns/blogroll-xfn.php
+msgctxt "Pattern title"
+msgid "Blogroll with XFN"
+msgstr ""
+
+#: patterns/blogroll-xfn.php
+msgctxt "Pattern description"
+msgid "An old-web blogroll with XFN rel values."
+msgstr ""
+
+#: patterns/blogroll-xfn.php:13
+msgid "Blogroll"
+msgstr ""
+
+#: patterns/blogroll-xfn.php:16
+msgid "Links are the road. Some are friends, some are neighbours, some are just good exits."
+msgstr ""
+
+#: patterns/blogroll-xfn.php:20
+msgid "IndieWeb"
+msgstr ""
+
+#: patterns/blogroll-xfn.php:23
+msgid "Microformats"
+msgstr ""
+
+#: patterns/blogroll-xfn.php:26
+msgid "Internet Archive"
+msgstr ""
+
+#: patterns/blogroll-xfn.php:29
+msgid "TEXTFILES.COM"
+msgstr ""
+
+#: patterns/colophon.php
+msgctxt "Pattern title"
+msgid "Colophon"
+msgstr ""
+
+#: patterns/colophon.php
+msgctxt "Pattern description"
+msgid "Theme credits and operating principles."
+msgstr ""
+
+#: patterns/colophon.php:13
+#: patterns/open-web-links.php:32
+msgid "Colophon"
+msgstr ""
+
+#: patterns/colophon.php:16
+msgid "This site runs Dirtbag, a block theme that prefers plain HTML, native browser behaviour, WordPress core blocks, and no JavaScript unless the job is real."
+msgstr ""
+
+#: patterns/colophon.php:19
+msgid "Typography scale informed by Butterick’s Practical Typography."
+msgstr ""
+
+#: patterns/colophon.php:19
+msgid "Truck icon is CC0 from SVG Repo."
+msgstr ""
+
+#: patterns/colophon.php:19
+msgid "Feeds, sitemaps, XFN links, and microformats are part of the road kit."
+msgstr ""
+
+#: patterns/color-style-demo-panel.php
+msgctxt "Pattern title"
+msgid "Colour style demo panel"
+msgstr ""
+
+#: patterns/color-style-demo-panel.php
+msgctxt "Pattern description"
+msgid "Plain section panel for previewing a colour style."
+msgstr ""
+
+#: patterns/color-style-demo-panel.php:14
+msgid "Dirtbag colour panel"
+msgstr ""
+
+#: patterns/color-style-demo-panel.php:18
+msgid "Safety yellow, black type, visible links."
+msgstr ""
+
+#: patterns/color-style-demo-panel.php:22
+msgid "See all colour styles"
+msgstr ""
+
+#: patterns/comments.php
+msgctxt "Pattern title"
+msgid "Comments"
+msgstr ""
+
+#: patterns/comments.php
+msgctxt "Pattern description"
+msgid "Comments list, pagination, and comment form."
+msgstr ""
+
+#: patterns/comments.php:15
+msgid "Comments"
+msgstr ""
+
+#: patterns/field-note.php
+msgctxt "Pattern title"
+msgid "Field note"
+msgstr ""
+
+#: patterns/field-note.php
+msgctxt "Pattern description"
+msgid "A dated place-and-observation note pattern."
+msgstr ""
+
+#: patterns/field-note.php:14
+msgid "June 18, 2026"
+msgstr ""
+
+#: patterns/field-note.php:14
+msgid "Shoulder of the road"
+msgstr ""
+
+#: patterns/field-note.php:17
+msgid "Observed: one useful thing, one broken thing, one link worth keeping."
+msgstr ""
+
+#: patterns/h-card-profile.php
+msgctxt "Pattern title"
+msgid "h-card profile"
+msgstr ""
+
+#: patterns/h-card-profile.php
+msgctxt "Pattern description"
+msgid "A plain IndieWeb h-card identity block."
+msgstr ""
+
+#: patterns/h-card-profile.php:22
+msgid "A small site for HTML, blocks, road grit, and plain old links."
+msgstr ""
+
+#: patterns/h-card-profile.php:26
+#: patterns/rel-me-links.php:17
+msgid "Home"
+msgstr ""
+
+#: patterns/now-section.php
+msgctxt "Pattern title"
+msgid "Now section"
+msgstr ""
+
+#: patterns/now-section.php
+msgctxt "Pattern description"
+msgid "A simple now-page content block."
+msgstr ""
+
+#: patterns/now-section.php:13
+msgid "Now"
+msgstr ""
+
+#: patterns/now-section.php:16
+msgid "Keeping the site small."
+msgstr ""
+
+#: patterns/now-section.php:16
+msgid "Writing posts before building systems."
+msgstr ""
+
+#: patterns/now-section.php:16
+msgid "Checking that links, feeds, and comments still work."
+msgstr ""
+
+#: patterns/open-web-links.php
+msgctxt "Pattern title"
+msgid "Open web links"
+msgstr ""
+
+#: patterns/open-web-links.php
+msgctxt "Pattern description"
+msgid "Visible feeds, sitemap, and open-web links."
+msgstr ""
+
+#: patterns/open-web-links.php:13
+msgid "Open web doors"
+msgstr ""
+
+#: patterns/open-web-links.php:17
+msgid "Posts RSS"
+msgstr ""
+
+#: patterns/open-web-links.php:20
+msgid "Comments RSS"
+msgstr ""
+
+#: patterns/open-web-links.php:23
+msgid "Sitemap"
+msgstr ""
+
+#: patterns/open-web-links.php:26
+msgid "Links page"
+msgstr ""
+
+#: patterns/open-web-links.php:29
+msgid "Now page"
+msgstr ""
+
+#: patterns/post-meta.php
+msgctxt "Pattern title"
+msgid "Post meta"
+msgstr ""
+
+#: patterns/post-meta.php
+msgctxt "Pattern description"
+msgid "Date, author, categories, tags, and permalink."
+msgstr ""
+
+#: patterns/post-meta.php:16
+msgid "From"
+msgstr ""
+
+#: patterns/post-meta.php:20
+msgid "’s dashboard"
+msgstr ""
+
+#: patterns/post-meta.php:23
+msgid "Filed under: "
+msgstr ""
+
+#: patterns/post-meta.php:24
+msgid "From the glovebox: "
+msgstr ""
+
+#: patterns/previous-next.php
+msgctxt "Pattern title"
+msgid "Previous and next posts"
+msgstr ""
+
+#: patterns/previous-next.php
+msgctxt "Pattern description"
+msgid "Plain previous/next post navigation."
+msgstr ""
+
+#: patterns/previous-next.php:15
+msgid "Previous:"
+msgstr ""
+
+#: patterns/previous-next.php:16
+msgid "Next:"
+msgstr ""
+
+#: patterns/rel-me-links.php
+msgctxt "Pattern title"
+msgid "rel-me links"
+msgstr ""
+
+#: patterns/rel-me-links.php
+msgctxt "Pattern description"
+msgid "Identity links using rel=me."
+msgstr ""
+
+#: patterns/rel-me-links.php:13
+msgid "Elsewhere"
+msgstr ""
+
+#: patterns/rel-me-links.php:20
+msgid "Email"
+msgstr ""
+
+#: patterns/roadside-notice.php
+msgctxt "Pattern title"
+msgid "Roadside notice"
+msgstr ""
+
+#: patterns/roadside-notice.php
+msgctxt "Pattern description"
+msgid "A plain callout or warning block."
+msgstr ""
+
+#: patterns/roadside-notice.php:14
+msgid "Roadside notice:"
+msgstr ""
+
+#: patterns/roadside-notice.php:14
+msgid "If it needs JavaScript to be understood, it needs a better fallback."
+msgstr ""
+
+#: patterns/webmention-invitation.php
+msgctxt "Pattern title"
+msgid "Webmention invitation"
+msgstr ""
+
+#: patterns/webmention-invitation.php
+msgctxt "Pattern description"
+msgid "A small open-web response invitation."
+msgstr ""
+
+#: patterns/webmention-invitation.php:14
+msgid "Respond from your own site"
+msgstr ""
+
+#: patterns/webmention-invitation.php:17
+msgid "If your site supports Webmention, link to this permalink and send it along. If not, a normal comment still counts. The old web had many doors."
+msgstr ""
+
+#: theme.json
+msgctxt "Style variation name"
+msgid "Brutalist"
+msgstr ""
+
+#: theme.json
+#: styles/hi-vis.json
+#: styles/minimalist.json
+msgctxt "Color name"
+msgid "Black"
+msgstr ""
+
+#: theme.json
+#: styles/minimalist.json
+msgctxt "Color name"
+msgid "White"
+msgstr ""
+
+#: theme.json
+#: styles/minimalist.json
+msgctxt "Color name"
+msgid "Grey 20"
+msgstr ""
+
+#: theme.json
+#: styles/minimalist.json
+msgctxt "Color name"
+msgid "Grey 40"
+msgstr ""
+
+#: theme.json
+#: styles/minimalist.json
+msgctxt "Color name"
+msgid "Grey 60"
+msgstr ""
+
+#: theme.json
+#: styles/minimalist.json
+msgctxt "Color name"
+msgid "Grey 80"
+msgstr ""
+
+#: theme.json
+#: styles/minimalist.json
+msgctxt "Color name"
+msgid "Red"
+msgstr ""
+
+#: theme.json
+#: styles/minimalist.json
+msgctxt "Color name"
+msgid "Maroon"
+msgstr ""
+
+#: theme.json
+#: styles/minimalist.json
+msgctxt "Color name"
+msgid "Orange"
+msgstr ""
+
+#: theme.json
+#: styles/minimalist.json
+msgctxt "Color name"
+msgid "Yellow"
+msgstr ""
+
+#: theme.json
+#: styles/minimalist.json
+msgctxt "Color name"
+msgid "Olive"
+msgstr ""
+
+#: theme.json
+#: styles/minimalist.json
+msgctxt "Color name"
+msgid "Lime"
+msgstr ""
+
+#: theme.json
+#: styles/minimalist.json
+msgctxt "Color name"
+msgid "Green"
+msgstr ""
+
+#: theme.json
+#: styles/minimalist.json
+msgctxt "Color name"
+msgid "Aqua"
+msgstr ""
+
+#: theme.json
+#: styles/minimalist.json
+msgctxt "Color name"
+msgid "Teal"
+msgstr ""
+
+#: theme.json
+#: styles/hi-vis.json
+#: styles/minimalist.json
+msgctxt "Color name"
+msgid "Blue"
+msgstr ""
+
+#: theme.json
+#: styles/minimalist.json
+msgctxt "Color name"
+msgid "Navy"
+msgstr ""
+
+#: theme.json
+#: styles/hi-vis.json
+#: styles/minimalist.json
+msgctxt "Color name"
+msgid "Fuchsia"
+msgstr ""
+
+#: theme.json
+#: styles/minimalist.json
+msgctxt "Color name"
+msgid "Purple"
+msgstr ""
+
+#: theme.json
+#: styles/amber-crt.json
+#: styles/blueprint.json
+#: styles/hi-vis.json
+#: styles/minimalist.json
+#: styles/newspaper.json
+#: styles/terminal.json
+msgctxt "Font family name"
+msgid "Arial"
+msgstr ""
+
+#: theme.json
+#: styles/amber-crt.json
+#: styles/blueprint.json
+#: styles/hi-vis.json
+#: styles/minimalist.json
+#: styles/newspaper.json
+#: styles/terminal.json
+msgctxt "Font family name"
+msgid "Arial Black"
+msgstr ""
+
+#: theme.json
+#: styles/amber-crt.json
+#: styles/blueprint.json
+#: styles/hi-vis.json
+#: styles/minimalist.json
+#: styles/newspaper.json
+#: styles/terminal.json
+msgctxt "Font family name"
+msgid "Comic Sans MS"
+msgstr ""
+
+#: theme.json
+#: styles/amber-crt.json
+#: styles/blueprint.json
+#: styles/hi-vis.json
+#: styles/minimalist.json
+#: styles/newspaper.json
+#: styles/terminal.json
+msgctxt "Font family name"
+msgid "Courier New"
+msgstr ""
+
+#: theme.json
+#: styles/amber-crt.json
+#: styles/blueprint.json
+#: styles/hi-vis.json
+#: styles/minimalist.json
+#: styles/newspaper.json
+#: styles/terminal.json
+msgctxt "Font family name"
+msgid "Georgia"
+msgstr ""
+
+#: theme.json
+#: styles/amber-crt.json
+#: styles/blueprint.json
+#: styles/hi-vis.json
+#: styles/minimalist.json
+#: styles/newspaper.json
+#: styles/terminal.json
+msgctxt "Font family name"
+msgid "Impact"
+msgstr ""
+
+#: theme.json
+#: styles/amber-crt.json
+#: styles/blueprint.json
+#: styles/hi-vis.json
+#: styles/minimalist.json
+#: styles/newspaper.json
+#: styles/terminal.json
+msgctxt "Font family name"
+msgid "Lucida Console"
+msgstr ""
+
+#: theme.json
+#: styles/amber-crt.json
+#: styles/blueprint.json
+#: styles/hi-vis.json
+#: styles/minimalist.json
+#: styles/newspaper.json
+#: styles/terminal.json
+msgctxt "Font family name"
+msgid "Lucida Sans Unicode"
+msgstr ""
+
+#: theme.json
+#: styles/amber-crt.json
+#: styles/blueprint.json
+#: styles/hi-vis.json
+#: styles/minimalist.json
+#: styles/newspaper.json
+#: styles/terminal.json
+msgctxt "Font family name"
+msgid "Palatino"
+msgstr ""
+
+#: theme.json
+#: styles/amber-crt.json
+#: styles/blueprint.json
+#: styles/hi-vis.json
+#: styles/minimalist.json
+#: styles/newspaper.json
+#: styles/terminal.json
+msgctxt "Font family name"
+msgid "Tahoma"
+msgstr ""
+
+#: theme.json
+#: styles/amber-crt.json
+#: styles/blueprint.json
+#: styles/hi-vis.json
+#: styles/minimalist.json
+#: styles/newspaper.json
+#: styles/terminal.json
+msgctxt "Font family name"
+msgid "Times New Roman"
+msgstr ""
+
+#: theme.json
+#: styles/amber-crt.json
+#: styles/blueprint.json
+#: styles/hi-vis.json
+#: styles/minimalist.json
+#: styles/newspaper.json
+#: styles/terminal.json
+msgctxt "Font family name"
+msgid "Trebuchet MS"
+msgstr ""
+
+#: theme.json
+#: styles/amber-crt.json
+#: styles/blueprint.json
+#: styles/hi-vis.json
+#: styles/minimalist.json
+#: styles/newspaper.json
+#: styles/terminal.json
+msgctxt "Font family name"
+msgid "Verdana"
+msgstr ""
+
+#: theme.json
+#: styles/amber-crt.json
+#: styles/blueprint.json
+#: styles/hi-vis.json
+#: styles/minimalist.json
+#: styles/newspaper.json
+#: styles/terminal.json
+msgctxt "Font size name"
+msgid "Small"
+msgstr ""
+
+#: theme.json
+#: styles/amber-crt.json
+#: styles/blueprint.json
+#: styles/hi-vis.json
+#: styles/minimalist.json
+#: styles/newspaper.json
+#: styles/terminal.json
+msgctxt "Font size name"
+msgid "Base"
+msgstr ""
+
+#: theme.json
+#: styles/amber-crt.json
+#: styles/blueprint.json
+#: styles/hi-vis.json
+#: styles/minimalist.json
+#: styles/newspaper.json
+#: styles/terminal.json
+msgctxt "Font size name"
+msgid "Medium"
+msgstr ""
+
+#: theme.json
+#: styles/amber-crt.json
+#: styles/blueprint.json
+#: styles/hi-vis.json
+#: styles/minimalist.json
+#: styles/newspaper.json
+#: styles/terminal.json
+msgctxt "Font size name"
+msgid "Large"
+msgstr ""
+
+#: theme.json
+#: styles/amber-crt.json
+#: styles/blueprint.json
+#: styles/hi-vis.json
+#: styles/minimalist.json
+#: styles/newspaper.json
+#: styles/terminal.json
+msgctxt "Font size name"
+msgid "Extra Large"
+msgstr ""
+
+#: theme.json
+#: styles/amber-crt.json
+#: styles/blueprint.json
+#: styles/hi-vis.json
+#: styles/minimalist.json
+#: styles/newspaper.json
+#: styles/terminal.json
+msgctxt "Font size name"
+msgid "Huge"
+msgstr ""
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Header"
+msgstr ""
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Footer"
+msgstr ""
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "No title page"
+msgstr ""
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Wide page"
+msgstr ""
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Centred page"
+msgstr ""
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Plain page"
+msgstr ""
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Colophon page"
+msgstr ""
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Now page"
+msgstr ""
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Links page"
+msgstr ""
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Feeds page"
+msgstr ""
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Uses page"
+msgstr ""
+
+#: styles/amber-crt.json
+msgctxt "Style variation name"
+msgid "Amber CRT"
+msgstr ""
+
+#: styles/amber-crt.json
+#: styles/terminal.json
+msgctxt "Color name"
+msgid "Screen"
+msgstr ""
+
+#: styles/amber-crt.json
+msgctxt "Color name"
+msgid "Amber"
+msgstr ""
+
+#: styles/amber-crt.json
+#: styles/terminal.json
+msgctxt "Color name"
+msgid "Dim"
+msgstr ""
+
+#: styles/amber-crt.json
+#: styles/terminal.json
+msgctxt "Color name"
+msgid "Panel"
+msgstr ""
+
+#: styles/blueprint.json
+msgctxt "Style variation name"
+msgid "Blueprint"
+msgstr ""
+
+#: styles/blueprint.json
+msgctxt "Color name"
+msgid "Blueprint"
+msgstr ""
+
+#: styles/blueprint.json
+msgctxt "Color name"
+msgid "Line"
+msgstr ""
+
+#: styles/blueprint.json
+msgctxt "Color name"
+msgid "Cyan"
+msgstr ""
+
+#: styles/blueprint.json
+msgctxt "Color name"
+msgid "Shadow"
+msgstr ""
+
+#: styles/hi-vis.json
+msgctxt "Style variation name"
+msgid "Hi-vis"
+msgstr ""
+
+#: styles/hi-vis.json
+msgctxt "Color name"
+msgid "Safety Yellow"
+msgstr ""
+
+#: styles/minimalist.json
+msgctxt "Style variation name"
+msgid "Minimalist"
+msgstr ""
+
+#: styles/newspaper.json
+msgctxt "Style variation name"
+msgid "Newspaper"
+msgstr ""
+
+#: styles/newspaper.json
+msgctxt "Color name"
+msgid "Paper"
+msgstr ""
+
+#: styles/newspaper.json
+msgctxt "Color name"
+msgid "Ink"
+msgstr ""
+
+#: styles/newspaper.json
+msgctxt "Color name"
+msgid "Muted"
+msgstr ""
+
+#: styles/newspaper.json
+msgctxt "Color name"
+msgid "Accent"
+msgstr ""
+
+#: styles/terminal.json
+msgctxt "Style variation name"
+msgid "Terminal"
+msgstr ""
+
+#: styles/terminal.json
+msgctxt "Color name"
+msgid "Phosphor"
+msgstr ""

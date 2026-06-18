@@ -7,6 +7,7 @@
  *
  * @package Dirtbag
  */
+
 ?>
 <!-- wp:group {"className":"h-entry field-note"} -->
 <div class="wp-block-group h-entry field-note"><!-- wp:paragraph -->

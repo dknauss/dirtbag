@@ -7,6 +7,7 @@
  *
  * @package Dirtbag
  */
+
 ?>
 <!-- wp:heading {"level":2} -->
 <h2 class="wp-block-heading"><?php esc_html_e( 'Now', 'dirtbag' ); ?></h2>

@@ -7,6 +7,7 @@
  *
  * @package Dirtbag
  */
+
 ?>
 <!-- wp:group {"className":"webmention-invite"} -->
 <div class="wp-block-group webmention-invite"><!-- wp:heading {"level":2} -->
