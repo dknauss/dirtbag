@@ -52,6 +52,17 @@ Open Appearance > Editor > Styles and choose a style variation.
 * Dirtbag site icon PNG variants are generated from the local pickup truck SVG variants.
 * Potluck, La.Catholique, CC BY 2.0, https://www.flickr.com/photos/38559542@N02/8167936623
 * Abandoned rusty Ford pickup truck, Jonathan Desrosiers, CC0 1.0, https://wordpress.org/photos/photo/3526751dbe/
+* Blue Bird Truck Stop sign, libraryofcongress, CC0 1.0, https://www.rawpixel.com/image/3797049/photo-image-blue-vintage-bird
+* Old Truck near Great Sand Dunes Colorado, Log Home Finishing, CC0 1.0, https://www.flickr.com/photos/23399885@N06/40197635543
+* Sunny Side Truck Stop Cafe, libraryofcongress, CC0 1.0, https://www.rawpixel.com/image/3800505/photo-image-logo-vintage-neon
+* Red pickup truck, creator not listed, CC0 1.0, https://www.rawpixel.com/image/6035980/red-pickup-truck-free-public-domain-cc0-photo
+* Folding table and chairs, green 2008, robert therrian, CC0 1.0, https://commons.wikimedia.org/w/index.php?curid=163543396
+* Driver This 1975 Van Watched, U.S. National Archives, CC0 1.0, https://www.rawpixel.com/image/8765476/photo-image-vintage-retro
+* Datsun 521 Truck 1500, 先従隗始, CC0 1.0, https://commons.wikimedia.org/w/index.php?curid=172568009
+* Ford Cortina, Txemai Argazki, CC0 1.0, https://www.flickr.com/photos/59170444@N05/52478677429
+* Toyota RT66P Corona Mark II Double Pick, 先従隗始, CC0 1.0, https://commons.wikimedia.org/w/index.php?curid=172568010
+* Sign roadside curio shop, 05/1972, U.S. National Archives, CC0 1.0, https://www.rawpixel.com/image/8802552/photo-image-mountain-nature-landscape
+* Highway crossing desert Sandoval County, libraryofcongress, CC0 1.0, https://www.rawpixel.com/image/12151006/image-cloud-plant-art
 * local chapter hall Veterans Foreign, Carol M Highsmith, CC0 1.0, https://www.rawpixel.com/image/8079773/photo-image-cloud-sky-american-flag
 * Typography scale informed by Butterick's Practical Typography, https://practicaltypography.com/
 
