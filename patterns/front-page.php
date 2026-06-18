@@ -20,7 +20,7 @@
 <div class="wp-block-query h-feed"><!-- wp:post-template {"className":"h-entry","layout":{"type":"grid","columnCount":3}} -->
 <!-- wp:post-featured-image {"isLink":true,"aspectRatio":"4/3","width":"100%","sizeSlug":"medium_large","className":"u-featured","style":{"spacing":{"margin":{"top":"0","bottom":"1em"}}}} /-->
 
-<!-- wp:post-title {"isLink":true,"className":"p-name"} /-->
+<!-- wp:post-title {"isLink":true,"level":3,"className":"p-name"} /-->
 
 <!-- wp:group {"className":"post-meta","layout":{"type":"flex","flexWrap":"wrap"}} -->
 <div class="wp-block-group post-meta"><!-- wp:post-date {"metadata":{"bindings":{"datetime":{"source":"core/post-data","args":{"field":"date"}}}},"className":"dt-published u-url"} /-->
@@ -40,8 +40,8 @@
 <!-- /wp:column -->
 
 <!-- wp:column {"width":"33.33%"} -->
-<div class="wp-block-column" style="flex-basis:33.33%"><!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading">Used Cars and Unused Plans</h3>
+<div class="wp-block-column" style="flex-basis:33.33%"><!-- wp:heading -->
+<h2 class="wp-block-heading">Used Cars and Unused Plans</h2>
 <!-- /wp:heading -->
 
 <!-- wp:latest-posts {"postsToShow":4,"displayPostContent":true,"displayPostDate":true,"displayFeaturedImage":true,"featuredImageAlign":"left"} /--></div>
