@@ -1,6 +1,6 @@
 === Dirtbag ===
 Contributors: danknauss
-Requires at least: 6.6
+Requires at least: 7.0
 Tested up to: 6.9
 Requires PHP: 7.2
 Stable tag: 0.1.2
@@ -35,6 +35,10 @@ No. The theme uses web-safe font stacks and local icon assets.
 Open Appearance > Editor > Styles and choose a style variation.
 
 == Changelog ==
+
+= 0.1.3 =
+* Require WordPress 7.0 and use the core Breadcrumbs block.
+* Document editor controls policy for Brutalist and style variations.
 
 = 0.1.2 =
 * Apply barebones Playground export for header and front page.

@@ -53,3 +53,9 @@ Planned checks and improvements before a formal public release or WordPress.org 
   - Explore a private-first note/scratch-pad tool later, possibly with a clearly labelled `contenteditable` area.
   - Define persistence, privacy, accessibility, keyboard, and screen-reader behaviour before adding any public template surface.
   - Avoid app-like machinery in the theme; use a companion plugin if saving or private dashboard behaviour is needed.
+
+## Compatibility notes
+
+- **Breadcrumbs and WordPress 7.0**
+  - Dirtbag v1 targets WordPress 7.0+ so it can use the core Breadcrumbs block.
+  - If a future release lowers the minimum WordPress version, remove or conditionally replace `core/breadcrumbs` first.

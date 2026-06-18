@@ -43,3 +43,11 @@ When changing a style variation:
 3. Do not add CSS files.
 4. Run `bin/package-check`.
 5. Test switching between all styles in the Site Editor.
+
+## Editor controls policy
+
+Brutalist keeps the editor lean. Style variations unlock more WordPress-native design controls for people who want to tinker without adding a build step or custom CSS files.
+
+Practically, `theme.json` keeps `settings.appearanceTools` set to `false`, while each file in `styles/` sets `settings.appearanceTools` to `true`.
+
+Switching back to Brutalist hides the extra controls again; it does not necessarily erase saved design changes. If a user adds padding, margins, borders, or other supported block/global style values while a variation is active, WordPress may keep those saved block attributes or user global styles when the user switches back to Brutalist. The controls are hidden, but the saved content/style data can remain until the user resets or removes it.
