@@ -28,6 +28,30 @@ Dirtbag is intentionally low machinery. The theme should be understandable by re
 - Keep copy changes intentional. Do not rewrite existing demo content unless that is the task.
 - Keep site-root files such as `robots.txt`, `llms.txt`, and `blogroll.opml` out of the theme package.
 
+## What "no theme stylesheet" means
+
+Dirtbag ships **no enqueued or bundled CSS file**: `style.css` is header-only, and there are no other `.css` files in the package. That is the rule the package check enforces.
+
+It does not mean the theme authors zero CSS. Theme styling is expressed the WordPress-native way, through `theme.json`:
+
+- **Global styles.** Typography, spacing, colour, and per-block/element rules in `theme.json` (and the style variations) compile to WordPress's inline global-styles output. This is theme-authored styling — it just isn't a separate stylesheet.
+- **A small custom-CSS block.** `theme.json` → `styles.css` carries two rules that core settings cannot express declaratively:
+  1. A `byline` gap/margin reset so the author byline reads as one line.
+  2. The truck-icon `filter` rule that reads the `--wp--custom--dirtbag--truck-icon-filter` variable (see [style variations](style-variations.md)).
+
+So the accurate claim is: **no CSS files, no enqueued theme stylesheet, no front-end JavaScript** — not "no CSS at all." WordPress core may additionally print block, layout, and global-style assets required by the active blocks.
+
+## Internationalization
+
+Translatable UI strings live in **pattern PHP** (`patterns/*.php`) using the `dirtbag` text domain, and are collected in `languages/dirtbag.pot`.
+
+Block template and template-part HTML files (`templates/*.html`, `parts/*.html`) **cannot contain translation calls** — they are static HTML. Any prose written directly into those files is therefore untranslatable by WordPress design. Two consequences:
+
+- Repeated, translatable UI prose is routed through patterns instead of being inlined. The post byline ("From … 's dashboard") lives in `patterns/byline.php` and is referenced from the feed and single templates via `wp:pattern`, so it is translatable.
+- Some static chrome remains in template/part HTML and is **not** translatable: the skip link, footer text and menu labels, list-page headings ("Notebook", "Latest posts"), the no-results message, and the previous/next labels. This is a WordPress limitation, not a Dirtbag omission. Move a string into a pattern if it must be translatable.
+
+Refresh `languages/dirtbag.pot` before release only when pattern strings change; avoid timestamp-only churn.
+
 ## Local workflow
 
 Make the smallest useful change, then run:
