@@ -4,7 +4,7 @@
   "meta": {
     "title": "Dirtbag Theme \u2014 Stable Tag",
     "author": "Dan Knauss",
-    "description": "Preview the Dirtbag WordPress block theme pinned to the front-page cleanup commit.",
+    "description": "Preview the Dirtbag WordPress block theme pinned to the About h-card cleanup commit.",
     "categories": [
       "theme",
       "block-theme"
@@ -21,7 +21,7 @@
       "themeData": {
         "resource": "git:directory",
         "url": "https://github.com/dknauss/dirtbag",
-        "ref": "9765dd05cc651cc273c4060e45d32b23f7c94bb2",
+        "ref": "ee5a40d9e0d590c17d52d3ac59a75eaaf38c6e5e",
         "refType": "commit",
         "path": "/"
       },
