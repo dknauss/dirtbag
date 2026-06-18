@@ -20,7 +20,7 @@ Dirtbag is a freely distributable WordPress block theme that's small, simple, du
 - **Block theme:** full-site editing templates, template parts, patterns, and `theme.json`.
 - **No build step:** edit files, run the package check, ship the theme.
 - **No theme-authored JavaScript in v1:** We're open to exploring lightweight frameworks, like Alpine, in the future.
-- **No enqueued theme stylesheet:** `style.css` contains the WordPress theme header only.
+- **No enqueued theme stylesheet:** `style.css` contains the WordPress theme header only — and it is *empty*.
 - **Core-first layout:** uses WordPress core layout, block, and global-style output where needed.
 - **Web-safe typography:** universal font stacks instead of bundled web fonts.
 - **Open-web friendly:** templates and docs for RSS, OPML, XFN, h-card, rel=me, now pages, and plain-text site-root files.
