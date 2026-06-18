@@ -149,6 +149,11 @@
         }
       ],
       "fluid": false
+    },
+    "custom": {
+      "dirtbag": {
+        "truckIconFilter": "brightness(0) saturate(100%) invert(64%) sepia(85%) saturate(1800%) hue-rotate(360deg) brightness(103%) contrast(105%)"
+      }
     }
   },
   "styles": {
@@ -301,7 +306,6 @@
           }
         }
       }
-    },
-    "css": "/* Dirtbag state layer: native controls, loud focus, no JavaScript. */\na:visited { color: #cccccc; }\na:hover,\na:focus { color: #000099; background: #00ffff; outline: 2px solid #00ffff; outline-offset: 2px; }\na:focus-visible { outline: 3px solid #00ffff; outline-offset: 3px; }\na:active { color: #ffff00; }\nbutton,\ninput,\ntextarea,\nselect,\n.wp-block-button__link { color: #ffffff; background: #000099; border: 1px solid #ffffff; border-radius: 0; }\nbutton:hover,\nbutton:focus,\ninput[type=button]:hover,\ninput[type=button]:focus,\ninput[type=submit]:hover,\ninput[type=submit]:focus,\n.wp-block-button__link:hover,\n.wp-block-button__link:focus { color: #000099; background: #00ffff; outline: 2px solid #00ffff; outline-offset: 2px; }\nbutton:focus-visible,\ninput:focus-visible,\ntextarea:focus-visible,\nselect:focus-visible,\n.wp-block-button__link:focus-visible { outline: 3px solid #00ffff; outline-offset: 3px; }\nbutton:active,\ninput[type=button]:active,\ninput[type=submit]:active,\n.wp-block-button__link:active { color: #ffff00; }\nbutton:disabled,\ninput:disabled,\ntextarea:disabled,\nselect:disabled { color: #cccccc; background: #000000; cursor: not-allowed; }\ninput:invalid,\ntextarea:invalid,\nselect:invalid { border-color: #ff0000; }\n.wp-block-navigation a[aria-current=page] { color: #000099; background: #00ffff; font-weight: 700; text-decoration: underline; }\nsummary:hover,\nsummary:focus { color: #000099; background: #00ffff; outline: 2px solid #00ffff; outline-offset: 2px; }\n.wp-block-site-logo img,\n.wp-block-navigation .wp-block-site-logo img,\n.custom-logo,\n.h-card img.u-photo { filter: brightness(0) invert(1); }"
+    }
   }
 }

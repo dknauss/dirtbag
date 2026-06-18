@@ -224,6 +224,11 @@
         }
       ],
       "fluid": false
+    },
+    "custom": {
+      "dirtbag": {
+        "truckIconFilter": "none"
+      }
     }
   },
   "styles": {
@@ -376,7 +381,6 @@
           }
         }
       }
-    },
-    "css": "/* Dirtbag state layer: native controls, loud focus, no JavaScript. */\na:visited { color: #990099; }\na:hover,\na:focus { color: #000000; background: #ffff00; outline: 2px solid #0000ff; outline-offset: 2px; }\na:focus-visible { outline: 3px solid #0000ff; outline-offset: 3px; }\na:active { color: #ff0000; }\nbutton,\ninput,\ntextarea,\nselect,\n.wp-block-button__link { color: #000000; background: #ffffff; border: 1px solid #000000; border-radius: 0; }\nbutton:hover,\nbutton:focus,\ninput[type=button]:hover,\ninput[type=button]:focus,\ninput[type=submit]:hover,\ninput[type=submit]:focus,\n.wp-block-button__link:hover,\n.wp-block-button__link:focus { color: #000000; background: #ffff00; outline: 2px solid #0000ff; outline-offset: 2px; }\nbutton:focus-visible,\ninput:focus-visible,\ntextarea:focus-visible,\nselect:focus-visible,\n.wp-block-button__link:focus-visible { outline: 3px solid #0000ff; outline-offset: 3px; }\nbutton:active,\ninput[type=button]:active,\ninput[type=submit]:active,\n.wp-block-button__link:active { color: #ff0000; }\nbutton:disabled,\ninput:disabled,\ntextarea:disabled,\nselect:disabled { color: #666666; background: #cccccc; cursor: not-allowed; }\ninput:invalid,\ntextarea:invalid,\nselect:invalid { border-color: #ff0000; }\n.wp-block-navigation a[aria-current=page] { color: #000000; background: #eeeeee; font-weight: 700; text-decoration: underline; }\nsummary:hover,\nsummary:focus { color: #000000; background: #ffff00; outline: 2px solid #0000ff; outline-offset: 2px; }"
+    }
   }
 }

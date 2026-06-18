@@ -234,6 +234,11 @@
     "layout": {
       "contentSize": "42rem",
       "wideSize": "64rem"
+    },
+    "custom": {
+      "dirtbag": {
+        "truckIconFilter": "none"
+      }
     }
   },
   "templateParts": [
@@ -366,7 +371,7 @@
         }
       }
     },
-    "css": ".wp-block-navigation a[aria-current=page],\n.wp-block-navigation .current-menu-item > a { font-weight: 700; text-decoration: underline; text-decoration-thickness: .08em; text-underline-offset: .18em; }\n.wp-block-group.byline { gap: 0 !important; }\n.wp-block-group.byline > p,\n.wp-block-group.byline > .wp-block-post-author-name { margin-top: 0; margin-bottom: 0; }\n"
+    "css": ".wp-block-group.byline { gap: 0 !important; }\n.wp-block-group.byline > p,\n.wp-block-group.byline > .wp-block-post-author-name { margin-top: 0; margin-bottom: 0; }\n.wp-block-site-logo img,\n.wp-block-navigation .wp-block-site-logo img,\n.custom-logo,\n.h-card img.u-photo { filter: var(--wp--custom--dirtbag--truck-icon-filter, none); background: transparent; }\n"
   },
   "customTemplates": [
     {
