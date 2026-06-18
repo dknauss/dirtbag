@@ -1,0 +1,13 @@
+# Site-root open-web files are useful for a local/live site, but they do not
+# belong in the WordPress.org theme package. Keep templates in docs/ instead.
+/.well-known/
+/about.txt
+/blogroll.opml
+/blogroll.txt
+/colophon.txt
+/feeds.txt
+/humans.txt
+/llms.txt
+/now.txt
+/robots.txt
+/security.txt

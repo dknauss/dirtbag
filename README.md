@@ -30,3 +30,13 @@ Dirtbag includes standard block templates for home, posts, pages, archives, sear
 - No bundled JavaScript libraries.
 - No remote resources are loaded by the theme.
 - Theme credits and third-party resource licences are documented in `readme.txt`.
+## Development checks
+
+Dirtbag has no build step. Use the small package check before publishing changes:
+
+```sh
+bin/package-check
+```
+
+The same check runs in GitHub Actions. GSD project memory lives in `.planning/`.
+

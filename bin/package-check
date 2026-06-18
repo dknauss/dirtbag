@@ -1,0 +1,107 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT"
+
+echo "== Dirtbag package check =="
+
+required=(style.css readme.txt license.txt screenshot.png theme.json templates/index.html languages/dirtbag.pot)
+for file in "${required[@]}"; do
+  [[ -f "$file" ]] || { echo "Missing required file: $file" >&2; exit 1; }
+done
+
+echo "Required files OK"
+
+python3 - <<'PY'
+from pathlib import Path
+import json, struct, re, sys
+root = Path('.')
+
+# JSON validation.
+for p in [Path('theme.json'), *sorted(Path('styles').glob('*.json'))]:
+    json.loads(p.read_text())
+print('JSON OK')
+
+# Screenshot dimensions without Pillow.
+with open('screenshot.png', 'rb') as f:
+    sig = f.read(8)
+    if sig != b'\x89PNG\r\n\x1a\n':
+        raise SystemExit('screenshot.png is not a PNG')
+    length = struct.unpack('>I', f.read(4))[0]
+    chunk = f.read(4)
+    if chunk != b'IHDR':
+        raise SystemExit('screenshot.png missing IHDR')
+    width, height = struct.unpack('>II', f.read(8))
+    if (width, height) != (1200, 900):
+        raise SystemExit(f'screenshot.png must be 1200x900, got {width}x{height}')
+print('Screenshot OK')
+
+# Block comment nesting in templates and parts.
+comment_re = re.compile(r'<!--\s*(/)?wp:([A-Za-z0-9_\-/]+)(.*?)(/)?\s*-->', re.S)
+for p in list(Path('templates').glob('*.html')) + list(Path('parts').glob('*.html')):
+    stack = []
+    for m in comment_re.finditer(p.read_text()):
+        close, name, rest, selfclose = m.group(1), m.group(2), m.group(3), m.group(4)
+        if close:
+            if not stack or stack[-1] != name:
+                raise SystemExit(f'{p}: closing {name} mismatches {stack[-1] if stack else "EMPTY"}')
+            stack.pop()
+        elif selfclose or rest.rstrip().endswith('/'):
+            continue
+        else:
+            stack.append(name)
+    if stack:
+        raise SystemExit(f'{p}: unclosed blocks {stack}')
+print('Block nesting OK')
+
+# Package hygiene.
+for p in root.rglob('*'):
+    if '.git' in p.parts:
+        continue
+    rel = p.as_posix()
+    name = p.name
+    if any(part in {'.git', '.github', '.planning'} for part in p.parts):
+        continue
+    if p.is_file():
+        if name in {'.DS_Store', 'Thumbs.db', 'desktop.ini', 'error_log', 'php.ini', 'web.config', 'favicon.ico'}:
+            raise SystemExit(f'Forbidden file: {rel}')
+        if p.suffix in {'.zip', '.sql', '.sh', '.xml'}:
+            raise SystemExit(f'Forbidden package file type: {rel}')
+
+root_forbidden = {'robots.txt','llms.txt','security.txt','about.txt','colophon.txt','feeds.txt','humans.txt','now.txt','blogroll.txt','blogroll.opml'}
+for name in root_forbidden:
+    if Path(name).exists():
+        raise SystemExit(f'Site-root file must not be in theme package root: {name}')
+if Path('.well-known').exists():
+    raise SystemExit('.well-known must not be in the theme package root')
+print('Package hygiene OK')
+
+# Suspicious frontend/theme code.
+scan_files = [*Path('templates').glob('*.html'), *Path('parts').glob('*.html'), *Path('patterns').glob('*.php'), Path('theme.json'), Path('style.css')]
+patterns = [r'wp:html', r'<script', r'javascript:', r'\son[a-z]+\s*=']
+for p in scan_files:
+    text = p.read_text(errors='ignore')
+    for pat in patterns:
+        if re.search(pat, text, flags=re.I):
+            raise SystemExit(f'Suspicious pattern {pat!r} in {p}')
+print('Suspicious code scan OK')
+
+# No bundled frontend assets except required style.css and local images/SVGs.
+for p in root.rglob('*'):
+    if any(part in {'.git', '.github', '.planning'} for part in p.parts):
+        continue
+    if p.is_file() and p.suffix in {'.js', '.woff', '.woff2', '.ttf', '.otf'}:
+        raise SystemExit(f'Unexpected bundled frontend asset: {p}')
+for p in root.rglob('*.css'):
+    if p.as_posix() != 'style.css':
+        raise SystemExit(f'Unexpected CSS file: {p}')
+print('Asset scan OK')
+PY
+
+for file in patterns/*.php; do
+  php -l "$file" >/dev/null
+done
+
+echo "PHP syntax OK"
+echo "All package checks passed."
