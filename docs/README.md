@@ -11,6 +11,11 @@ This folder holds repo-facing documentation for the Dirtbag WordPress block them
 - [Site-root open-web file templates](site-root-open-web-files.md) — `robots.txt`, `llms.txt`, OPML, and other files that belong in the site root, not the theme zip.
 - [Backlog](backlog.md) — planned checks and improvements.
 
+## Live previews
+
+- [Playground preview: stable tag](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/dknauss/dirtbag/main/playground/blueprint-stable.json)
+- [Playground preview: main branch](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/dknauss/dirtbag/main/playground/blueprint-main.json)
+
 ## Project memory
 
 The `.planning/` directory contains GSD project memory and roadmap state. It is useful for local development, but it is not part of a WordPress.org theme package.

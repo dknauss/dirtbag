@@ -19,7 +19,8 @@ import json, struct, re, sys
 root = Path('.')
 
 # JSON validation.
-for p in [Path('theme.json'), *sorted(Path('styles').glob('*.json'))]:
+json_files = [Path('theme.json'), *sorted(Path('styles').glob('*.json')), *sorted(Path('playground').glob('*.json'))]
+for p in json_files:
     json.loads(p.read_text())
 print('JSON OK')
 

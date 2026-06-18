@@ -1,0 +1,39 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "landingPage": "/",
+  "meta": {
+    "title": "Dirtbag Theme — Main Branch",
+    "author": "Dan Knauss",
+    "description": "Preview the Dirtbag WordPress block theme from the main branch.",
+    "categories": ["theme", "block-theme"]
+  },
+  "preferredVersions": {
+    "php": "8.3",
+    "wp": "latest"
+  },
+  "login": true,
+  "steps": [
+    {
+      "step": "installTheme",
+      "themeData": {
+        "resource": "git:directory",
+        "url": "https://github.com/dknauss/dirtbag",
+        "ref": "main",
+        "refType": "branch",
+        "path": "/"
+      },
+      "options": {
+        "activate": true,
+        "importStarterContent": true
+      },
+      "ifAlreadyInstalled": "overwrite"
+    },
+    {
+      "step": "setSiteOptions",
+      "options": {
+        "blogname": "Dirtbag",
+        "blogdescription": "Nothing but good bones and road grit."
+      }
+    }
+  ]
+}

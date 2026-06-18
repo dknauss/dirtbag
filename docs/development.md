@@ -14,6 +14,7 @@ Dirtbag is intentionally low machinery. The theme should be understandable by re
 | `patterns/` | PHP block patterns with translation-ready strings. |
 | `languages/` | Translation template files. |
 | `docs/` | Maintainer and release documentation. |
+| `playground/` | WordPress Playground blueprints for stable-tag and main-branch previews. |
 | `.planning/` | Local GSD planning state. Not part of release packages. |
 | `bin/package-check` | Small local verification script. |
 
@@ -49,3 +50,12 @@ Update both together before a tagged release.
 ## No build step means no hidden step
 
 Dirtbag should not require `npm install`, `composer install`, asset compilation, minification, transpilation, or generated CSS/JS to be usable. If a future tool is added for validation, it should be optional and documented as a check, not as a required build.
+
+## Playground previews
+
+Dirtbag keeps two small browser preview blueprints:
+
+- `playground/blueprint-stable.json` installs the stable tag.
+- `playground/blueprint-main.json` installs the main branch.
+
+The README badges link to both. Update the stable blueprint ref when cutting a new stable tag.

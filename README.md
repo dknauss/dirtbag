@@ -1,9 +1,11 @@
 # Dirtbag
 
-[![Package check](https://github.com/dknauss/dirtbag/actions/workflows/package-check.yml/badge.svg)](https://github.com/dknauss/dirtbag/actions/workflows/package-check.yml)
-![WordPress](https://img.shields.io/badge/WordPress-6.6%2B-blue.svg)
-![PHP](https://img.shields.io/badge/PHP-7.2%2B-777bb4.svg)
-![License](https://img.shields.io/badge/license-GPLv2%2B-blue.svg)
+[![Package Check](https://github.com/dknauss/dirtbag/actions/workflows/package-check.yml/badge.svg)](https://github.com/dknauss/dirtbag/actions/workflows/package-check.yml) [![Latest Tag](https://img.shields.io/github/v/tag/dknauss/dirtbag)](https://github.com/dknauss/dirtbag/tags) [![Docs](https://img.shields.io/badge/docs-available-0a7ea4.svg)](docs/)
+[![License: GPL-2.0-or-later](https://img.shields.io/badge/license-GPL--2.0--or--later-blue.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
+[![WordPress 6.6+](https://img.shields.io/badge/WordPress-6.6%2B-21759b.svg?logo=wordpress&logoColor=white)](https://wordpress.org/)
+[![Tested up to WP 6.9](https://img.shields.io/badge/tested%20up%20to-WP%206.9-21759b.svg?logo=wordpress&logoColor=white)](https://wordpress.org/)
+[![PHP 7.2+](https://img.shields.io/badge/PHP-7.2%2B-777bb4.svg?logo=php&logoColor=white)](https://www.php.net/)
+[![▶ Playground (stable tag)](https://img.shields.io/badge/▶_Playground-stable_tag-3858e9.svg?logo=wordpress&logoColor=white)](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/dknauss/dirtbag/main/playground/blueprint-stable.json) [![▶ Playground (main)](https://img.shields.io/badge/▶_Playground-main_branch-6e40c9.svg?logo=wordpress&logoColor=white)](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/dknauss/dirtbag/main/playground/blueprint-main.json)
 
 **Dirtbag is a hyper-simple WordPress block theme with nothing but good bones and road grit.**
 
