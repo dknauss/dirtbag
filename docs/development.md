@@ -52,6 +52,14 @@ Block template and template-part HTML files (`templates/*.html`, `parts/*.html`)
 
 Refresh `languages/dirtbag.pot` before release only when pattern strings change; avoid timestamp-only churn.
 
+## Editor design controls
+
+Dirtbag turns `appearanceTools` off in `theme.json` and does not re-enable it in any style variation. That hides the block editor's per-block controls for borders, margin, padding, `blockGap`, line height, min-height, and sticky position, plus the link-colour control — so editors cannot nudge individual blocks away from the theme's layout or accumulate sticky overrides.
+
+What stays available (enabled explicitly in `theme.json` settings): choosing colours from the palette or a custom colour, font family, font size, and switching style variations under **Appearance → Editor → Styles**.
+
+The trade is deliberate: fewer knobs keep the brutalist defaults consistent while leaving the genuinely useful, low-risk choices intact.
+
 ## Local workflow
 
 Make the smallest useful change, then run:
