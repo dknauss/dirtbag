@@ -21,6 +21,7 @@ Do not include development-only files in the release zip:
 - `.git/`
 - `.github/`
 - `.planning/`
+- `playground/`
 - local backups
 - database dumps
 - root site-kit files such as `robots.txt`, `llms.txt`, `about.txt`, `blogroll.opml`, or `.well-known/security.txt`
@@ -67,3 +68,7 @@ Keep third-party resource credits in `readme.txt`. Current credits include:
 4. Test keyboard navigation and small viewports.
 5. Validate rendered HTML on representative pages.
 6. Confirm package contents before uploading.
+
+## Playground seed content
+
+The `playground/` directory is repo-only demo infrastructure. It seeds content, taxonomy terms, authors, media, and preview state for WordPress Playground links. It must stay out of WordPress.org theme release zips.
