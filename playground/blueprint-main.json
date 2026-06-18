@@ -2,10 +2,13 @@
   "$schema": "https://playground.wordpress.net/blueprint-schema.json",
   "landingPage": "/",
   "meta": {
-    "title": "Dirtbag Theme — Main Branch",
+    "title": "Dirtbag Theme \u2014 Main Branch",
     "author": "Dan Knauss",
     "description": "Preview the Dirtbag WordPress block theme from the main branch.",
-    "categories": ["theme", "block-theme"]
+    "categories": [
+      "theme",
+      "block-theme"
+    ]
   },
   "preferredVersions": {
     "php": "8.3",
@@ -24,7 +27,8 @@
       },
       "options": {
         "activate": true,
-        "importStarterContent": true
+        "importStarterContent": true,
+        "targetFolderName": "dirtbag"
       },
       "ifAlreadyInstalled": "overwrite"
     },
@@ -34,6 +38,10 @@
         "blogname": "Dirtbag",
         "blogdescription": "Nothing but good bones and road grit."
       }
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php\nrequire '/wordpress/wp-load.php';\n\n$icon_path = get_theme_file_path( 'assets/icons/dirtbag-site-icon.png' );\nif ( ! file_exists( $icon_path ) ) {\n    return;\n}\n\n$upload = wp_upload_bits( 'dirtbag-site-icon.png', null, file_get_contents( $icon_path ) );\nif ( ! empty( $upload['error'] ) ) {\n    return;\n}\n\n$filetype      = wp_check_filetype( $upload['file'], null );\n$attachment_id = wp_insert_attachment(\n    array(\n        'post_mime_type' => $filetype['type'],\n        'post_title'     => 'Dirtbag site icon',\n        'post_content'   => '',\n        'post_status'    => 'inherit',\n    ),\n    $upload['file']\n);\n\nif ( is_wp_error( $attachment_id ) || ! $attachment_id ) {\n    return;\n}\n\nrequire_once ABSPATH . 'wp-admin/includes/image.php';\n$metadata = wp_generate_attachment_metadata( $attachment_id, $upload['file'] );\nwp_update_attachment_metadata( $attachment_id, $metadata );\nset_theme_mod( 'custom_logo', $attachment_id );\nupdate_option( 'site_icon', $attachment_id );\n"
     }
   ]
 }

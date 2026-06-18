@@ -55,7 +55,7 @@ Dirtbag should not require `npm install`, `composer install`, asset compilation,
 
 Dirtbag keeps two small browser preview blueprints:
 
-- `playground/blueprint-stable.json` installs the stable tag.
+- `playground/blueprint-stable.json` installs the commit for the current stable tag. It uses the commit SHA rather than the annotated tag ref because Playground/isomorphic-git can fail on annotated tag pack resolution.
 - `playground/blueprint-main.json` installs the main branch.
 
-The README badges link to both. Update the stable blueprint ref when cutting a new stable tag.
+Both blueprints force the theme folder to `dirtbag` so theme asset paths resolve, and both seed the site logo from the bundled truck icon. Update the stable blueprint ref when cutting a new stable tag.
