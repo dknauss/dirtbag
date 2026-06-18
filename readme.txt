@@ -1,5 +1,5 @@
 === Dirtbag ===
-Contributors: danknauss
+Contributors: dpknauss
 Requires at least: 6.6
 Tested up to: 6.9
 Requires PHP: 7.2
