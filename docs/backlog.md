@@ -45,3 +45,11 @@ Planned checks and improvements before a formal public release or WordPress.org 
 - Add screenshots for every style variation.
 - Add a short maintainer note for refreshing `languages/dirtbag.pot`.
 - Add a WordPress Playground blueprint if it can stay simple and does not become a build step.
+
+## Future experiments
+
+- **Private note tool**
+  - Do not ship `single-note.html` in v1 unless a real `note` post type or companion plugin backs it.
+  - Explore a private-first note/scratch-pad tool later, possibly with a clearly labelled `contenteditable` area.
+  - Define persistence, privacy, accessibility, keyboard, and screen-reader behaviour before adding any public template surface.
+  - Avoid app-like machinery in the theme; use a companion plugin if saving or private dashboard behaviour is needed.

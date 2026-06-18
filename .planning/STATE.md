@@ -20,3 +20,9 @@ See: `.planning/PROJECT.md` (updated 2026-06-18)
 - Pattern PHP syntax passed.
 - Rendered frontend had no stale state-layer or random colour CSS.
 - Studio DB backup exists for locked good style state.
+## Accumulated Context
+
+### Pending Todos
+
+- 1 pending todo: `.planning/todos/pending/2026-06-18-private-note-tool.md`
+
