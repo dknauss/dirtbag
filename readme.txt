@@ -3,7 +3,7 @@ Contributors: danknauss
 Requires at least: 6.6
 Tested up to: 6.9
 Requires PHP: 7.2
-Stable tag: 0.1.0
+Stable tag: 0.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: block-theme, full-site-editing, one-column, style-variations
@@ -35,6 +35,9 @@ No. The theme uses web-safe font stacks and local icon assets.
 Open Appearance > Editor > Styles and choose a style variation.
 
 == Changelog ==
+
+= 0.1.1 =
+* Refine header layout and add Playground demo content.
 
 = 0.1.0 =
 * Initial theme.

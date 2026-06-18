@@ -100,7 +100,8 @@ for p in root.rglob('*.css'):
 print('Asset scan OK')
 PY
 
-for file in patterns/*.php; do
+for file in patterns/*.php playground/*.php; do
+  [[ -f "$file" ]] || continue
   php -l "$file" >/dev/null
 done
 
