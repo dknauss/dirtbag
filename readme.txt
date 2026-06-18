@@ -50,6 +50,9 @@ Open Appearance > Editor > Styles and choose a style variation.
 * Pickup Truck SVG Vector, SVG Repo, CC0, https://www.svgrepo.com/svg/452616/pickup-truck
 * Dirtbag pickup truck icon variants are adapted from the SVG Repo pickup truck icon with small CC0-compatible grit marks added by the theme author.
 * Dirtbag site icon PNG variants are generated from the local pickup truck SVG variants.
+* Potluck, La.Catholique, CC BY 2.0, https://www.flickr.com/photos/38559542@N02/8167936623
+* Abandoned rusty Ford pickup truck, Jonathan Desrosiers, CC0 1.0, https://wordpress.org/photos/photo/3526751dbe/
+* local chapter hall Veterans Foreign, Carol M Highsmith, CC0 1.0, https://www.rawpixel.com/image/8079773/photo-image-cloud-sky-american-flag
 * Typography scale informed by Butterick's Practical Typography, https://practicaltypography.com/
 
 All bundled theme code and original theme design are distributed under GPLv2 or later.
