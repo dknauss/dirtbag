@@ -1,25 +1,22 @@
 # Dirtbag backlog
 
-## Release QA and review checks
+Planned checks and improvements before a formal public release or WordPress.org theme submission.
 
-These are planned checks before a public release or WordPress.org theme submission. Keep them boring, repeatable, and small.
+## Release QA
 
 1. **Official Theme Check pass**
    - Run the WordPress Theme Check plugin against Dirtbag.
    - Treat required errors as release blockers.
    - Record any recommended warnings that are intentionally accepted.
 
-2. **Browser style-switcher regression test**
-   - Use a browser-capable Codex session or manual Site Editor pass.
-   - Switch through Default, Minimalist, Newspaper, Hi-vis, Amber CRT, Terminal, and Blueprint.
+2. **Browser-mode style picker regression**
+   - Use a fresh browser-capable `codex-browser` or `codex-browser-handoff` session, or do a manual Site Editor pass.
+   - Switch through Default, Minimalist, Newspaper, Hi-vis, Amber CRT, Terminal, and Blueprint several times.
    - Verify the truck icon colour changes correctly and does not stick between styles.
    - Verify no old hover, active-nav, or random colour CSS returns.
 
 3. **Small viewport screenshots**
-   - Capture and review at least:
-     - `240 × 320`
-     - `320 × 240`
-     - `360 × 640`
+   - Capture and review at least `240×320`, `320×240`, and `360×640`.
    - Check reading flow, navigation, site logo, featured images, comments, and forms.
    - Confirm there is no accidental horizontal scrolling.
 
@@ -28,22 +25,23 @@ These are planned checks before a public release or WordPress.org theme submissi
    - Confirm focus is visible and tab order follows the page.
    - Confirm there are no keyboard traps.
 
-5. **Package check script**
-   - Add a small local script that verifies the theme zip before release.
-   - Checks should include required files, no hidden files, no root site-kit `.txt`/`.opml` files, valid JSON, PHP syntax, and no bundled JS/fonts.
-   - Keep the script local and simple; no build step.
+5. **Rendered HTML validation**
+   - Validate home, single, page, archive, search, 404, and comments with the W3C/Nu checker.
+   - Record any unavoidable WordPress/core output notes separately from theme issues.
 
-6. **Translation and rendered-output checks**
-   - Refresh `languages/dirtbag.pot` before release and avoid committing timestamp-only churn.
-   - Run rendered HTML validation on key URLs.
-   - Run axe or pa11y accessibility checks in a browser-capable session.
-## Tooling and validation backlog
+6. **Axe/pa11y accessibility checks**
+   - Run automated checks in a browser-capable session.
+   - Follow with manual keyboard and screen-reader spot checks.
 
-Add these before a formal release cycle:
+## Tooling improvements
 
-- **Tiny package-check script:** add `bin/package-check` to rerun the static checks: required files, package hygiene, JSON validation, PHP syntax, WPCS/PHPCompatibility, no bundled JS/fonts, screenshot dimensions, and stale site-root file detection.
-- **Browser-mode style picker regression:** in a `codex-browser` session, switch every style variation repeatedly and verify the truck icon colour does not stick or leak stale CSS between styles.
-- **Official Theme Check plugin pass:** run the WordPress Theme Check plugin and treat required failures as blockers.
-- **Optional W3C/Nu HTML validation:** validate rendered pages such as home, single, page, archive, search, 404, and comments.
-- **Axe/pa11y accessibility checks:** run automated accessibility checks in a browser-capable session, then follow with keyboard/manual checks.
+- Keep `bin/package-check` tiny, dependency-free, and easy to rerun.
+- Consider adding optional checks for stale text-domain strings and pattern translation coverage.
+- Consider a release packaging helper that creates a clean `dirtbag.zip` without development files.
+- Consider a browser-mode regression script for the style picker if browser tooling becomes part of the normal workflow.
 
+## Documentation improvements
+
+- Add screenshots for every style variation.
+- Add a short maintainer note for refreshing `languages/dirtbag.pot`.
+- Add a WordPress Playground blueprint if it can stay simple and does not become a build step.

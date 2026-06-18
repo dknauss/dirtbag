@@ -1,42 +1,130 @@
 # Dirtbag
 
-Dirtbag is a hyper-simple WordPress block theme. It favours plain markup, core blocks, web-safe fonts, and style variations over bundled front-end machinery.
+[![Package check](https://github.com/dknauss/dirtbag/actions/workflows/package-check.yml/badge.svg)](https://github.com/dknauss/dirtbag/actions/workflows/package-check.yml)
+![WordPress](https://img.shields.io/badge/WordPress-6.6%2B-blue.svg)
+![PHP](https://img.shields.io/badge/PHP-7.2%2B-777bb4.svg)
+![License](https://img.shields.io/badge/license-GPLv2%2B-blue.svg)
 
-## Modes
+**Dirtbag is a hyper-simple WordPress block theme with nothing but good bones and road grit.**
 
-- **Brutalist** — default, plainest mode. No enqueued theme stylesheet and no theme JavaScript.
-- **Minimalist** — sparse theme.json styling for readable defaults.
-- **Newspaper** — black ink, white paper, old classifieds energy.
-- **Terminal** — MS-DOS-adjacent green phosphor without the boot disk.
-- **Amber CRT** — late-night monitor glow.
-- **Blueprint** — garage floor plans and cyan chalk lines.
-- **Hi-vis** — safety vest, road cone, no-name yellow-box dinner.
+It favours plain markup, core WordPress blocks, web-safe fonts, style variations, visible feeds, and old/open-web habits over front-end machinery.
 
-WordPress core may still print global styles, layout styles, block styles, and block scripts needed by core blocks. Dirtbag does not enqueue a separate stylesheet or JavaScript runtime.
+![Dirtbag theme screenshot](screenshot.png)
 
-## JavaScript policy
+## What it is
 
-Dirtbag ships no theme-authored front-end JavaScript in v1. Future interaction work should start with native HTML and WordPress core. If a real enhancement needs JavaScript, prefer tiny vanilla JavaScript first. Alpine.js, Reef, and VanJS remain future candidates only.
+Dirtbag is a distributable WordPress block theme for people who want a site that feels small, durable, and understandable.
+
+- **Block theme:** full-site editing templates, template parts, patterns, and `theme.json`.
+- **No build step:** edit files, run the package check, ship the theme.
+- **No theme-authored JavaScript in v1:** no Alpine, Reef, VanJS, or bundled runtime.
+- **No enqueued theme stylesheet:** `style.css` contains the WordPress theme header only.
+- **Core-first layout:** uses WordPress core layout, block, and global-style output where needed.
+- **Web-safe typography:** universal font stacks instead of bundled web fonts.
+- **Open-web friendly:** templates and docs for RSS, OPML, XFN, h-card, rel=me, now pages, and plain-text site-root files.
+
+WordPress core may still print global styles, layout styles, block styles, and scripts required by core blocks. Dirtbag’s rule is narrower and simpler: the theme does not ship its own front-end CSS or JavaScript files.
+
+## Quick start
+
+From a WordPress installation:
+
+```sh
+cd wp-content/themes
+git clone https://github.com/dknauss/dirtbag.git dirtbag
+```
+
+Then in WordPress:
+
+1. Go to **Appearance → Themes**.
+2. Activate **Dirtbag**.
+3. Go to **Appearance → Editor → Styles** to choose a style variation.
+
+For a release zip, make sure the zip contains a top-level `dirtbag/` directory and excludes development-only files such as `.git/`, `.github/`, and `.planning/`.
+
+## Style variations
+
+| Style | Intent | Truck icon |
+| --- | --- | --- |
+| Brutalist / default | Plainest mode, browser-like HTML energy | Black on transparent |
+| Minimalist | Sparse readable defaults | Black on transparent |
+| Newspaper | Ink, paper, classifieds | Black on transparent |
+| Hi-vis | Safety vest and road cone | Black on transparent |
+| Amber CRT | Late-night monitor glow | Amber on transparent |
+| Terminal | MS-DOS-adjacent phosphor | Green on transparent |
+| Blueprint | Garage plans and cyan chalk lines | Amber on transparent |
+
+The style variations live in `styles/`. Shared defaults live in `theme.json`.
 
 ## Templates and patterns
 
-Dirtbag includes standard block templates for home, posts, pages, archives, search, author archives, date archives, taxonomy archives, 404s, and several page variants. Patterns cover comments, post meta, previous/next links, h-card profile markup, rel=me links, a blogroll, a now section, a colophon, an accessible table, and open-web links.
+Dirtbag includes standard block templates for:
 
-## Review notes
+- Home and front page
+- Single posts and pages
+- Archives, authors, dates, categories, tags, and search
+- 404 pages
+- Plain, wide, centred, no-title, links, feeds, now, colophon, and uses page variants
 
-- Required theme files: `style.css`, `readme.txt`, `theme.json`, and `templates/index.html`.
-- Translation text domain: `dirtbag`.
-- Domain path: `/languages`.
-- No bundled JavaScript libraries.
-- No remote resources are loaded by the theme.
-- Theme credits and third-party resource licences are documented in `readme.txt`.
-## Development checks
+Patterns cover comments, post meta, previous/next links, h-card profile markup, rel=me links, XFN/blogroll links, a now section, a colophon, an accessible table, open-web links, and small roadside notices.
 
-Dirtbag has no build step. Use the small package check before publishing changes:
+## Development
+
+There is no package install and no build command. The main local check is:
 
 ```sh
 bin/package-check
 ```
 
-The same check runs in GitHub Actions. GSD project memory lives in `.planning/`.
+It verifies required theme files, JSON validity, screenshot dimensions, block nesting, package hygiene, suspicious front-end code patterns, bundled asset rules, and PHP syntax for patterns.
 
+The same check runs in GitHub Actions on pushes and pull requests.
+
+## Documentation
+
+Start with the docs index:
+
+- [Docs index](docs/README.md)
+- [Development guide](docs/development.md)
+- [Testing guide](docs/testing.md)
+- [Style variations](docs/style-variations.md)
+- [WordPress.org theme review notes](docs/theme-review.md)
+- [Site-root open-web file templates](docs/site-root-open-web-files.md)
+- [Backlog and roadmap notes](docs/backlog.md)
+
+GSD project memory lives in `.planning/` for local planning context.
+
+## JavaScript policy
+
+Dirtbag v1 ships no theme-authored front-end JavaScript.
+
+If a future interaction truly needs JavaScript, the order of preference is:
+
+1. Native HTML and WordPress core behaviour.
+2. Tiny vanilla JavaScript.
+3. Alpine.js for markup-local behaviour, only if approved.
+4. Reef for tiny reactive UI, only if Alpine’s style is wrong for the job.
+5. VanJS for more app-like DOM generation, only if a real UI need justifies it.
+
+## Accessibility and performance goals
+
+Dirtbag aims to stay boring in the best way:
+
+- Semantic landmarks and headings.
+- Visible links and keyboard focus from WordPress/core styling.
+- Skip link support.
+- No external fonts, trackers, analytics, or remote assets.
+- No bundled JavaScript runtime.
+- Small template and pattern surface area.
+
+Manual browser accessibility checks are still required before release. See [Testing](docs/testing.md).
+
+## License and credits
+
+Dirtbag is licensed under the [GNU General Public License v2 or later](license.txt).
+
+Third-party resource credits are listed in [`readme.txt`](readme.txt), including the CC0 pickup truck source image from SVG Repo and typographic inspiration from Butterick’s Practical Typography.
+
+## Contributing
+
+Small, plain patches are welcome. Please run `bin/package-check` before opening a pull request and keep the no-build-step/no-theme-JS rule intact unless an issue explicitly agrees otherwise.
