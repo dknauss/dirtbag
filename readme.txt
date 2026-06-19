@@ -3,7 +3,7 @@ Contributors: dpknauss
 Requires at least: 7.0
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 0.1.3
+Stable tag: 0.1.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: full-site-editing, one-column, style-variations
@@ -35,6 +35,11 @@ No. The theme uses web-safe font stacks and local icon assets.
 Open Appearance > Editor > Styles and choose a style variation.
 
 == Changelog ==
+
+= 0.1.4 =
+* Accessibility: remove the scrollable overlay captions from the front-page gallery (alt text kept; credits remain in this readme).
+* WordPress.org Theme Check cleanup: drop the invalid block-theme tag, add a GPL copyright notice, and remove base64_decode from the bundled Playground seed.
+* Expand the README overview and align the JavaScript policy wording with the core-Interactivity-first doctrine.
 
 = 0.1.3 =
 * Require WordPress 7.0 and PHP 7.2+; use the core Breadcrumbs block.
