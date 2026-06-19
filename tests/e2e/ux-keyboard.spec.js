@@ -33,5 +33,14 @@ test.describe('keyboard and overlay', () => {
     const search = page.locator('.wp-block-search__input').first();
     await search.focus();
     await expect(search).toBeFocused();
+
+    // Comment form on a single post (URL discovered from the archive — it embeds
+    // the seed date, so it can't be a static slug).
+    await page.goto('/archive/');
+    const href = await page.locator('.wp-block-post-title a').first().getAttribute('href');
+    await page.goto(href);
+    const comment = page.locator('#comment, .comment-form textarea').first();
+    await comment.focus();
+    await expect(comment).toBeFocused();
   });
 });

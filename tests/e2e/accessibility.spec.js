@@ -37,29 +37,48 @@ const GATED_RULES = [
   'landmark-unique', 'region', 'color-contrast', 'button-name',
 ];
 
+// Run axe on the current page: gate the confirmed-clean set, report the rest.
+async function checkAxe(page, label, testInfo) {
+  const { violations } = await new AxeBuilder({ page })
+    .withTags(['wcag2a', 'wcag2aa'])
+    .analyze();
+
+  const ungated = violations.filter((v) => !GATED_RULES.includes(v.id));
+  if (ungated.length) {
+    console.log(`\naxe findings (report-only) on ${label}:\n` + ungated
+      .map((v) => `- ${v.id} (${v.impact}): ${v.help} [${v.nodes.length}]`).join('\n'));
+    await testInfo.attach('axe.json', {
+      body: JSON.stringify(ungated, null, 2), contentType: 'application/json',
+    });
+  }
+
+  const gated = violations
+    .filter((v) => GATED_RULES.includes(v.id))
+    .map((v) => `${v.id} [${v.nodes.length}]`);
+  expect(gated, `gated a11y violations on ${label}`).toEqual([]);
+}
+
 test.describe('axe (wcag2a/aa)', () => {
   for (const path of PAGES) {
     test(`axe: ${path}`, async ({ page }, testInfo) => {
       await page.goto(path);
-      const { violations } = await new AxeBuilder({ page })
-        .withTags(['wcag2a', 'wcag2aa'])
-        .analyze();
-
-      // Report-only for rules not yet gated — surface without failing.
-      const ungated = violations.filter((v) => !GATED_RULES.includes(v.id));
-      if (ungated.length) {
-        console.log(`\naxe findings (report-only) on ${path}:\n` + ungated
-          .map((v) => `- ${v.id} (${v.impact}): ${v.help} [${v.nodes.length}]`).join('\n'));
-        await testInfo.attach('axe.json', {
-          body: JSON.stringify(ungated, null, 2), contentType: 'application/json',
-        });
-      }
-
-      // Gating — the confirmed-clean set must stay clean.
-      const gated = violations
-        .filter((v) => GATED_RULES.includes(v.id))
-        .map((v) => `${v.id} [${v.nodes.length}]`);
-      expect(gated, `gated a11y violations on ${path}`).toEqual([]);
+      await checkAxe(page, path, testInfo);
     });
   }
+
+  // Templates that can't be static slugs: a single post (its URL embeds the seed
+  // date) and the 404 fallback. Resolve the post link from the archive at runtime.
+  test('axe: a single post (with comment form)', async ({ page }, testInfo) => {
+    await page.goto('/archive/');
+    const href = await page.locator('.wp-block-post-title a').first().getAttribute('href');
+    expect(href, 'a post link on the archive').toBeTruthy();
+    await page.goto(href);
+    await expect(page.locator('.comment-form, #commentform').first()).toBeVisible();
+    await checkAxe(page, 'single post', testInfo);
+  });
+
+  test('axe: the 404 template', async ({ page }, testInfo) => {
+    await page.goto('/no-such-road-here/');
+    await checkAxe(page, '404', testInfo);
+  });
 });
