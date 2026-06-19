@@ -91,3 +91,16 @@ Dirtbag keeps two small browser preview blueprints:
 - `playground/blueprint-main.json` installs the main branch.
 
 Both blueprints force the theme folder to `dirtbag` so theme asset paths resolve, and both seed the site logo from the bundled truck icon. Update the stable blueprint ref when cutting a new stable tag.
+
+## Studio site, demo content, and reseeding
+
+The local Studio site is the **authoring workbench**, not a demo to be reset. Its theme folder is a symlink to this repo, so the site renders whatever branch is checked out. Content and Site-Editor edits happen here first, then get exported into theme files and into `playground/seed-content.php`.
+
+Directionality matters: `seed-content.php` is **derived from** the Studio site (Studio → seed file), not the other way around. Re-running the seed *into* Studio runs that backwards — it bulldozes live working content and imports a frozen, possibly older snapshot.
+
+Two distinct "make it match the theme" operations:
+
+- **Clear overrides only (routine, safe).** When the Studio site renders stale because Site-Editor template/template-part customizations in the database shadow the theme files, delete just those overrides so the committed files take over. Content (posts, pages, media, menus) is preserved. Back up `wp-content/database/.ht.sqlite` first; restore by copying the backup back over it. This is the normal way to make Studio reflect the committed theme.
+- **Full wipe + reseed (rare, throwaway only).** Deleting all content *and* overrides and re-running `seed-content.php` produces a pristine canonical demo (theme files + seeded content). Do this on a **throwaway** Studio site, never the main workbench, and only to validate the brand-new-user experience before a tag/release. Before reseeding anywhere for real, first **re-export current Studio content back into `seed-content.php`** so you are not restoring an older draft.
+
+The free pristine demo already exists: the Playground links run `seed-content.php` from a blank install on every load. Use those for a clean-room view instead of resetting Studio.

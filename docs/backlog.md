@@ -33,6 +33,11 @@ Planned checks and improvements before a formal public release or WordPress.org 
    - Run automated checks in a browser-capable session.
    - Follow with manual keyboard and screen-reader spot checks.
 
+7. **Clean-install verification**
+   - Confirm the theme renders correctly for a brand-new user with no database overrides.
+   - Use a Playground link (which reseeds from a blank install on every load) or a **throwaway** Studio site — never reset the main authoring site.
+   - For a full wipe + reseed, first re-export current Studio content into `playground/seed-content.php`; the seed file is derived from Studio, not the reverse. See [development guide](development.md#studio-site-demo-content-and-reseeding).
+
 ## Tooling improvements
 
 - Keep `bin/package-check` tiny, dependency-free, and easy to rerun.

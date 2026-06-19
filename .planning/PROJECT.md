@@ -55,6 +55,7 @@ A Dirtbag site must remain readable, navigable, and understandable with WordPres
 | Keep site-root text/OPML files out of theme package | They are site policy/content files and can trip theme review | ✓ Good |
 | Add `bin/package-check` instead of a build step | Tests the package without changing the no-build philosophy | — Pending |
 | Track GSD planning docs in git | Project decisions should travel with the repo | — Pending |
+| Studio site is the authoring workbench; `seed-content.php` is derived from it | Reseeding Studio from the seed file runs the export backwards and destroys live content; clear DB overrides (not content) to match the theme, and reserve full wipe+reseed for throwaway/Playground clean-install checks | ✓ Good |
 
 ---
 *Last updated: 2026-06-18 after GSD initialization*

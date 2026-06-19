@@ -44,9 +44,11 @@ Deliverables:
 - POT refreshed only when strings change.
 - Resource credits verified in `readme.txt`.
 - Release notes written.
+- Clean-install verification on a throwaway/Playground site (theme files + seeded demo, no DB overrides). The authoring Studio site is never reset for this; `seed-content.php` is re-exported from Studio before any reseed. See `docs/development.md` and `docs/backlog.md`.
 
 Success criteria:
 
 - Package passes `bin/package-check`.
 - Zip contents match theme-review expectations.
 - Release tag can be created from a clean `main` branch.
+- Theme renders correctly from a clean install with no Site-Editor database overrides.
