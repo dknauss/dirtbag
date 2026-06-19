@@ -20,7 +20,8 @@ The script checks:
 - No suspicious raw front-end code patterns.
 - No bundled JavaScript, font files, or extra CSS files.
 - PHP syntax for pattern files.
-- **Seed/demo content integrity** — decodes `playground/seed-content.php` and checks each post for malformed block delimiters, balanced block nesting, and reconcile artifacts (`core/post-data`, hardcoded theme slug, dev URLs).
+- **Seed/demo content integrity** — reads `playground/seed-content.json` (the seed data, loaded by `seed-content.php`) and checks each post for malformed block delimiters, balanced block nesting, and reconcile artifacts (`core/post-data`, hardcoded theme slug, dev URLs).
+- **No `base64_decode`** in any pattern or Playground PHP file (WordPress.org Theme Check disallows it).
 - **Reconcile guardrails** across shipped block files (same artifacts), so a raw Site-Editor export cannot silently reintroduce them.
 - **i18n** — pattern translation calls use the `dirtbag` text domain.
 
