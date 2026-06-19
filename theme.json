@@ -64,6 +64,20 @@
 				"page"
 			],
 			"title": "Uses page"
+		},
+		{
+			"name": "page-archive",
+			"postTypes": [
+				"page"
+			],
+			"title": "Archive index"
+		},
+		{
+			"name": "page-search",
+			"postTypes": [
+				"page"
+			],
+			"title": "Search page"
 		}
 	],
 	"settings": {
