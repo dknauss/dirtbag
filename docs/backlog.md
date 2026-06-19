@@ -64,3 +64,14 @@ Planned checks and improvements before a formal public release or WordPress.org 
 - **Breadcrumbs and WordPress 7.0**
   - Dirtbag v1 targets WordPress 7.0+ so it can use the core Breadcrumbs block.
   - If a future release lowers the minimum WordPress version, remove or conditionally replace `core/breadcrumbs` first.
+
+## Browser testing (future Playwright / manual)
+
+Not yet verified in a real browser; looked OK on a quick manual skim.
+
+- **Mobile navigation overlay — open/close and centering**
+  - Tap the header menu icon on small viewports; confirm the overlay opens, the `core/navigation-overlay-close` button closes it, Esc closes it, and focus is trapped while open.
+  - Confirm the site logo and the menu are visually centred (`parts/navigation-overlay.html`).
+- **Mobile navigation overlay — dark style variations**
+  - The overlay uses fixed `#ffffff` background / `#000000` text so it always renders solid. On dark variations (Terminal, Amber CRT, Blueprint) that is a light panel over a dark site.
+  - Verify contrast and appearance there, and decide whether the overlay should follow each variation's colours instead of fixed black/white.
