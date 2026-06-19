@@ -7,7 +7,7 @@
 [![PHP 7.2+](https://img.shields.io/badge/PHP-7.2%2B-777bb4.svg?logo=php&logoColor=white)](https://www.php.net/)
 [![▶ Playground (stable tag)](https://img.shields.io/badge/▶_Playground-stable_tag-3858e9.svg?logo=wordpress&logoColor=white)](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/dknauss/dirtbag/main/playground/blueprint-stable.json) [![▶ Playground (main)](https://img.shields.io/badge/▶_Playground-main_branch-6e40c9.svg?logo=wordpress&logoColor=white)](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/dknauss/dirtbag/main/playground/blueprint-main.json)
 
-**Dirtbag is a simple WordPress block theme focused on the fundamentals.** It favours plain HTML markup, as little JS (and CSS) as possible, core WordPress blocks, the fonts everyone already has, visible feeds, and old/open-web habits over front-end machinery. 
+**Dirtbag is a simple WordPress block theme that does more with less.** It's for people who want to learn about WordPress theme design and front-end development by stripping down to fundamentals and building up from there. If you just dig the indieweb and dirtbag aesthetic, that's cool too, but I hope it's a gateway drug to tinkering. 
 
 ![Dirtbag](https://raw.githubusercontent.com/dknauss/dirtbag/main/docs/images/dirtbag-card.png)
 
@@ -21,13 +21,13 @@ Dirtbag is a freely distributable WordPress block theme that's small, simple, du
 
 - **Block theme:** full-site editing templates, template parts, patterns, and `theme.json`.
 - **No build step:** edit files, run the package check, ship the theme.
-- **No theme-authored JavaScript:** core blocks may still load WordPress's own Interactivity API (navigation overlay, enhanced pagination, image lightbox), each with a plain-HTML fallback. Core's runtime is the OEM part; aftermarket frameworks like Alpine are a later, approved exception — see the [JavaScript policy](#javascript-policy).
-- **No enqueued theme stylesheet file:** `style.css` contains the WordPress theme header only — and it is *empty*. Dirtbag does use WordPress-native `theme.json` styles.
+- **No theme-authored JavaScript:** core blocks may still load WordPress's own Interactivity API (navigation overlay, enhanced pagination, image lightbox), each with a plain-HTML fallback. Core's runtime is the OEM part; lightweight aftermarket frameworks might be a later, approved exception if we get curious enough — see the [JavaScript policy](#javascript-policy).
+- **No enqueued theme stylesheet file:** `style.css` contains the WordPress theme header only — and it is *empty*. Dirtbag uses WordPress-native `theme.json`-based styles and aims to keep it simple.
 - **Core-first layout:** uses WordPress core layout, block, and global-style output where needed.
-- **Web-safe typography:** universal font stacks instead of bundled web fonts.
+- **Web-safe typography:** universal font stacks instead of bundled web fonts. (The global styles use web-safe colours as well, just for the hell of it and so we can say "web-safe" in 2026.)
 - **Open-web friendly:** templates and docs for RSS, OPML, XFN, h-card, rel=me, now pages, and plain-text site-root files.
 
-WordPress core may still print global styles, layout styles, block styles, and scripts required by core blocks. Dirtbag’s rule is narrower and simpler: the theme does not enqueue a theme stylesheet file and does not ship front-end JavaScript files.
+WordPress core prints global styles, layout styles, block styles, and scripts required by core blocks. Dirtbag aims not to do anything extra if it is already done or can be done by core. 
 
 ## Quick start
 
@@ -43,8 +43,6 @@ Then in WordPress:
 1. Go to **Appearance → Themes**.
 2. Activate **Dirtbag**.
 3. Go to **Appearance → Editor → Styles** to choose a style variation.
-
-For a release zip, make sure the zip contains a top-level `dirtbag/` directory and excludes development-only files such as `.git/`, `.github/`, and `.planning/`.
 
 ## Style variations
 
@@ -107,6 +105,8 @@ It verifies required theme files, JSON validity, screenshot dimensions, block ne
 
 The same check runs in GitHub Actions on pushes and pull requests.
 
+To build a clean zip package to install via the theme uploader in WordPress, make sure it contains a top-level `dirtbag/` directory and excludes development-only files such as `.git/`, `.github/`, and `.planning/`.
+
 ## Documentation
 
 Start with the docs index:
@@ -125,16 +125,14 @@ GSD project memory lives in `.planning/` for local planning context.
 
 ## JavaScript policy
 
-Dirtbag ships no theme-authored front-end JavaScript. WordPress core still loads its own where blocks need it — the navigation overlay already pulls in the Interactivity API runtime, and the theme opts into two of core’s progressive enhancements: enhanced (no-reload) feed pagination and the image lightbox. All three degrade to plain links and images when JavaScript is off.
+Dirtbag ships no theme-authored front-end JavaScript. WordPress core loads its own where blocks need it — the navigation overlay pulls in the Interactivity API runtime, and the theme opts into two of core’s progressive enhancements: enhanced (no-reload) feed pagination and the image lightbox. All three degrade to plain links and images when JavaScript is off.
 
 When an interaction genuinely needs JavaScript, reach for the OEM part before the aftermarket catalogue:
 
 1. **Native HTML and WordPress core behaviour** — no runtime at all.
 2. **The WordPress Interactivity API** — the OEM part. Preact + signals (~10&nbsp;kb), built by the same shop that built the engine, progressive-enhancement-first, and already in the parts bin whenever a core interactive block is on the page (overlay, accordion, search, enhanced pagination, lightbox). Adding behaviour on a runtime you are already carrying costs almost nothing.
 3. **Tiny vanilla JavaScript** — for a one-bolt job that does not justify a framework.
-4. **Aftermarket frameworks** — Alpine.js, Reef, or VanJS, *only* if the OEM part is genuinely wrong for the job. These are bolt-ons from another maker: a second runtime to haul around, extra weight, and no guarantee it fits the WordPress engine. Approve before fitting.
-
-Whatever the part: if it needs JavaScript to be understood, it needs a better fallback.
+4. **Aftermarket frameworks** — Only if the OEM part is genuinely wrong for the job. These are bolt-ons from another maker: a second runtime to haul around, extra weight, and no guarantee it fits the WordPress engine. Whatever the part: if it needs its own JavaScript to be understood, it needs a better fallback.
 
 ## Accessibility and performance goals
 
@@ -147,7 +145,7 @@ Dirtbag aims to stay boring in the best way:
 - No bundled JavaScript runtime.
 - Small template and pattern surface area.
 
-Manual browser accessibility checks are still required before release. See [Testing](docs/testing.md).
+Manual browser accessibility checks are required before each release. See [Testing](docs/testing.md).
 
 ## License and credits
 
@@ -157,7 +155,7 @@ Third-party resource credits are listed in [`readme.txt`](readme.txt), including
 
 ## AI assistance
 
-Parts of Dirtbag were built with AI assistance — Anthropic’s Claude, via Claude Code — under human direction and review. Commits made with that help carry a `Co-Authored-By: Claude` trailer. The maintainer reviews and remains responsible for all shipped code, content, and design.
+Dirtbag is built with AI assistance from multiple models in dialogue with each other and the human directior and reviewer. Commits carry a `Co-Authored-By: Claude` trailer when Claude was involved. The maintainer reviews and remains responsible for all shipped code, content, and design. Dig into the docs to see some of the things humans and machines have learned together from each other on this project.
 
 ## Contributing
 
