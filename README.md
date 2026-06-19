@@ -163,3 +163,11 @@ Dirtbag is built with AI assistance from multiple models in dialogue with each o
 ## Contributing
 
 Small, plain patches are welcome. Please run `bin/package-check` before opening a pull request and keep the no-build-step/no-theme-JS rule intact unless an issue explicitly agrees otherwise.
+
+**Commit attribution is enforced.** Every commit must carry a `Co-Authored-By:` trailer (Dirtbag is built in human + AI dialogue). Turn the hook on once per clone:
+
+```sh
+git config core.hooksPath .githooks
+```
+
+The `commit-msg` hook then rejects any commit without a trailer. A genuine human-only commit can attribute the person, or bypass deliberately with `git commit --no-verify`.

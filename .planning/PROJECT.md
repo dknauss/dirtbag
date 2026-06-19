@@ -21,9 +21,11 @@ A Dirtbag site must remain readable, navigable, and understandable with WordPres
 ### Active
 
 - [ ] Keep package checks repeatable with `bin/package-check` and CI.
+- [ ] Build out the accessibility + UX e2e suite (Playwright + axe) — the primary testing focus; graduate axe rules from report-only to gating as the baseline clears. See `docs/testing-strategy.md`.
 - [ ] Verify Site Editor style switching in a browser-capable session before release.
 - [ ] Run official Theme Check before WordPress.org submission.
 - [ ] Keep accessibility, translation, security, and performance checks boring and repeatable.
+- [ ] Enforce commit attribution: `Co-Authored-By` trailer required via `.githooks/commit-msg` (`git config core.hooksPath .githooks`).
 
 ### Out of Scope
 
@@ -36,7 +38,7 @@ A Dirtbag site must remain readable, navigable, and understandable with WordPres
 - Local theme root: `/Users/danknauss/Developer/GitHub/dirtbag` (kept out of iCloud / cloud-synced folders).
 - Local Studio site: `/Users/danknauss/Studio/dirtbag` (the theme folder symlinks the repo).
 - Theme package should remain WordPress.org-review friendly: no hidden package files, no root `robots.txt`, no root `.well-known`, no bundled JS/fonts, and complete resource credits.
-- Testing is a **calibrated pyramid, not test-first TDD** — the theme is mostly declarative. The static gate (`bin/package-check` + CI) owns "green"; render/accessibility E2E, Theme Check, and manual browser QA cover behaviour; TDD is reserved for the small islands of real logic. See `docs/testing-strategy.md`.
+- Testing is a **calibrated pyramid, not test-first TDD** — the theme is mostly declarative. The static gate (`bin/package-check` + CI) owns "green"; the **primary quality focus is accessibility and UX**, verified with Playwright + axe + real-browser checks; Theme Check and manual QA back it up; TDD is reserved for the small islands of real logic. See `docs/testing-strategy.md`.
 
 ## Constraints
 
