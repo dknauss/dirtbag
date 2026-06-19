@@ -1,5 +1,15 @@
 # Dirtbag Roadmap
 
+## Testing approach
+
+Dirtbag is a mostly *declarative* theme, so full test-first TDD is overkill — the
+artifact is configuration and markup, not logic. We use a calibrated pyramid: a fast
+static gate (`bin/package-check` + CI), schema validity, render + accessibility E2E
+(Playwright), Theme Check on the release zip, and manual browser QA — with TDD
+reserved for the small islands of real logic (the seed importer, new package-check
+checks, any future Interactivity directive or vanilla JS). Each phase below leans on
+the levels mapped in [docs/testing-strategy.md](../docs/testing-strategy.md).
+
 ## Phase 1 — Repository, package checks, and publishing
 
 Goal: make Dirtbag a public GitHub repository with repeatable no-build package checks.
