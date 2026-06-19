@@ -95,6 +95,61 @@ for p in scan_files:
             raise SystemExit(f'Suspicious pattern {pat!r} in {p}')
 print('Suspicious code scan OK')
 
+# Image inventory: fail if wp.org package or Playground demo images drift.
+image_exts = {'.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'}
+allowed_theme_images = {
+    'screenshot.png',
+    'assets/icons/dirtbag-site-icon-white.png',
+    'assets/icons/dirtbag-site-icon.png',
+    'assets/icons/pickup-truck-header-white.svg',
+    'assets/icons/pickup-truck-header.svg',
+    'assets/icons/pickup-truck-white.svg',
+    'assets/icons/pickup-truck.svg',
+    'assets/images/abandoned-rusty-ford-pickup-1024x768.jpg',
+    'assets/images/local-chapter-hall-veterans-foreign.jpg',
+    'assets/images/potluck-la-catholique.jpg',
+}
+allowed_playground_images = {
+    'playground/media/abandoned-rusty-ford-pickup.jpg',
+    'playground/media/blue-bird-truck-stop-sign.jpg',
+    'playground/media/datsun-521-truck-1500.jpg',
+    'playground/media/dirtbag-site-icon.png',
+    'playground/media/driver-this-1975-van-watched.jpg',
+    'playground/media/folding-table-and-chairs-green-2008.jpg',
+    'playground/media/ford-cortina.jpg',
+    'playground/media/highway-crossing-desert-sandoval-county.jpg',
+    'playground/media/local-chapter-hall-veterans-foreign.jpg',
+    'playground/media/old-truck-great-sand-dunes-colorado.jpg',
+    'playground/media/potluck-la-catholique.jpg',
+    'playground/media/red-pickup-truck.jpg',
+    'playground/media/roadside-curio-shop-sign-1972.jpg',
+    'playground/media/sunny-side-truck-stop-cafe.jpg',
+    'playground/media/toyota-corona-mark-ii-double-pick.jpg',
+}
+actual_theme_images = set()
+actual_playground_images = set()
+for base in (Path('assets'),):
+    if not base.exists():
+        continue
+    for p in base.rglob('*'):
+        if p.is_file() and p.suffix.lower() in image_exts:
+            actual_theme_images.add(p.as_posix())
+if Path('screenshot.png').exists():
+    actual_theme_images.add('screenshot.png')
+if Path('playground/media').exists():
+    for p in Path('playground/media').glob('*'):
+        if p.is_file() and p.suffix.lower() in image_exts:
+            actual_playground_images.add(p.as_posix())
+if actual_theme_images != allowed_theme_images:
+    extra = sorted(actual_theme_images - allowed_theme_images)
+    missing = sorted(allowed_theme_images - actual_theme_images)
+    raise SystemExit(f'Theme image inventory drift. Extra: {extra}; missing: {missing}')
+if actual_playground_images != allowed_playground_images:
+    extra = sorted(actual_playground_images - allowed_playground_images)
+    missing = sorted(allowed_playground_images - actual_playground_images)
+    raise SystemExit(f'Playground image inventory drift. Extra: {extra}; missing: {missing}')
+print('Image inventory OK')
+
 # No bundled frontend assets except required style.css and local images/SVGs.
 for p in root.rglob('*'):
     if any(part in {'.git', '.github', '.planning'} for part in p.parts):
