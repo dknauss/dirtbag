@@ -69,7 +69,7 @@ for p in root.rglob('*'):
         continue
     rel = p.as_posix()
     name = p.name
-    if any(part in {'.git', '.github', '.planning'} for part in p.parts):
+    if any(part in {'.git', '.github', '.planning', 'tests', 'node_modules'} for part in p.parts):
         continue
     if p.is_file():
         if name in {'.DS_Store', 'Thumbs.db', 'desktop.ini', 'error_log', 'php.ini', 'web.config', 'favicon.ico'}:
@@ -210,14 +210,24 @@ print('Image inventory OK')
 
 # No bundled frontend assets except required style.css and local images/SVGs.
 for p in root.rglob('*'):
-    if any(part in {'.git', '.github', '.planning'} for part in p.parts):
+    if any(part in {'.git', '.github', '.planning', 'tests', 'node_modules'} for part in p.parts):
         continue
     if p.is_file() and p.suffix in {'.js', '.woff', '.woff2', '.ttf', '.otf'}:
         raise SystemExit(f'Unexpected bundled frontend asset: {p}')
 for p in root.rglob('*.css'):
+    if any(part in {'.git', '.github', '.planning', 'tests', 'node_modules'} for part in p.parts):
+        continue
     if p.as_posix() != 'style.css':
         raise SystemExit(f'Unexpected CSS file: {p}')
 print('Asset scan OK')
+
+# i18n: pattern translation calls must use the 'dirtbag' text domain.
+trans_re = re.compile(r"(?<![A-Za-z0-9_])(esc_html_e|esc_attr_e|esc_html__|esc_attr__|_e|__)\(\s*'(?:[^'\\]|\\.)*'\s*(?:,\s*'([^']*)')?\s*\)")
+for p in Path('patterns').glob('*.php'):
+    for m in trans_re.finditer(p.read_text()):
+        if m.group(2) != 'dirtbag':
+            raise SystemExit(f"i18n: {p}: text domain must be 'dirtbag' in {m.group(0)!r}")
+print('i18n text domain OK')
 PY
 
 for file in patterns/*.php playground/*.php; do
