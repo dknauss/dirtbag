@@ -20,6 +20,17 @@ The script checks:
 - No suspicious raw front-end code patterns.
 - No bundled JavaScript, font files, or extra CSS files.
 - PHP syntax for pattern files.
+- **Seed/demo content integrity** — decodes `playground/seed-content.php` and checks each post for malformed block delimiters, balanced block nesting, and reconcile artifacts (`core/post-data`, hardcoded theme slug, dev URLs).
+- **Reconcile guardrails** across shipped block files (same artifacts), so a raw Site-Editor export cannot silently reintroduce them.
+- **i18n** — pattern translation calls use the `dirtbag` text domain.
+
+## Automated end-to-end and accessibility tests
+
+A dev-only Playwright harness lives in `tests/` (export-ignored, not shipped). It runs smoke checks (key pages return, the 404 template loads, the front page features posts, archive/search render) and accessibility checks (axe WCAG 2 A/AA, the skip link, the mobile navigation overlay) against a running site.
+
+Run it against the local Studio site or any URL — see [`tests/README.md`](../tests/README.md). Browser automation requires a browser-capable session (`claude-playwright`).
+
+In CI, `.github/workflows/e2e.yml` boots WordPress 7.0 in WordPress Playground with the theme and seeded demo content, then runs the suite. (First-run note: the Playground boot and the axe baseline may need tuning, since the harness was authored without a local Node/browser environment.)
 
 ## Manual WordPress checks
 
