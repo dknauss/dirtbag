@@ -4,6 +4,23 @@ Dirtbag is a deliberately small, mostly *declarative* block theme: `theme.json`,
 templates, template parts, patterns, and style variations. There is no
 `functions.php` and almost no imperative logic. That shapes how we test.
 
+## Focus: accessibility and UX
+
+Dirtbag's quality bar is **accessibility and user experience**, verified in a real
+browser. The static gate (`package-check`) keeps the package *valid*, but it cannot
+tell you whether the page is *usable* — that is what the Playwright + browser layer
+is for, and it is where the testing effort concentrates:
+
+- **Accessibility** — axe (WCAG 2.1 A/AA) across page types *and* across every style
+  variation (the dark themes — Terminal, Amber CRT, Blueprint — need contrast
+  checks), heading order, landmarks, the skip link, and the navigation overlay's
+  focus behaviour.
+- **UX** — keyboard reachability and visible focus, the mobile overlay (open / close
+  / Esc / focus trap), the search and comment forms, and that the core enhancements
+  (pagination, lightbox) degrade to a usable document with JavaScript off.
+
+Everything below supports that focus.
+
 ## Is TDD overkill here? Mostly yes.
 
 Test-Driven Development (red → green → refactor) is the right default for business
@@ -72,6 +89,52 @@ TDD-with-gates rule).
 | 4 — Interactivity (Preact) | Level 6 (TDD for any directive/JS) + Level 3 (JS-off fallback E2E) |
 | 5 — SEO & structure | Levels 3 + 5 (render/structure assertions + manual) |
 | 6 — Educational | Plain-language / readability review of docs; Level 1 keeps assets export-ignored |
+
+## Implementation plan (Playwright + browser)
+
+Built on the existing `tests/` harness (Playwright + `@axe-core/playwright`, booting
+Playground via `tests/blueprint.json`). Specs are authored to run in a
+browser-capable session (e.g. `claude-playwright`) or CI; a plain CLI session can't
+execute browsers, so authored specs are validated when first run there.
+
+**Spec files**
+
+- `tests/e2e/site.spec.js` *(exists)* — smoke: page types return 200, the 404
+  template, front-page sticky feature, archive lists, search form.
+- `tests/e2e/accessibility.spec.js` *(new)* — axe (`wcag2a`, `wcag2aa`) on `/`, a
+  single post, a page, an archive, search, and 404; one `<h1>` with ordered
+  headings; `header` / `main` / `footer` landmarks and a labelled `nav`; skip-link
+  target.
+- `tests/e2e/ux-keyboard.spec.js` *(new)* — Tab order reaches skip link → nav →
+  main; the mobile navigation overlay opens from the menu button, closes via its
+  close button and `Esc`, and traps focus while open; search and comment forms are
+  keyboard-operable; focus is visible.
+- `tests/e2e/js-off.spec.js` *(new)* — a `javaScriptEnabled: false` project: query
+  pagination still navigates (real links), images stay plain `<img>` (lightbox
+  absent, no dead control), and the nav menu is still reachable.
+
+**axe gating policy** — findings are report-only today. Graduate to **failing**
+rule-by-rule as the baseline clears, starting with the high-confidence set already
+exercised: `image-alt`, `link-name`, `label`, `heading-order`, `landmark-unique`,
+`region`, `skip-link`, and `color-contrast`. Track the gated set here as it grows.
+
+**Per-style accessibility sweep** — contrast and focus visibility differ per
+variation. Run axe against all seven styles by applying each variation, then
+scanning (the variation-applier + headless approach used for the README gallery).
+Gate `color-contrast` only once every style passes.
+
+**Viewports** — run the keyboard/overlay specs at a mobile width (360×640) and a
+desktop width; add small-viewport screenshot review (240×320, 320×240, 360×640) to
+the manual checklist.
+
+**Manual gate (release)** — screen-reader spot checks, a real-keyboard pass, and the
+style-switcher regression (no sticky CSS) stay human-run; see `backlog.md` Release
+QA.
+
+**Verification discipline** — when these run against a seeded site, treat the
+seed/export with suspicion: a raw Site-Editor export can reintroduce artifacts the
+reconcile strips, so `package-check` (seed integrity + reconcile guardrails) runs
+*first* and the e2e suite second.
 
 ## Principles
 

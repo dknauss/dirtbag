@@ -1,5 +1,6 @@
 # Keep development/demo infrastructure out of release archives.
 .github/** export-ignore
+.githooks/** export-ignore
 .planning/** export-ignore
 docs/** export-ignore
 playground/** export-ignore

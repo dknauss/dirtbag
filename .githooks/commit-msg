@@ -1,0 +1,38 @@
+#!/bin/sh
+# Enforce contributor attribution on every commit.
+#
+# Dirtbag is built in human + AI dialogue, so each commit must carry a
+# Co-Authored-By trailer naming who (or what) was involved. This enforces
+# attribution, not cryptographic signing — see docs/development.md.
+#
+# Enable once per clone:  git config core.hooksPath .githooks
+# Genuine human-only commit?  git commit --no-verify  (use sparingly).
+
+msg_file="$1"
+src="$2"
+
+# Skip git-generated merge/squash messages and in-progress merges.
+case "$src" in
+	merge|squash) exit 0 ;;
+esac
+if [ -f "$(git rev-parse --git-dir)/MERGE_HEAD" ]; then
+	exit 0
+fi
+
+# Accept any well-formed Co-Authored-By trailer (Name <email>), case-insensitive.
+if grep -qiE '^[[:space:]]*Co-authored-by:[[:space:]]*.+<.+@.+>' "$msg_file"; then
+	exit 0
+fi
+
+cat >&2 <<'MSG'
+✗ Commit rejected: missing attribution.
+
+Every commit must carry a Co-Authored-By trailer (this project is built in
+human + AI dialogue). Add one, e.g.:
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+then commit again. Human-only commit? Attribute the human (or the model that
+assisted), or bypass deliberately with: git commit --no-verify
+MSG
+exit 1
