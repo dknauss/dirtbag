@@ -10,7 +10,7 @@
 
 ?>
 <!-- wp:group {"className":"h-card"} -->
-<div class="wp-block-group h-card"><!-- wp:image {"width":"96px","height":"96px","scale":"cover","sizeSlug":"full","linkDestination":"none","className":"u-photo"} -->
+<div class="wp-block-group h-card"><!-- wp:image {"width":"96px","height":"96px","scale":"cover","sizeSlug":"full","linkDestination":"none","lightbox":{"enabled":false},"className":"u-photo"} -->
 <figure class="wp-block-image size-full is-resized u-photo"><img src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/icons/pickup-truck.svg" alt="" style="object-fit:cover;width:96px;height:96px"/></figure>
 <!-- /wp:image -->
 
