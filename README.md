@@ -100,15 +100,16 @@ GSD project memory lives in `.planning/` for local planning context.
 
 ## JavaScript policy
 
-Dirtbag v1 ships no theme-authored front-end JavaScript.
+Dirtbag ships no theme-authored front-end JavaScript. WordPress core still loads its own where blocks need it — the navigation overlay and accordion already pull in the Interactivity API runtime, and the theme now opts into two of core’s progressive enhancements: enhanced (no-reload) feed pagination and the image lightbox. Both degrade to plain links and images when JavaScript is off.
 
-If a future interaction truly needs JavaScript, the order of preference is:
+When an interaction genuinely needs JavaScript, reach for the OEM part before the aftermarket catalogue:
 
-1. Native HTML and WordPress core behaviour.
-2. Tiny vanilla JavaScript.
-3. Alpine.js for markup-local behaviour, only if approved.
-4. Reef for tiny reactive UI, only if Alpine’s style is wrong for the job.
-5. VanJS for more app-like DOM generation, only if a real UI need justifies it.
+1. **Native HTML and WordPress core behaviour** — no runtime at all.
+2. **The WordPress Interactivity API** — the OEM part. Preact + signals (~10&nbsp;kb), built by the same shop that built the engine, progressive-enhancement-first, and already in the parts bin whenever a core interactive block is on the page (overlay, accordion, search, enhanced pagination, lightbox). Adding behaviour on a runtime you are already carrying costs almost nothing.
+3. **Tiny vanilla JavaScript** — for a one-bolt job that does not justify a framework.
+4. **Aftermarket frameworks** — Alpine.js, Reef, or VanJS, *only* if the OEM part is genuinely wrong for the job. These are bolt-ons from another maker: a second runtime to haul around, extra weight, and no guarantee it fits the WordPress engine. Approve before fitting.
+
+Whatever the part: if it needs JavaScript to be understood, it needs a better fallback.
 
 ## Accessibility and performance goals
 

@@ -52,3 +52,25 @@ Success criteria:
 - Zip contents match theme-review expectations.
 - Release tag can be created from a clean `main` branch.
 - Theme renders correctly from a clean install with no Site-Editor database overrides.
+
+## Phase 4 — Interactivity API (Preact) explorations
+
+Goal: use WordPress's native Interactivity API (Preact + signals) for progressive enhancements before reaching for any third-party framework — OEM (core) parts over aftermarket ones (Alpine/Reef/VanJS). The runtime is already on the page via core blocks (navigation overlay, accordion), so these cost almost nothing.
+
+Done (zero theme JavaScript, all graceful fallbacks):
+
+- Enhanced (no-reload) pagination on the home, archive, and master-archive feeds (`enhancedPagination`). Falls back to normal pagination links.
+- Image lightbox on galleries and unlinked images via `theme.json` (`settings.blocks.core/image.lightbox.enabled`).
+
+Ongoing principle:
+
+- Lean on the core interactive blocks already in play — navigation overlay, accordion, search — rather than re-implementing their behaviour.
+
+Future (v2, only if a real need justifies crossing the no-`functions.php` / no-theme-JS line):
+
+- Custom Interactivity directives/stores for small progressive enhancements (e.g. a Field Notes / blogroll filter, copy-permalink, a webmention facepile), authored to work without JavaScript first. Needs a script module + enqueue (a block's `viewScriptModule` or `functions.php`) — no bundler required, but a deliberate decision.
+
+Success criteria:
+
+- Every enhancement degrades gracefully with JavaScript disabled.
+- No theme-authored JavaScript files and no third-party framework added.
