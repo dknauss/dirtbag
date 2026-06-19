@@ -1,10 +1,9 @@
 // Keyboard / UX behaviour, focused on the mobile navigation overlay and forms.
-// Marked fixme: selectors for the WP 7.0 navigation-overlay must be confirmed in
-// a browser-capable session (claude-playwright) on first run, then un-fixme'd.
-// See docs/testing-strategy.md → "Implementation plan".
+// Selectors validated against WP 7.0 in a browser run (Studio site, desktop +
+// mobile) — see docs/testing-strategy.md → "Implementation plan".
 const { test, expect } = require('@playwright/test');
 
-test.describe.fixme('keyboard and overlay (validate selectors in a browser run)', () => {
+test.describe('keyboard and overlay', () => {
   test('tab order reaches the skip link first', async ({ page }) => {
     await page.goto('/');
     await page.keyboard.press('Tab');

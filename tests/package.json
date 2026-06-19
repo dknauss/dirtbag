@@ -5,7 +5,8 @@
   "description": "Dev-only test harness for the Dirtbag theme (not shipped).",
   "scripts": {
     "install:browsers": "playwright install --with-deps chromium",
-    "test": "playwright test"
+    "test": "playwright test",
+    "test:styles": "./axe-styles.sh"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.0",
