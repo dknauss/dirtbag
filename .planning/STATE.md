@@ -27,7 +27,8 @@ See: `.planning/PROJECT.md` (updated 2026-06-18)
 - Started the personas + teachable-surfaces audit (research/planning only).
 - `.planning/phase-6/PERSONAS-AND-OBJECTIVES.md` — two primary personas (Tinker, Wrench), two secondary (Beacon, Sprout), and learning objectives LO-1…LO-8.
 - `.planning/phase-6/TEACHABLE-SURFACES-AUDIT.md` — docs/seed/patterns/package-check mapped to objectives, with the gap analysis.
-- Next Phase 6 deliverables: proposed learning-path structure, the "where does educational content live" decision, and plain-language/accessibility guidelines.
+- `.planning/phase-6/CONTENT-HOME-DECISION.md` — decided: hybrid `docs/` + seed demo surfaced via a Playground blueprint; nothing new ships in the package; patterns stay silent in-package and get annotated in `docs/`.
+- Next Phase 6 deliverables: proposed learning-path structure (now unblocked), and plain-language/accessibility guidelines.
 
 ### Pending Todos
 
