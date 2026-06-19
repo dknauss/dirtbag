@@ -93,6 +93,8 @@ Start with the docs index:
 - [WordPress.org theme review notes](docs/theme-review.md)
 - [Site-root open-web file templates](docs/site-root-open-web-files.md)
 - [Backlog and roadmap notes](docs/backlog.md)
+- [Changelog](CHANGELOG.md)
+- [Support](SUPPORT.md)
 
 GSD project memory lives in `.planning/` for local planning context.
 
