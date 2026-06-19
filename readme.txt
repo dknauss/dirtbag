@@ -71,3 +71,5 @@ Open Appearance > Editor > Styles and choose a style variation.
 * Typography scale informed by Butterick's Practical Typography, https://practicaltypography.com/
 
 All bundled theme code and original theme design are distributed under GPLv2 or later.
+
+Portions of this theme were developed with AI assistance (Anthropic Claude, via Claude Code) under maintainer direction and review.

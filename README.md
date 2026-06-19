@@ -130,6 +130,10 @@ Dirtbag is licensed under the [GNU General Public License v2 or later](license.t
 
 Third-party resource credits are listed in [`readme.txt`](readme.txt), including the CC0 pickup truck source image from SVG Repo and typographic inspiration from Butterick’s Practical Typography.
 
+## AI assistance
+
+Parts of Dirtbag were built with AI assistance — Anthropic’s Claude, via Claude Code — under human direction and review. Commits made with that help carry a `Co-Authored-By: Claude` trailer. The maintainer reviews and remains responsible for all shipped code, content, and design.
+
 ## Contributing
 
 Small, plain patches are welcome. Please run `bin/package-check` before opening a pull request and keep the no-build-step/no-theme-JS rule intact unless an issue explicitly agrees otherwise.
