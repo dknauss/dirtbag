@@ -7,7 +7,9 @@
 [![PHP 7.2+](https://img.shields.io/badge/PHP-7.2%2B-777bb4.svg?logo=php&logoColor=white)](https://www.php.net/)
 [![▶ Playground (stable tag)](https://img.shields.io/badge/▶_Playground-stable_tag-3858e9.svg?logo=wordpress&logoColor=white)](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/dknauss/dirtbag/main/playground/blueprint-stable.json) [![▶ Playground (main)](https://img.shields.io/badge/▶_Playground-main_branch-6e40c9.svg?logo=wordpress&logoColor=white)](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/dknauss/dirtbag/main/playground/blueprint-main.json)
 
-**Dirtbag is a simple WordPress block theme that does more with less.** It's for people who want to learn about WordPress theme design and front-end development by stripping down to fundamentals and building up from there. If you just dig the indieweb and dirtbag aesthetic, that's cool too, but I hope it's a gateway drug to tinkering. 
+**Dirtbag is a simple WordPress block theme that does more with less.** It's for people who want to learn about WordPress theme design and front-end development by stripping down to fundamentals and building up from there. If you just dig the indieweb and dirtbag aesthetic, that's cool too, but I hope it's a gateway drug to tinkering.
+
+It favours plain HTML markup, as little JS (and CSS) as possible, core WordPress blocks, the fonts everyone already has, visible feeds, and old/open-web habits over front-end machinery.
 
 ![Dirtbag](https://raw.githubusercontent.com/dknauss/dirtbag/main/docs/images/dirtbag-card.png)
 
