@@ -69,7 +69,7 @@
 	"settings": {
 		"appearanceTools": false,
 		"color": {
-			"custom": true,
+			"custom": false,
 			"customDuotone": false,
 			"customGradient": false,
 			"defaultDuotone": false,
@@ -181,6 +181,10 @@
 		"layout": {
 			"contentSize": "42rem",
 			"wideSize": "64rem"
+		},
+		"shadow": {
+			"defaultPresets": false,
+			"presets": []
 		},
 		"spacing": {
 			"customSpacingSize": true,
