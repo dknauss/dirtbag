@@ -54,11 +54,34 @@ Refresh `languages/dirtbag.pot` before release only when pattern strings change;
 
 ## Editor design controls
 
-Dirtbag turns `appearanceTools` off in `theme.json` and does not re-enable it in any style variation. That hides the block editor's per-block controls for borders, margin, padding, `blockGap`, line height, min-height, and sticky position, plus the link-colour control — so editors cannot nudge individual blocks away from the theme's layout or accumulate sticky overrides.
+`appearanceTools: false` (our setting, and also the WordPress default) is **not** a lockdown. It only suppresses one bundle of controls: borders, link colour, spacing (margin/padding/`blockGap`), line height, min-height, and sticky position. Everything else stays at WordPress defaults, which is why the editor still shows plenty of controls (text/background colour, font size, drop shadow, and so on).
 
-What stays available (enabled explicitly in `theme.json` settings): choosing colours from the palette or a custom colour, font family, font size, and switching style variations under **Appearance → Editor → Styles**.
+On top of that default, Dirtbag explicitly disables two more controls in `theme.json`:
 
-The trade is deliberate: fewer knobs keep the brutalist defaults consistent while leaving the genuinely useful, low-risk choices intact.
+- **Custom colour** — `settings.color.custom: false`. Editors pick from the palette swatches; there is no arbitrary hex picker.
+- **Drop shadow** — `settings.shadow` with `defaultPresets: false` and no presets. No box-shadow control.
+
+**Kept on, deliberately:** the colour palette, font family, font size, and style variations (**Appearance → Editor → Styles**).
+
+### What `theme.json` cannot do
+
+Important so the "brutalist" claim is not oversold. `theme.json` controls *which UI controls appear*; it does not lock the site down. It cannot:
+
+- disable JavaScript, or stop a core block from loading its own scripts — the accordion and navigation blocks ship core view JS via the Interactivity API regardless of theme settings;
+- unregister or block-list a block;
+- remove the Site Editor's Additional CSS panel (that is a user capability, not a theme setting).
+
+"No theme CSS/JS" means the theme ships none. It cannot subtract what WordPress core brings.
+
+### Optional further lockdowns
+
+`theme.json`-only levers, to weigh against usefulness:
+
+- Disable custom font sizes: `typography.customFontSize: false` (keeps the named size presets only).
+- Disable text/background colour entirely: `color.text: false`, `color.background: false`.
+- Default palette is already locked out (`color.defaultPalette: false`).
+- Scope any of the above to a single block via `settings.blocks["core/accordion"]` (etc.).
+- Anything beyond `theme.json` — unregistering blocks, stopping core block JS, gating Additional CSS — needs `functions.php`/a plugin and breaks the no-PHP-runtime rule, so it stays out of scope for v1.
 
 ## Local workflow
 
