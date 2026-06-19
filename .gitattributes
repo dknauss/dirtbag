@@ -4,6 +4,7 @@
 # empty directory stub in the zip.
 /.github export-ignore
 /.githooks export-ignore
+/bin export-ignore
 /.planning export-ignore
 /docs export-ignore
 /playground export-ignore
