@@ -35,10 +35,12 @@ test.describe(`axe per style: ${STYLE}`, () => {
         });
       }
 
-      // Graduation target — color-contrast is the rule this sweep exists to gate.
-      // Enable once every style passes on every page (see the strategy doc):
-      // const contrast = violations.filter((v) => v.id === 'color-contrast');
-      // expect(contrast, `color-contrast violations on ${path} (${STYLE})`).toEqual([]);
+      // Gating — color-contrast is the rule this sweep exists to guard, now clean
+      // on every style and page. A per-style regression fails the sweep.
+      const contrast = violations
+        .filter((v) => v.id === 'color-contrast')
+        .map((v) => `${v.id} [${v.nodes.length}]`);
+      expect(contrast, `color-contrast violations on ${path} (${STYLE})`).toEqual([]);
       void contrastNodes;
     });
   }

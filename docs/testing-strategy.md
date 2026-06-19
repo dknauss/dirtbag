@@ -113,19 +113,21 @@ execute browsers, so authored specs are validated when first run there.
   pagination still navigates (real links), images stay plain `<img>` (lightbox
   absent, no dead control), and the nav menu is still reachable.
 
-**axe gating policy** — findings are report-only today. Graduate to **failing**
-rule-by-rule as the baseline clears, starting with the high-confidence set already
-exercised: `image-alt`, `link-name`, `label`, `heading-order`, `landmark-unique`,
-`region`, `skip-link`, and `color-contrast`. Track the gated set here as it grows.
-First browser run (WP 7.0, seeded Studio site, desktop + mobile) surfaced a single
-**`button-name`** finding on `/about/`: the h-card avatar (a decorative 96px icon,
-`alt=""`) inherited the theme-wide image lightbox, so core rendered an unnamed
-`.lightbox-trigger` "enlarge" button (its accessible name binds from the
+**axe gating policy** — the high-confidence set is now **gating** (a regression
+fails the suite): `image-alt`, `link-name`, `label`, `heading-order`,
+`landmark-unique`, `region`, `color-contrast`, and `button-name`, enforced in
+`accessibility.spec.js` across the seeded pages plus a single post and the 404
+template; `color-contrast` is additionally gated across every style by the per-style
+sweep below. Other axe findings stay report-only until likewise confirmed clean;
+track the gated set here as it grows. (`skip-link` is a best-practice rule outside
+`wcag2a/aa`, so it is guarded structurally instead — see the skip-link target test.)
+The graduation was unblocked by one finding: the first browser run (WP 7.0, seeded
+Studio site) surfaced a `button-name` on `/about/` — the h-card avatar (a decorative
+96px icon, `alt=""`) inherited the theme-wide image lightbox, so core rendered an
+unnamed `.lightbox-trigger` "enlarge" button (its accessible name binds from the
 Interactivity API and resolved to null). Fixed by disabling the lightbox on that one
 decorative block (`"lightbox":{"enabled":false}` in `patterns/h-card-profile.php` and
-the seeded About page) — a 96px icon should not be enlargeable. The axe baseline
-(`wcag2a`/`wcag2aa`) is now **clean across every seeded page and every style**, so the
-whole high-confidence set above is ready to graduate to gating.
+the seeded About page) — a 96px icon should not be enlargeable.
 
 **Per-style accessibility sweep** *(implemented)* — contrast and focus visibility
 differ per variation. `tests/axe-styles.sh` (`npm run test:styles` in `tests/`)
@@ -134,10 +136,13 @@ styles post, then restores `default` on exit), and re-runs `tests/styles/
 a11y-styles.spec.js` against the seeded pages for each. The active variation is
 global site state, so the sweep is sequential. First run: **all seven styles
 (default + the six variations, including the dark Terminal / Amber CRT / Blueprint
-themes) report zero `color-contrast` violations** on every seeded page — so
-`color-contrast` is ready to graduate to gating. The only per-style finding is the
-same style-independent `button-name` above. The sweep defaults to the local Studio
-site; override `DIRTBAG_WP_CLI` to drive a different WP-CLI in CI.
+themes) report zero `color-contrast` violations** on every seeded page, and
+`color-contrast` is now **gated** in `a11y-styles.spec.js`. Locally the sweep defaults
+to the Studio site (override `DIRTBAG_WP_CLI` for a different WP-CLI). In CI it runs
+as the `e2e-styles` matrix job: Playground is in-memory with no persistent wp-cli, so
+each style gets its own boot and the variation is applied at boot via
+`tests/ci-style-blueprint.mjs` (which appends an `apply-style.php` step to the
+blueprint) rather than the sequential local loop.
 
 **Viewports** — run the keyboard/overlay specs at a mobile width (360×640) and a
 desktop width; add small-viewport screenshot review (240×320, 320×240, 360×640) to
