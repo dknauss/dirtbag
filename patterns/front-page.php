@@ -21,7 +21,7 @@
 <h2 class="wp-block-heading">Field Notes from the Shoulder</h2>
 <!-- /wp:heading -->
 
-<!-- wp:query {"queryId":0,"query":{"perPage":3,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"only","inherit":false},"className":"h-feed","layout":{"type":"default"}} -->
+<!-- wp:query {"queryId":0,"query":{"perPage":6,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"only","inherit":false},"className":"h-feed","layout":{"type":"default"}} -->
 <div class="wp-block-query h-feed"><!-- wp:post-template {"className":"h-entry","layout":{"type":"grid","columnCount":3}} -->
 <!-- wp:post-featured-image {"isLink":true,"aspectRatio":"4/3","width":"100%","scale":"cover","sizeSlug":"medium_large","className":"u-featured","style":{"spacing":{"margin":{"top":"0","bottom":"0.75em"}}}} /-->
 
