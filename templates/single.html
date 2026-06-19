@@ -1,21 +1,89 @@
 <!-- wp:template-part {"slug":"header","area":"header"} /-->
 
-<!-- wp:group {"tagName":"main","anchor":"main-content","className":"h-entry"} -->
-<main id="main-content" class="wp-block-group h-entry">
-<!-- wp:post-title {"level":1,"className":"p-name"} /-->
-<!-- wp:post-featured-image {"className":"u-featured","style":{"spacing":{"margin":{"top":"1em","bottom":"1em"}}},"aspectRatio":"4/3","scale":"cover","width":"100%","sizeSlug":"large"} /-->
-<!-- wp:group {"className":"post-meta","layout":{"type":"flex","flexWrap":"wrap"}} -->
-<div class="wp-block-group post-meta"><!-- wp:post-date {"className":"dt-published"} /-->
-<!-- wp:pattern {"slug":"dirtbag/byline"} /-->
-<!-- wp:post-terms {"term":"category","className":"p-category"} /-->
-<!-- wp:post-terms {"term":"post_tag","className":"p-category"} /--></div>
+<!-- wp:group {"tagName":"main","className":"h-entry","anchor":"main-content"} -->
+<main id="main-content" class="wp-block-group h-entry"><!-- wp:post-title {"level":1,"className":"p-name"} /-->
+
+<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap"}} -->
+<div class="wp-block-group"><!-- wp:group {"className":"byline p-author h-card","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"flex","flexWrap":"nowrap"}} -->
+<div class="wp-block-group byline p-author h-card"><!-- wp:paragraph {"className":"byline-prefix"} -->
+<p class="byline-prefix">From&nbsp;</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:post-author-name {"isLink":true,"className":"p-name"} /-->
+
+<!-- wp:paragraph {"className":"byline-suffix"} -->
+<p class="byline-suffix">’s dashboard on &nbsp;</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:post-date {"className":"dt-published"} /-->
+
+<!-- wp:paragraph -->
+<p>.</p>
+<!-- /wp:paragraph --></div>
 <!-- /wp:group -->
+
+<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"left"}} -->
+<div class="wp-block-group"><!-- wp:post-terms {"term":"category","prefix":"Parked in ","suffix":".","className":"p-category"} /-->
+
+<!-- wp:post-terms {"term":"post_tag","prefix":"Part Bins: ","suffix":".","className":"p-category"} /--></div>
+<!-- /wp:group --></div>
+<!-- /wp:group -->
+
+<!-- wp:post-featured-image {"aspectRatio":"4/3","width":"100%","sizeSlug":"large","className":"u-featured","style":{"spacing":{"margin":{"top":"1em","bottom":"1em"}}}} /-->
+
 <!-- wp:post-content {"className":"e-content"} /-->
-<!-- wp:pattern {"slug":"dirtbag/webmention-invitation"} /-->
-<!-- wp:post-navigation-link {"type":"previous","label":"Previous:"} /-->
-<!-- wp:post-navigation-link {"label":"Next:"} /-->
-<!-- wp:pattern {"slug":"dirtbag/comments"} /-->
-</main>
+
+<!-- wp:group {"metadata":{"patternName":"dirtbag/webmention-invitation","name":"Webmention invitation","description":"A small open-web response invitation.","categories":["text"]},"className":"webmention-invite"} -->
+<div class="wp-block-group webmention-invite"><!-- wp:heading -->
+<h2 class="wp-block-heading">Respond from your own site</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>If your site supports Webmention, link to this page's URL (it's a <a href="https://en.wikipedia.org/wiki/Permalink">permalink</a>) and send it along. If not, a comment still counts. The old web still has many doors, pockets, and passageways.</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"space-between"}} -->
+<div class="wp-block-group"><!-- wp:post-navigation-link {"type":"previous","label":"\u003cstrong\u003ePrevious:\u003c/strong\u003e","showTitle":true} /-->
+
+<!-- wp:post-navigation-link {"label":"\u003cstrong\u003eNext:\u003c/strong\u003e","showTitle":true} /--></div>
+<!-- /wp:group -->
+
+<!-- wp:comments {"metadata":{"patternName":"dirtbag/comments","name":"Comments","description":"Comments list, pagination, and comment form.","categories":["text"]},"className":"wp-block-comments-query-loop"} -->
+<div class="wp-block-comments wp-block-comments-query-loop"><!-- wp:heading -->
+<h2 class="wp-block-heading">Comments</h2>
+<!-- /wp:heading -->
+
+<!-- wp:comments-title {"level":3} /-->
+
+<!-- wp:comment-template -->
+<!-- wp:group {"className":"h-entry comment"} -->
+<div class="wp-block-group h-entry comment"><!-- wp:avatar {"size":50,"className":"u-photo"} /-->
+
+<!-- wp:comment-date {"className":"dt-published"} /-->
+
+<!-- wp:comment-author-name {"className":"p-author h-card"} /-->
+
+<!-- wp:comment-content {"className":"e-content"} /-->
+
+<!-- wp:group {"layout":{"type":"flex","flexWrap":"wrap"}} -->
+<div class="wp-block-group"><!-- wp:comment-edit-link /-->
+
+<!-- wp:comment-reply-link /--></div>
+<!-- /wp:group --></div>
+<!-- /wp:group -->
+<!-- /wp:comment-template -->
+
+<!-- wp:comments-pagination {"layout":{"type":"flex","justifyContent":"space-between"}} -->
+<!-- wp:comments-pagination-previous /-->
+
+<!-- wp:comments-pagination-numbers /-->
+
+<!-- wp:comments-pagination-next /-->
+<!-- /wp:comments-pagination -->
+
+<!-- wp:post-comments-form /--></div>
+<!-- /wp:comments --></main>
 <!-- /wp:group -->
 
 <!-- wp:template-part {"slug":"footer","area":"footer"} /-->
