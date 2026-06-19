@@ -196,6 +196,9 @@ if ( ! function_exists( 'dirtbag_playground_seed_posts' ) ) {
 				if ( ! empty( $post['terms']['category'] ) ) {
 					wp_set_object_terms( $new_id, $post['terms']['category'], 'category', false );
 				}
+				if ( ! empty( $post['terms']['category'] ) && in_array( 'field-notes', (array) $post['terms']['category'], true ) ) {
+					stick_post( $new_id );
+				}
 				if ( ! empty( $post['terms']['post_tag'] ) ) {
 					wp_set_object_terms( $new_id, $post['terms']['post_tag'], 'post_tag', false );
 				}
