@@ -331,9 +331,7 @@
 			},
 			"core/post-title": {
 				"typography": {
-					"fontSize": "36px",
-					"fontWeight": "700",
-					"lineHeight": "1.15"
+					"fontWeight": "700"
 				}
 			},
 			"core/site-tagline": {
