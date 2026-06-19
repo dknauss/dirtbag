@@ -33,9 +33,20 @@ Planned checks and improvements before a formal public release or WordPress.org 
    - Run automated checks in a browser-capable session.
    - Follow with manual keyboard and screen-reader spot checks.
 
+7. **Clean-install verification**
+   - Confirm the theme renders correctly for a brand-new user with no database overrides.
+   - Use a Playground link (which reseeds from a blank install on every load) or a **throwaway** Studio site — never reset the main authoring site.
+   - For a full wipe + reseed, first re-export current Studio content into `playground/seed-content.php`; the seed file is derived from Studio, not the reverse. See [development guide](development.md#studio-site-demo-content-and-reseeding).
+
+8. **JavaScript-off fallback pass**
+   - "No theme JavaScript" is not the test; the test is what survives when scripts do not run. If a core block or enhancement Dirtbag opts into loads JS, document the fallback and verify it with scripts disabled or unavailable.
+   - Cover the navigation overlay (menu reachable / page navigable without it), enhanced query pagination (links still paginate), and the image lightbox (images remain plain images).
+   - Confirm each degrades to a useful document — a plain link, button, image, or full page — not a dead control.
+
 ## Tooling improvements
 
 - Keep `bin/package-check` tiny, dependency-free, and easy to rerun.
+- **Bake the reconcile into the export step (long-term fix).** A raw Site-Editor export reintroduces artifacts the reconcile strips (the `core/post-data` datetime binding, hardcoded `"theme":"dirtbag"` slugs, absolute `localhost` URLs). `bin/package-check` now *fails* when these reappear (short-term guardrail), but the durable fix is a Studio→repo export helper that applies the reconcile automatically so the artifacts never land in committed files.
 - Consider adding optional checks for stale text-domain strings and pattern translation coverage.
 - Consider a release packaging helper that creates a clean `dirtbag.zip` without development files.
 - Consider a browser-mode regression script for the style picker if browser tooling becomes part of the normal workflow.
@@ -59,3 +70,14 @@ Planned checks and improvements before a formal public release or WordPress.org 
 - **Breadcrumbs and WordPress 7.0**
   - Dirtbag v1 targets WordPress 7.0+ so it can use the core Breadcrumbs block.
   - If a future release lowers the minimum WordPress version, remove or conditionally replace `core/breadcrumbs` first.
+
+## Browser testing (future Playwright / manual)
+
+Not yet verified in a real browser; looked OK on a quick manual skim.
+
+- **Mobile navigation overlay — open/close and centering**
+  - Tap the header menu icon on small viewports; confirm the overlay opens, the `core/navigation-overlay-close` button closes it, Esc closes it, and focus is trapped while open.
+  - Confirm the site logo and the menu are visually centred (`parts/navigation-overlay.html`).
+- **Mobile navigation overlay — dark style variations**
+  - The overlay uses fixed `#ffffff` background / `#000000` text so it always renders solid. On dark variations (Terminal, Amber CRT, Blueprint) that is a light panel over a dark site.
+  - Verify contrast and appearance there, and decide whether the overlay should follow each variation's colours instead of fixed black/white.

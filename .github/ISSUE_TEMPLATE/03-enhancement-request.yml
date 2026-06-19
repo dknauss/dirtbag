@@ -1,0 +1,39 @@
+name: Enhancement Request
+description: Suggest a small, theme-aligned improvement.
+title: "[Enhancement]: "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Dirtbag intentionally avoids build steps, front-end JavaScript, bundled fonts, and heavy abstractions. Please frame requests around that project direction.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: What are you trying to do, and why does the current theme not cover it?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: Describe the smallest change that would solve the problem.
+    validations:
+      required: true
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Project constraints
+      options:
+        - label: This can work without a build step.
+        - label: This can work without theme-authored front-end JavaScript.
+        - label: This can use WordPress core blocks, templates, patterns, or theme.json.
+        - label: This keeps bundled assets local and minimal.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Optional notes on workarounds or other approaches.
+    validations:
+      required: false

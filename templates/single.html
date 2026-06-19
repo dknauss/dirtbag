@@ -1,26 +1,12 @@
-<!-- wp:template-part {"slug":"header","theme":"dirtbag","area":"header"} /-->
+<!-- wp:template-part {"slug":"header","area":"header"} /-->
 
 <!-- wp:group {"tagName":"main","className":"h-entry","anchor":"main-content"} -->
 <main id="main-content" class="wp-block-group h-entry"><!-- wp:post-title {"level":1,"className":"p-name"} /-->
 
 <!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap"}} -->
-<div class="wp-block-group"><!-- wp:group {"className":"byline p-author h-card","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"flex","flexWrap":"nowrap"}} -->
-<div class="wp-block-group byline p-author h-card"><!-- wp:paragraph {"className":"byline-prefix"} -->
-<p class="byline-prefix">From&nbsp;</p>
-<!-- /wp:paragraph -->
+<div class="wp-block-group"><!-- wp:post-date {"className":"dt-published"} /-->
 
-<!-- wp:post-author-name {"isLink":true,"className":"p-name"} /-->
-
-<!-- wp:paragraph {"className":"byline-suffix"} -->
-<p class="byline-suffix">’s dashboard on &nbsp;</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:post-date {"metadata":{"bindings":{"datetime":{"source":"core/post-data","args":{"field":"date"}}}},"className":"dt-published"} /-->
-
-<!-- wp:paragraph -->
-<p>.</p>
-<!-- /wp:paragraph --></div>
-<!-- /wp:group -->
+<!-- wp:pattern {"slug":"dirtbag/byline"} /-->
 
 <!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"left"}} -->
 <div class="wp-block-group"><!-- wp:post-terms {"term":"category","prefix":"Parked in ","suffix":".","className":"p-category"} /-->
@@ -86,4 +72,4 @@
 <!-- /wp:comments --></main>
 <!-- /wp:group -->
 
-<!-- wp:template-part {"slug":"footer","theme":"dirtbag","area":"footer"} /-->
+<!-- wp:template-part {"slug":"footer","area":"footer"} /-->

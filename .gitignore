@@ -11,3 +11,10 @@
 /now.txt
 /robots.txt
 /security.txt
+
+# Dev-only test harness artifacts (the tests themselves are committed).
+node_modules/
+tests/node_modules/
+tests/test-results/
+tests/playwright-report/
+tests/blueprint.ci.json

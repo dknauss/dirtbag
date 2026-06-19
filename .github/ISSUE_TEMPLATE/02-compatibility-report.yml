@@ -1,0 +1,51 @@
+name: Compatibility Report
+description: Report WordPress, PHP, browser, or theme-review compatibility findings.
+title: "[Compat]: "
+labels: ["compatibility", "triage"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What compatibility issue or review finding did you encounter?
+    validations:
+      required: true
+  - type: dropdown
+    id: compatibility_type
+    attributes:
+      label: Compatibility type
+      options:
+        - WordPress core version
+        - PHP version
+        - Browser or assistive technology
+        - WordPress.org Theme Check or Theme Review
+        - WordPress Playground
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: versions
+    attributes:
+      label: Versions tested
+      placeholder: |
+        - WordPress:
+        - PHP:
+        - Dirtbag:
+        - Browser/AT:
+        - Tool or checker version:
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Paste logs, checker output, screenshots, or links to reproduction steps.
+    validations:
+      required: true
+  - type: textarea
+    id: suggested_fix
+    attributes:
+      label: Suggested fix
+      description: Optional notes on what should change.
+    validations:
+      required: false

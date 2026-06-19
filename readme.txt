@@ -1,9 +1,9 @@
 === Dirtbag ===
-Contributors: danknauss
+Contributors: dpknauss
 Requires at least: 7.0
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 0.1.2
+Stable tag: 0.1.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: block-theme, full-site-editing, one-column, style-variations
@@ -24,7 +24,7 @@ Dirtbag does not collect, store, or transmit user data. It does not load remote 
 
 = Does Dirtbag include JavaScript? =
 
-No. Dirtbag v1 includes no theme-authored front-end JavaScript and no bundled JavaScript libraries.
+No theme-authored JavaScript, and no bundled libraries. WordPress core still loads its own scripts where core blocks need them — the navigation overlay, enhanced pagination, and image lightbox use core's Interactivity API — and each falls back to plain HTML when that script does not run.
 
 = Does Dirtbag load external fonts or assets? =
 
@@ -68,6 +68,10 @@ Open Appearance > Editor > Styles and choose a style variation.
 * Sign roadside curio shop, 05/1972, U.S. National Archives, CC0 1.0, https://www.rawpixel.com/image/8802552/photo-image-mountain-nature-landscape
 * Highway crossing desert Sandoval County, libraryofcongress, CC0 1.0, https://www.rawpixel.com/image/12151006/image-cloud-plant-art
 * local chapter hall Veterans Foreign, Carol M Highsmith, CC0 1.0, https://www.rawpixel.com/image/8079773/photo-image-cloud-sky-american-flag
+* What's in your glove box?, karmatosed (Tammie Lister), CC0 1.0, https://www.flickr.com/photos/73631307@N00/2096516382
+* Secured Glovebox, cogdogblog (Alan Levine), CC0 1.0, https://www.flickr.com/photos/37996646802@N01/33213363108
 * Typography scale informed by Butterick's Practical Typography, https://practicaltypography.com/
 
 All bundled theme code and original theme design are distributed under GPLv2 or later.
+
+Portions of this theme were developed with AI assistance (Anthropic Claude, via Claude Code) under maintainer direction and review.

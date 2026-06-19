@@ -1,0 +1,58 @@
+name: E2E
+
+# Boots WordPress 7.0 in WordPress Playground with the theme + seeded demo
+# content, then runs the Playwright smoke + accessibility suite against it.
+#
+# NOTE: this harness has not been executed in the authoring environment (no
+# Node/browser there). Treat the first CI run as the shakedown — the Playground
+# CLI flags and the axe baseline (real a11y findings) may need a tweak.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Pin the CI blueprint to this commit
+        run: sed "s/__REF__/${{ github.event.pull_request.head.sha || github.sha }}/" tests/blueprint.json > tests/blueprint.ci.json
+
+      - name: Install test dependencies
+        working-directory: tests
+        run: npm install
+
+      - name: Install Playwright Chromium
+        working-directory: tests
+        run: npx playwright install --with-deps chromium
+
+      - name: Boot WordPress Playground (theme + seeded content)
+        run: |
+          npx @wp-playground/cli@latest server --port 9400 --blueprint=tests/blueprint.ci.json &
+          for i in $(seq 1 60); do
+            curl -sf http://127.0.0.1:9400/ >/dev/null && break
+            sleep 2
+          done
+
+      - name: Run Playwright (smoke + accessibility)
+        working-directory: tests
+        run: npm test
+        env:
+          DIRTBAG_BASE_URL: http://127.0.0.1:9400
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ failure() }}
+        with:
+          name: playwright-report
+          path: tests/playwright-report
+          retention-days: 7

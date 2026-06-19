@@ -64,12 +64,33 @@
 				"page"
 			],
 			"title": "Uses page"
+		},
+		{
+			"name": "page-archive",
+			"postTypes": [
+				"page"
+			],
+			"title": "Archive index"
+		},
+		{
+			"name": "page-search",
+			"postTypes": [
+				"page"
+			],
+			"title": "Search page"
 		}
 	],
 	"settings": {
 		"appearanceTools": false,
+		"blocks": {
+			"core/image": {
+				"lightbox": {
+					"enabled": true
+				}
+			}
+		},
 		"color": {
-			"custom": true,
+			"custom": false,
 			"customDuotone": false,
 			"customGradient": false,
 			"defaultDuotone": false,
@@ -181,6 +202,10 @@
 		"layout": {
 			"contentSize": "42rem",
 			"wideSize": "64rem"
+		},
+		"shadow": {
+			"defaultPresets": false,
+			"presets": []
 		},
 		"spacing": {
 			"customSpacingSize": true,
@@ -327,9 +352,7 @@
 			},
 			"core/post-title": {
 				"typography": {
-					"fontSize": "36px",
-					"fontWeight": "700",
-					"lineHeight": "1.15"
+					"fontWeight": "700"
 				}
 			},
 			"core/site-tagline": {
@@ -359,6 +382,11 @@
 		},
 		"css": ".wp-block-group.byline { gap: 0 !important; }\n.wp-block-group.byline > p,\n.wp-block-group.byline > .wp-block-post-author-name { margin-top: 0; margin-bottom: 0; }\n.wp-block-site-logo img,\n.wp-block-navigation .wp-block-site-logo img,\n.custom-logo,\n.h-card img.u-photo { filter: var(--wp--custom--dirtbag--truck-icon-filter, none); background: transparent; }\n",
 		"elements": {
+			"link": {
+				"typography": {
+					"textDecoration": "underline"
+				}
+			},
 			"button": {
 				":focus": {
 					"border": {
@@ -388,7 +416,7 @@
 			},
 			"h3": {
 				"typography": {
-					"fontSize": "22px",
+					"fontSize": "26px",
 					"lineHeight": "1.25"
 				}
 			},
@@ -435,6 +463,11 @@
 			"area": "footer",
 			"name": "footer",
 			"title": "Footer"
+		},
+		{
+			"area": "uncategorized",
+			"name": "navigation-overlay",
+			"title": "Navigation Overlay"
 		}
 	],
 	"title": "Brutalist"
