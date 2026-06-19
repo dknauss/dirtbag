@@ -73,15 +73,15 @@
 
 <!-- wp:gallery {"linkTo":"none"} -->
 <figure class="wp-block-gallery has-nested-images columns-default is-cropped"><!-- wp:image {"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/potluck-la-catholique.jpg" alt="Potluck dishes set out on a table indoors." class=""/><figcaption class="wp-element-caption">Potluck. Image: La.Catholique via Openverse/flickr, CC BY 2.0.</figcaption></figure>
+<figure class="wp-block-image size-full"><img src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/potluck-la-catholique.jpg" alt="Potluck dishes set out on a table indoors." class=""/></figure>
 <!-- /wp:image -->
 
 <!-- wp:image {"sizeSlug":"large","linkDestination":"none"} -->
-<figure class="wp-block-image size-large"><img src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/abandoned-rusty-ford-pickup-1024x768.jpg" alt="Abandoned rusty Ford pickup truck without a bed in a gravel driveway." class=""/><figcaption class="wp-element-caption">Abandoned rusty Ford pickup truck. Image: Jonathan Desrosiers via Openverse/wordpress.org/photos, CC0 1.0.</figcaption></figure>
+<figure class="wp-block-image size-large"><img src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/abandoned-rusty-ford-pickup-1024x768.jpg" alt="Abandoned rusty Ford pickup truck without a bed in a gravel driveway." class=""/></figure>
 <!-- /wp:image -->
 
 <!-- wp:image {"sizeSlug":"full","linkDestination":"none","className":"is-style-default"} -->
-<figure class="wp-block-image size-full is-style-default"><img src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/local-chapter-hall-veterans-foreign.jpg" alt="American flag mural and Veterans Foreign Wars sign on a local chapter hall wall." class=""/><figcaption class="wp-element-caption">local chapter hall Veterans Foreign. Image: Carol M Highsmith via Openverse/rawpixel, CC0 1.0.</figcaption></figure>
+<figure class="wp-block-image size-full is-style-default"><img src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/local-chapter-hall-veterans-foreign.jpg" alt="American flag mural and Veterans Foreign Wars sign on a local chapter hall wall." class=""/></figure>
 <!-- /wp:image --></figure>
 <!-- /wp:gallery --></main>
 <!-- /wp:group -->
