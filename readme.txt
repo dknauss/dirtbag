@@ -68,6 +68,8 @@ Open Appearance > Editor > Styles and choose a style variation.
 * Sign roadside curio shop, 05/1972, U.S. National Archives, CC0 1.0, https://www.rawpixel.com/image/8802552/photo-image-mountain-nature-landscape
 * Highway crossing desert Sandoval County, libraryofcongress, CC0 1.0, https://www.rawpixel.com/image/12151006/image-cloud-plant-art
 * local chapter hall Veterans Foreign, Carol M Highsmith, CC0 1.0, https://www.rawpixel.com/image/8079773/photo-image-cloud-sky-american-flag
+* What's in your glove box?, karmatosed (Tammie Lister), CC0 1.0, https://www.flickr.com/photos/73631307@N00/2096516382
+* Secured Glovebox, cogdogblog (Alan Levine), CC0 1.0, https://www.flickr.com/photos/37996646802@N01/33213363108
 * Typography scale informed by Butterick's Practical Typography, https://practicaltypography.com/
 
 All bundled theme code and original theme design are distributed under GPLv2 or later.

@@ -169,6 +169,8 @@ allowed_theme_images = {
 }
 allowed_playground_images = {
     'playground/media/abandoned-rusty-ford-pickup.jpg',
+    'playground/media/whats-in-your-glove-box.jpg',
+    'playground/media/secured-glovebox.jpg',
     'playground/media/blue-bird-truck-stop-sign.jpg',
     'playground/media/datsun-521-truck-1500.jpg',
     'playground/media/dirtbag-site-icon.png',
