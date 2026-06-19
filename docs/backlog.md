@@ -38,6 +38,11 @@ Planned checks and improvements before a formal public release or WordPress.org 
    - Use a Playground link (which reseeds from a blank install on every load) or a **throwaway** Studio site — never reset the main authoring site.
    - For a full wipe + reseed, first re-export current Studio content into `playground/seed-content.php`; the seed file is derived from Studio, not the reverse. See [development guide](development.md#studio-site-demo-content-and-reseeding).
 
+8. **JavaScript-off fallback pass**
+   - "No theme JavaScript" is not the test; the test is what survives when scripts do not run. If a core block or enhancement Dirtbag opts into loads JS, document the fallback and verify it with scripts disabled or unavailable.
+   - Cover the navigation overlay (menu reachable / page navigable without it), enhanced query pagination (links still paginate), and the image lightbox (images remain plain images).
+   - Confirm each degrades to a useful document — a plain link, button, image, or full page — not a dead control.
+
 ## Tooling improvements
 
 - Keep `bin/package-check` tiny, dependency-free, and easy to rerun.

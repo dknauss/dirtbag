@@ -24,7 +24,7 @@ Dirtbag does not collect, store, or transmit user data. It does not load remote 
 
 = Does Dirtbag include JavaScript? =
 
-No. Dirtbag v1 includes no theme-authored front-end JavaScript and no bundled JavaScript libraries.
+No theme-authored JavaScript, and no bundled libraries. WordPress core still loads its own scripts where core blocks need them — the navigation overlay, enhanced pagination, and image lightbox use core's Interactivity API — and each falls back to plain HTML when that script does not run.
 
 = Does Dirtbag load external fonts or assets? =
 
