@@ -7,9 +7,11 @@
 [![PHP 7.2+](https://img.shields.io/badge/PHP-7.2%2B-777bb4.svg?logo=php&logoColor=white)](https://www.php.net/)
 [![▶ Playground (stable tag)](https://img.shields.io/badge/▶_Playground-stable_tag-3858e9.svg?logo=wordpress&logoColor=white)](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/dknauss/dirtbag/main/playground/blueprint-stable.json) [![▶ Playground (main)](https://img.shields.io/badge/▶_Playground-main_branch-6e40c9.svg?logo=wordpress&logoColor=white)](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/dknauss/dirtbag/main/playground/blueprint-main.json)
 
-**Dirtbag is a simple WordPress block theme focused on the fundamentals. It favours plain markup, core WordPress blocks, web-safe fonts, style variations, visible feeds, and old/open-web habits over front-end machinery. Out of the box it gives you a plain, brutalist, 1990s default, unstyled foundation. It's packaged with Web 1.0-inspired page templates, block patterns, and six global styles: Amber CRT, Blueprint (or BSOD), Hi-vis (No-Name), Minimalist, Newspaper, and Terminal. Unlike the default no-style style, these alternative global styles open the door to the the full powers of the site editor, if you want to go there. Dirtbag is about doing more with native WordPress, more without creating new external dependencies, and more wih less. Instead of packing everything into the theme, ensure the theme gets the most out of the document, the browser, and WordPress.
+**Dirtbag is a simple WordPress block theme focused on the fundamentals.** It favours plain HTML markup, as little JS (and CSS) as possible, core WordPress blocks, the fonts everyone already has, visible feeds, and old/open-web habits over front-end machinery. 
 
 ![Dirtbag theme screenshot](screenshot.png)
+
+Out of the box Dirtbag gives you a plain, brutalist, 1990s default, unstyled foundation. It's packaged with Web 1.0-inspired page templates, block patterns, and six global styles: Amber CRT, Blueprint (or BSOD), Hi-vis (No-Name), Minimalist, Newspaper, and Terminal. Unlike the default no-style style, these alternative global styles open the door to the the full powers of the site editor, if you want to go there. Dirtbag is about doing more with native WordPress, more without creating new external dependencies, and more wih less. Instead of packing everything into the theme, ensure the theme gets the most out of the document, the browser, and WordPress.
 
 ## What it is
 
