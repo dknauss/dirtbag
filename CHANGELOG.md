@@ -6,6 +6,18 @@ This project follows the spirit of [Keep a Changelog](https://keepachangelog.com
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-06-19
+
+### Fixed
+
+- Accessibility: removed the scrollable overlay captions from the front-page gallery (axe `scrollable-region-focusable`); alt text retained and CC credits remain in `readme.txt`.
+
+### Changed
+
+- WordPress.org Theme Check cleanup: removed the invalid `block-theme` tag, added a GPL copyright notice to `readme.txt`, and externalized the Playground seed so no `base64_decode` remains in the source.
+- Expanded the README overview and aligned the JavaScript policy wording with the core-Interactivity-first doctrine.
+- Repointed the stable and theme-test Playground blueprints at the release; added a theme-unit-test blueprint.
+
 ## [0.1.3] - 2026-06-18
 
 ### Added
@@ -49,7 +61,8 @@ This project follows the spirit of [Keep a Changelog](https://keepachangelog.com
 
 - Initial Dirtbag block theme release.
 
-[Unreleased]: https://github.com/dknauss/dirtbag/compare/v0.1.3...HEAD
+[Unreleased]: https://github.com/dknauss/dirtbag/compare/v0.1.4...HEAD
+[0.1.4]: https://github.com/dknauss/dirtbag/releases/tag/v0.1.4
 [0.1.3]: https://github.com/dknauss/dirtbag/releases/tag/v0.1.3
 [0.1.2]: https://github.com/dknauss/dirtbag/releases/tag/v0.1.2
 [0.1.1]: https://github.com/dknauss/dirtbag/releases/tag/v0.1.1
