@@ -9,7 +9,7 @@
 
 **Dirtbag is a simple WordPress block theme focused on the fundamentals.** It favours plain HTML markup, as little JS (and CSS) as possible, core WordPress blocks, the fonts everyone already has, visible feeds, and old/open-web habits over front-end machinery. 
 
-![Dirtbag theme screenshot](screenshot.png)
+![Dirtbag](https://raw.githubusercontent.com/dknauss/dirtbag/main/docs/images/dirtbag-card.png)
 
 Out of the box Dirtbag gives you a plain, brutalist, 1990s default, unstyled foundation. It's packaged with Web 1.0-inspired page templates, block patterns, and six global styles: Amber CRT, Blueprint (or BSOD), Hi-vis (No-Name), Minimalist, Newspaper, and Terminal. Unlike the default no-style style, these alternative global styles open the door to the the full powers of the site editor, if you want to go there. 
 
@@ -59,6 +59,29 @@ For a release zip, make sure the zip contains a top-level `dirtbag/` directory a
 | Blueprint | Garage plans and cyan chalk lines | Amber on transparent |
 
 The style variations live in `styles/`. Shared defaults live in `theme.json`.
+
+### Gallery
+
+Real home-page renders of each style (same content, different style variation):
+
+<table>
+<tr>
+<td align="center" width="50%"><strong>Brutalist</strong> (default)<br><img src="https://raw.githubusercontent.com/dknauss/dirtbag/main/docs/images/styles/brutalist.png" alt="Dirtbag home page in the Brutalist default style"></td>
+<td align="center" width="50%"><strong>Minimalist</strong><br><img src="https://raw.githubusercontent.com/dknauss/dirtbag/main/docs/images/styles/minimalist.png" alt="Dirtbag home page in the Minimalist style"></td>
+</tr>
+<tr>
+<td align="center" width="50%"><strong>Newspaper</strong><br><img src="https://raw.githubusercontent.com/dknauss/dirtbag/main/docs/images/styles/newspaper.png" alt="Dirtbag home page in the Newspaper style"></td>
+<td align="center" width="50%"><strong>Hi-vis</strong><br><img src="https://raw.githubusercontent.com/dknauss/dirtbag/main/docs/images/styles/hi-vis.png" alt="Dirtbag home page in the Hi-vis style"></td>
+</tr>
+<tr>
+<td align="center" width="50%"><strong>Amber CRT</strong><br><img src="https://raw.githubusercontent.com/dknauss/dirtbag/main/docs/images/styles/amber-crt.png" alt="Dirtbag home page in the Amber CRT style"></td>
+<td align="center" width="50%"><strong>Terminal</strong><br><img src="https://raw.githubusercontent.com/dknauss/dirtbag/main/docs/images/styles/terminal.png" alt="Dirtbag home page in the Terminal style"></td>
+</tr>
+<tr>
+<td align="center" width="50%"><strong>Blueprint</strong><br><img src="https://raw.githubusercontent.com/dknauss/dirtbag/main/docs/images/styles/blueprint.png" alt="Dirtbag home page in the Blueprint style"></td>
+<td align="center" width="50%"></td>
+</tr>
+</table>
 
 ## Templates and patterns
 

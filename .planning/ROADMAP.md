@@ -100,3 +100,28 @@ Success criteria:
 - Each archive has a clear H1 + description and no near-duplicate thin archives the theme can prevent.
 - Breadcrumbs present site-wide; internal linking connects cornerstone pages.
 - The SEO-plugin handoff (meta, noindex, schema) is documented for site owners.
+
+## Phase 6 — Educational aspects (research and planning)
+
+Goal: research and plan how Dirtbag and its docs can *teach*. The theme is already pitched at people who want to get under the hood, tinker, and "build up from the fundamentals" — this phase turns that intent into a deliberate learning vehicle for block-theme basics, the open web, and accessible, build-free WordPress. Research and planning only; build later.
+
+Research questions:
+
+- **Who is the learner?** DIY site owners, students new to block themes, developers curious about no-build / no-framework WordPress, and IndieWeb newcomers. Define one or two primary personas and their goals.
+- **What does Dirtbag already teach implicitly that should be made explicit?** `theme.json` instead of a stylesheet file; core blocks over custom; the OEM Interactivity API over aftermarket frameworks; microformats, feeds, OPML, and XFN; accessible patterns; and `bin/package-check` as a dependency-free "flashlight."
+- **What formats fit a no-build ethos?** Annotated theme files, the existing in-theme pages/posts written in "Dirtbag diction," a guided "read the theme" tour, commented patterns, a glossary, and short focused docs — nothing that needs a bundler.
+- **How do we teach without bloating the shipped theme?** Keep teaching material in `docs/` and the seeded demo content (both `export-ignore`d from the package) or external (a companion Playground blueprint / site).
+
+Deliverables (to scope, not yet build):
+
+- A learner persona + learning-objectives outline.
+- An audit of existing teachable surfaces (`docs/`, seeded pages/posts, patterns, `package-check`) mapped to those objectives.
+- A proposed structure — e.g. a Field Guide / Garage learning path, annotated-code walkthroughs, a glossary, and a "build it yourself from `theme.json` up" tutorial.
+- A decision on where educational content lives (docs + seed demo vs. an external companion) that keeps the WordPress.org package minimal.
+- Plain-language and accessibility guidelines for the educational writing (tie in `readability-check`).
+
+Success criteria:
+
+- Audience and learning objectives are documented.
+- A concrete content plan exists, with each piece assigned a home (docs, seed, or external) so the shipped theme stays minimal.
+- No educational assets bloat the WordPress.org package — everything teachable is `export-ignore`d or external.
