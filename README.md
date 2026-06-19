@@ -19,7 +19,7 @@ Dirtbag is a freely distributable WordPress block theme that's small, simple, du
 
 - **Block theme:** full-site editing templates, template parts, patterns, and `theme.json`.
 - **No build step:** edit files, run the package check, ship the theme.
-- **No theme-authored JavaScript in v1:** We're open to exploring lightweight frameworks, like Alpine, in the future.
+- **No theme-authored JavaScript:** core blocks may still load WordPress's own Interactivity API (navigation overlay, enhanced pagination, image lightbox), each with a plain-HTML fallback. Core's runtime is the OEM part; aftermarket frameworks like Alpine are a later, approved exception — see the [JavaScript policy](#javascript-policy).
 - **No enqueued theme stylesheet file:** `style.css` contains the WordPress theme header only — and it is *empty*. Dirtbag does use WordPress-native `theme.json` styles.
 - **Core-first layout:** uses WordPress core layout, block, and global-style output where needed.
 - **Web-safe typography:** universal font stacks instead of bundled web fonts.
@@ -100,7 +100,7 @@ GSD project memory lives in `.planning/` for local planning context.
 
 ## JavaScript policy
 
-Dirtbag ships no theme-authored front-end JavaScript. WordPress core still loads its own where blocks need it — the navigation overlay and accordion already pull in the Interactivity API runtime, and the theme now opts into two of core’s progressive enhancements: enhanced (no-reload) feed pagination and the image lightbox. Both degrade to plain links and images when JavaScript is off.
+Dirtbag ships no theme-authored front-end JavaScript. WordPress core still loads its own where blocks need it — the navigation overlay already pulls in the Interactivity API runtime, and the theme opts into two of core’s progressive enhancements: enhanced (no-reload) feed pagination and the image lightbox. All three degrade to plain links and images when JavaScript is off.
 
 When an interaction genuinely needs JavaScript, reach for the OEM part before the aftermarket catalogue:
 

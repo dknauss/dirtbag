@@ -37,8 +37,13 @@ Open Appearance > Editor > Styles and choose a style variation.
 == Changelog ==
 
 = 0.1.3 =
-* Require WordPress 7.0 and use the core Breadcrumbs block.
-* Document editor controls policy for Brutalist and style variations.
+* Require WordPress 7.0 and PHP 7.2+; use the core Breadcrumbs block.
+* State the JavaScript policy honestly: no theme-authored or bundled JavaScript, but core blocks may load WordPress's own (the Interactivity API), each with a plain-HTML fallback.
+* Opt into core progressive enhancements: navigation overlay, enhanced (no-reload) pagination, and the image lightbox.
+* Add Archive (master index) and Search page templates.
+* Improve microformats2 markup (h-card path, post date binding, u-url) and make the byline translatable.
+* Collapse style variations to their deltas over theme.json; document the editor-controls, CSS, and i18n policies.
+* Add CC0 demo imagery and Playground seed content; add package-check and Playwright/CI tests.
 
 = 0.1.2 =
 * Apply barebones Playground export for header and front page.
