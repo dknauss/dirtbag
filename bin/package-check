@@ -100,14 +100,58 @@ print('Suspicious code scan OK')
 reconcile_artifacts = {
     'core/post-data': 'invalid post-date datetime binding (no-op source)',
     '"theme":"dirtbag"': 'hardcoded theme slug in a template-part ref',
-    'localhost': 'absolute localhost/dev URL',
 }
+# Match real localhost/dev URLs, not the bare word "localhost" in prose.
+localhost_url_re = re.compile(r'https?://localhost|localhost:\d')
+def reconcile_hits(text):
+    hits = [f'{snip!r} — {why}' for snip, why in reconcile_artifacts.items() if snip in text]
+    if localhost_url_re.search(text):
+        hits.append('absolute localhost/dev URL')
+    return hits
 for p in scan_files:
-    text = p.read_text(errors='ignore')
-    for snippet, why in reconcile_artifacts.items():
-        if snippet in text:
-            raise SystemExit(f'Reconcile artifact in {p}: {snippet!r} — {why}')
+    hits = reconcile_hits(p.read_text(errors='ignore'))
+    if hits:
+        raise SystemExit(f'Reconcile artifact in {p}: {hits[0]}')
 print('Reconcile guardrails OK')
+
+# Malformed block delimiters (e.g. <\!-- from shell-mangled authoring).
+malformed = '<\\!--'
+for p in scan_files:
+    if malformed in p.read_text(errors='ignore'):
+        raise SystemExit(f'Malformed block delimiter {malformed!r} in {p}')
+
+# Validate the Playground seed blob: the demo content is otherwise unchecked.
+def _check_block_nesting(label, text):
+    stack = []
+    for m in comment_re.finditer(text):
+        close, name, rest, selfclose = m.group(1), m.group(2), m.group(3), m.group(4)
+        if close:
+            if not stack or stack[-1] != name:
+                raise SystemExit(f'{label}: closing {name} mismatches {stack[-1] if stack else "EMPTY"}')
+            stack.pop()
+        elif selfclose or rest.rstrip().endswith('/'):
+            continue
+        else:
+            stack.append(name)
+    if stack:
+        raise SystemExit(f'{label}: unclosed blocks {stack}')
+
+import base64 as _b64
+seed = Path('playground/seed-content.php')
+if seed.exists():
+    blobs = re.findall(r"'([A-Za-z0-9+/=]{500,})'", seed.read_text())
+    if blobs:
+        data = json.loads(_b64.b64decode(max(blobs, key=len)))
+        for post in data.get('posts', []):
+            label = f"seed:{post.get('post_name')}"
+            content = post.get('post_content', '')
+            if malformed in content:
+                raise SystemExit(f'Malformed block delimiter in {label}')
+            _check_block_nesting(label, content)
+            hits = reconcile_hits(content)
+            if hits:
+                raise SystemExit(f'Reconcile artifact in {label}: {hits[0]}')
+    print('Seed content integrity OK')
 
 # Image inventory: fail if wp.org package or Playground demo images drift.
 image_exts = {'.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'}
