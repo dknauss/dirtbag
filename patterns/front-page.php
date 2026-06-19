@@ -10,14 +10,14 @@
 ?>
 <!-- wp:template-part {"slug":"header","area":"header"} /-->
 
-<!-- wp:columns -->
-<div class="wp-block-columns"><!-- wp:column {"width":"66.66%"} -->
-<div class="wp-block-column" style="flex-basis:66.66%"><!-- wp:heading {"level":1} -->
+<!-- wp:group {"tagName":"main","anchor":"main-content"} -->
+<main id="main-content" class="wp-block-group"><!-- wp:heading {"level":1} -->
 <h1 class="wp-block-heading">Car Wheels on a Gravel Road</h1>
 <!-- /wp:heading -->
 
-<!-- wp:group {"tagName":"main","className":"h-card","anchor":"main-content"} -->
-<main id="main-content" class="wp-block-group h-card"><!-- wp:query {"queryId":0,"query":{"perPage":3,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"ignore","inherit":false,"taxQuery":{"include":{"category":[3]}}},"className":"h-feed","layout":{"type":"default"}} -->
+<!-- wp:columns -->
+<div class="wp-block-columns"><!-- wp:column {"width":"66.66%"} -->
+<div class="wp-block-column" style="flex-basis:66.66%"><!-- wp:query {"queryId":0,"query":{"perPage":3,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"only","inherit":false},"className":"h-feed","layout":{"type":"default"}} -->
 <div class="wp-block-query h-feed"><!-- wp:post-template {"className":"h-entry","layout":{"type":"grid","columnCount":3}} -->
 <!-- wp:post-featured-image {"isLink":true,"aspectRatio":"4/3","width":"100%","sizeSlug":"medium_large","className":"u-featured","style":{"spacing":{"margin":{"top":"0","bottom":"1em"}}}} /-->
 
@@ -30,15 +30,12 @@
 <!-- /wp:group -->
 <!-- /wp:post-template -->
 
-<!-- wp:query-pagination -->
-<!-- wp:query-pagination-previous /-->
-
-<!-- wp:query-pagination-numbers /-->
-
-<!-- wp:query-pagination-next /-->
-<!-- /wp:query-pagination --></div>
-<!-- /wp:query --></main>
-<!-- /wp:group --></div>
+<!-- wp:query-no-results -->
+<!-- wp:paragraph -->
+<p>No featured posts yet. Mark a post as sticky to feature it here.</p>
+<!-- /wp:paragraph -->
+<!-- /wp:query-no-results --></div>
+<!-- /wp:query --></div>
 <!-- /wp:column -->
 
 <!-- wp:column {"width":"33.33%"} -->
@@ -46,7 +43,23 @@
 <h2 class="wp-block-heading">Used Cars and Unused Plans</h2>
 <!-- /wp:heading -->
 
-<!-- wp:latest-posts {"categories":[{"id":6,"name":"Garage"}],"postsToShow":4,"displayPostContent":true,"displayPostDate":true,"displayFeaturedImage":true,"featuredImageAlign":"left"} /--></div>
+<!-- wp:query {"queryId":1,"query":{"perPage":4,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"exclude","inherit":false},"className":"h-feed","layout":{"type":"default"}} -->
+<div class="wp-block-query h-feed"><!-- wp:post-template {"className":"h-entry"} -->
+<!-- wp:post-title {"isLink":true,"level":3,"className":"p-name"} /-->
+
+<!-- wp:group {"className":"post-meta","layout":{"type":"flex","flexWrap":"wrap"}} -->
+<div class="wp-block-group post-meta"><!-- wp:post-date {"isLink":true,"className":"dt-published u-url"} /-->
+
+<!-- wp:post-excerpt {"moreText":"(cont...)"} /--></div>
+<!-- /wp:group -->
+<!-- /wp:post-template -->
+
+<!-- wp:query-no-results -->
+<!-- wp:paragraph -->
+<p>No posts yet.</p>
+<!-- /wp:paragraph -->
+<!-- /wp:query-no-results --></div>
+<!-- /wp:query --></div>
 <!-- /wp:column --></div>
 <!-- /wp:columns -->
 
@@ -62,6 +75,7 @@
 <!-- wp:image {"sizeSlug":"full","linkDestination":"none","className":"is-style-default"} -->
 <figure class="wp-block-image size-full is-style-default"><img src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/local-chapter-hall-veterans-foreign.jpg" alt="American flag mural and Veterans Foreign Wars sign on a local chapter hall wall." class=""/><figcaption class="wp-element-caption">local chapter hall Veterans Foreign. Image: Carol M Highsmith via Openverse/rawpixel, CC0 1.0.</figcaption></figure>
 <!-- /wp:image --></figure>
-<!-- /wp:gallery -->
+<!-- /wp:gallery --></main>
+<!-- /wp:group -->
 
 <!-- wp:template-part {"slug":"footer","area":"footer"} /-->
