@@ -1,7 +1,7 @@
 === Dirtbag ===
 Contributors: dpknauss
 Requires at least: 6.6
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.2
 Stable tag: 0.1.2
 License: GPLv2 or later

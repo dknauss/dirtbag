@@ -3,6 +3,9 @@ name: Package Check
 on:
   push:
   pull_request:
+  schedule:
+    - cron: "23 10 * * 1"
+  workflow_dispatch:
 
 jobs:
   package-check:
