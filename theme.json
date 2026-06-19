@@ -82,6 +82,13 @@
 	],
 	"settings": {
 		"appearanceTools": false,
+		"blocks": {
+			"core/image": {
+				"lightbox": {
+					"enabled": true
+				}
+			}
+		},
 		"color": {
 			"custom": false,
 			"customDuotone": false,
