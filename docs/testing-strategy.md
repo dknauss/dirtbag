@@ -118,9 +118,12 @@ fails the suite): `image-alt`, `link-name`, `label`, `heading-order`,
 `landmark-unique`, `region`, `color-contrast`, and `button-name`, enforced in
 `accessibility.spec.js` across the seeded pages plus a single post and the 404
 template; `color-contrast` is additionally gated across every style by the per-style
-sweep below. Other axe findings stay report-only until likewise confirmed clean;
-track the gated set here as it grows. (`skip-link` is a best-practice rule outside
-`wcag2a/aa`, so it is guarded structurally instead — see the skip-link target test.)
+sweep below. The scan runs `wcag2a`, `wcag2aa`, **and `best-practice`** tags —
+`heading-order`, `landmark-unique`, and `region` are best-practice rules, so without
+that tag they would not be evaluated and gating them would be a silent no-op. Other
+axe findings stay report-only until likewise confirmed clean; track the gated set
+here as it grows. (`skip-link` is covered separately by a dedicated structural test
+for the skip-link target.)
 The graduation was unblocked by one finding: the first browser run (WP 7.0, seeded
 Studio site) surfaced a `button-name` on `/about/` — the h-card avatar (a decorative
 96px icon, `alt=""`) inherited the theme-wide image lightbox, so core rendered an

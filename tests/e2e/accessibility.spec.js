@@ -38,9 +38,12 @@ const GATED_RULES = [
 ];
 
 // Run axe on the current page: gate the confirmed-clean set, report the rest.
+// `best-practice` is included alongside the WCAG tags because heading-order,
+// landmark-unique, and region are best-practice rules — without it they would
+// not be evaluated and gating them would be a silent no-op.
 async function checkAxe(page, label, testInfo) {
   const { violations } = await new AxeBuilder({ page })
-    .withTags(['wcag2a', 'wcag2aa'])
+    .withTags(['wcag2a', 'wcag2aa', 'best-practice'])
     .analyze();
 
   const ungated = violations.filter((v) => !GATED_RULES.includes(v.id));
