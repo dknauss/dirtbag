@@ -95,6 +95,13 @@ for p in scan_files:
             raise SystemExit(f'Suspicious pattern {pat!r} in {p}')
 print('Suspicious code scan OK')
 
+# base64_decode is disallowed by WordPress.org Theme Check (obfuscation smell).
+# Keep theme/demo PHP clean; data belongs in plain files (e.g. seed-content.json).
+for p in [*Path('patterns').glob('*.php'), *Path('playground').glob('*.php')]:
+    if 'base64_decode' in p.read_text(errors='ignore'):
+        raise SystemExit(f'base64_decode found in {p} (not allowed; use a plain data file)')
+print('No base64_decode OK')
+
 # Reconcile guardrails: artifacts a raw Site-Editor export reintroduces and the
 # reconcile step is supposed to strip. Fail loudly so they cannot slip back in.
 reconcile_artifacts = {
@@ -136,21 +143,18 @@ def _check_block_nesting(label, text):
     if stack:
         raise SystemExit(f'{label}: unclosed blocks {stack}')
 
-import base64 as _b64
-seed = Path('playground/seed-content.php')
+seed = Path('playground/seed-content.json')
 if seed.exists():
-    blobs = re.findall(r"'([A-Za-z0-9+/=]{500,})'", seed.read_text())
-    if blobs:
-        data = json.loads(_b64.b64decode(max(blobs, key=len)))
-        for post in data.get('posts', []):
-            label = f"seed:{post.get('post_name')}"
-            content = post.get('post_content', '')
-            if malformed in content:
-                raise SystemExit(f'Malformed block delimiter in {label}')
-            _check_block_nesting(label, content)
-            hits = reconcile_hits(content)
-            if hits:
-                raise SystemExit(f'Reconcile artifact in {label}: {hits[0]}')
+    data = json.loads(seed.read_text(encoding='utf-8'))
+    for post in data.get('posts', []):
+        label = f"seed:{post.get('post_name')}"
+        content = post.get('post_content', '')
+        if malformed in content:
+            raise SystemExit(f'Malformed block delimiter in {label}')
+        _check_block_nesting(label, content)
+        hits = reconcile_hits(content)
+        if hits:
+            raise SystemExit(f'Reconcile artifact in {label}: {hits[0]}')
     print('Seed content integrity OK')
 
 # Image inventory: fail if wp.org package or Playground demo images drift.
