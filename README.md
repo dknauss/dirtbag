@@ -11,9 +11,9 @@
 
 ![Dirtbag](https://raw.githubusercontent.com/dknauss/dirtbag/main/docs/images/dirtbag-card.png)
 
-Out of the box Dirtbag gives you a plain, brutalist, 1990s default, unstyled foundation. It's packaged with Web 1.0-inspired page templates, block patterns, and six global styles: Amber CRT, Blueprint (or BSOD), Hi-vis (No-Name), Minimalist, Newspaper, and Terminal. Unlike the default no-style style, these alternative global styles open the door to the the full powers of the site editor, if you want to go there. 
+Out of the box Dirtbag gives you a plain, unstyled, brutalist foundation with a 1990s, view-source feel. It's packaged with Web 1.0-inspired page templates, block patterns, and six global styles: Amber CRT, Blueprint (or BSOD), Hi-vis (No-Name), Minimalist, Newspaper, and Terminal. Unlike the default no-style style, these alternative global styles open the door to the full powers of the site editor, if you want to go there. 
 
-Dirtbag is about doing more with native WordPress, more without creating new external dependencies, and more wih less. Instead of packing everything into the theme, ensure the theme gets the most out of the document, the browser, and WordPress.
+Dirtbag is about doing more with native WordPress, more without creating new external dependencies, and more with less. Instead of packing everything into the theme, it is built to get the most out of the document, the browser, and WordPress.
 
 ## What it is
 
@@ -27,7 +27,7 @@ Dirtbag is a freely distributable WordPress block theme that's small, simple, du
 - **Web-safe typography:** universal font stacks instead of bundled web fonts. (The global styles use web-safe colours as well, just for the hell of it and so we can say "web-safe" in 2026.)
 - **Open-web friendly:** templates and docs for RSS, OPML, XFN, h-card, rel=me, now pages, and plain-text site-root files.
 
-WordPress core prints global styles, layout styles, block styles, and scripts required by core blocks. Dirtbag aims not to do anything extra if it is already done or can be done by core. 
+WordPress core prints global styles, layout styles, block styles, and scripts required by core blocks. Dirtbag avoids doing anything core or the browser already does. 
 
 ## Quick start
 
@@ -133,7 +133,9 @@ When an interaction genuinely needs JavaScript, reach for the OEM part before th
 1. **Native HTML and WordPress core behaviour** — no runtime at all.
 2. **The WordPress Interactivity API** — the OEM part. Preact + signals (~10&nbsp;kb), built by the same shop that built the engine, progressive-enhancement-first, and already in the parts bin whenever a core interactive block is on the page (overlay, accordion, search, enhanced pagination, lightbox). Adding behaviour on a runtime you are already carrying costs almost nothing.
 3. **Tiny vanilla JavaScript** — for a one-bolt job that does not justify a framework.
-4. **Aftermarket frameworks** — Only if the OEM part is genuinely wrong for the job. These are bolt-ons from another maker: a second runtime to haul around, extra weight, and no guarantee it fits the WordPress engine. Whatever the part: if it needs its own JavaScript to be understood, it needs a better fallback.
+4. **Aftermarket frameworks** — Only if the OEM part is genuinely wrong for the job. These are bolt-ons from another maker: a second runtime to haul around, extra weight, and no guarantee it fits the WordPress engine.
+
+Whatever the part: if it needs its own JavaScript to be understood, it needs a better fallback.
 
 ## Accessibility and performance goals
 
@@ -156,7 +158,7 @@ Third-party resource credits are listed in [`readme.txt`](readme.txt), including
 
 ## AI assistance
 
-Dirtbag is built with AI assistance from multiple models in dialogue with each other and the human directior and reviewer. Commits carry a `Co-Authored-By: Claude` trailer when Claude was involved. The maintainer reviews and remains responsible for all shipped code, content, and design. Dig into the docs to see some of the things humans and machines have learned together from each other on this project.
+Dirtbag is built with AI assistance from multiple models in dialogue with each other and the human director and reviewer. Commits carry a `Co-Authored-By: Claude` trailer when Claude was involved. The maintainer reviews and remains responsible for all shipped code, content, and design. Dig into the docs to see some of the things humans and machines have learned from each other on this project.
 
 ## Contributing
 
