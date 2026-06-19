@@ -41,6 +41,7 @@ Planned checks and improvements before a formal public release or WordPress.org 
 ## Tooling improvements
 
 - Keep `bin/package-check` tiny, dependency-free, and easy to rerun.
+- **Bake the reconcile into the export step (long-term fix).** A raw Site-Editor export reintroduces artifacts the reconcile strips (the `core/post-data` datetime binding, hardcoded `"theme":"dirtbag"` slugs, absolute `localhost` URLs). `bin/package-check` now *fails* when these reappear (short-term guardrail), but the durable fix is a Studio→repo export helper that applies the reconcile automatically so the artifacts never land in committed files.
 - Consider adding optional checks for stale text-domain strings and pattern translation coverage.
 - Consider a release packaging helper that creates a clean `dirtbag.zip` without development files.
 - Consider a browser-mode regression script for the style picker if browser tooling becomes part of the normal workflow.
