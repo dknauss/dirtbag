@@ -69,21 +69,7 @@
 <!-- /wp:query-no-results --></div>
 <!-- /wp:query --></div>
 <!-- /wp:column --></div>
-<!-- /wp:columns -->
-
-<!-- wp:gallery {"linkTo":"none"} -->
-<figure class="wp-block-gallery has-nested-images columns-default is-cropped"><!-- wp:image {"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/potluck-la-catholique.jpg" alt="Potluck dishes set out on a table indoors." class=""/></figure>
-<!-- /wp:image -->
-
-<!-- wp:image {"sizeSlug":"large","linkDestination":"none"} -->
-<figure class="wp-block-image size-large"><img src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/abandoned-rusty-ford-pickup-1024x768.jpg" alt="Abandoned rusty Ford pickup truck without a bed in a gravel driveway." class=""/></figure>
-<!-- /wp:image -->
-
-<!-- wp:image {"sizeSlug":"full","linkDestination":"none","className":"is-style-default"} -->
-<figure class="wp-block-image size-full is-style-default"><img src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/local-chapter-hall-veterans-foreign.jpg" alt="American flag mural and Veterans Foreign Wars sign on a local chapter hall wall." class=""/></figure>
-<!-- /wp:image --></figure>
-<!-- /wp:gallery --></main>
+<!-- /wp:columns --></main>
 <!-- /wp:group -->
 
 <!-- wp:template-part {"slug":"footer","area":"footer"} /-->

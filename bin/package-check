@@ -167,9 +167,6 @@ allowed_theme_images = {
     'assets/icons/pickup-truck-header.svg',
     'assets/icons/pickup-truck-white.svg',
     'assets/icons/pickup-truck.svg',
-    'assets/images/abandoned-rusty-ford-pickup-1024x768.jpg',
-    'assets/images/local-chapter-hall-veterans-foreign.jpg',
-    'assets/images/potluck-la-catholique.jpg',
 }
 allowed_playground_images = {
     'playground/media/abandoned-rusty-ford-pickup.jpg',
