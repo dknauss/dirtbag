@@ -95,6 +95,20 @@ for p in scan_files:
             raise SystemExit(f'Suspicious pattern {pat!r} in {p}')
 print('Suspicious code scan OK')
 
+# Reconcile guardrails: artifacts a raw Site-Editor export reintroduces and the
+# reconcile step is supposed to strip. Fail loudly so they cannot slip back in.
+reconcile_artifacts = {
+    'core/post-data': 'invalid post-date datetime binding (no-op source)',
+    '"theme":"dirtbag"': 'hardcoded theme slug in a template-part ref',
+    'localhost': 'absolute localhost/dev URL',
+}
+for p in scan_files:
+    text = p.read_text(errors='ignore')
+    for snippet, why in reconcile_artifacts.items():
+        if snippet in text:
+            raise SystemExit(f'Reconcile artifact in {p}: {snippet!r} — {why}')
+print('Reconcile guardrails OK')
+
 # Image inventory: fail if wp.org package or Playground demo images drift.
 image_exts = {'.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'}
 allowed_theme_images = {
