@@ -29,13 +29,15 @@ test.describe('structure (gating)', () => {
   });
 });
 
-// Rules we intend to gate first, once confirmed clean across pages and styles.
+// Gated rules — confirmed clean across the seeded pages (and, for color-contrast,
+// across every style via the per-style sweep). A regression here fails the suite.
+// Other axe findings stay report-only until they are likewise confirmed clean.
 const GATED_RULES = [
   'image-alt', 'link-name', 'label', 'heading-order',
-  'landmark-unique', 'region', 'color-contrast',
+  'landmark-unique', 'region', 'color-contrast', 'button-name',
 ];
 
-test.describe('axe (wcag2a/aa) — report-only', () => {
+test.describe('axe (wcag2a/aa)', () => {
   for (const path of PAGES) {
     test(`axe: ${path}`, async ({ page }, testInfo) => {
       await page.goto(path);
@@ -43,18 +45,21 @@ test.describe('axe (wcag2a/aa) — report-only', () => {
         .withTags(['wcag2a', 'wcag2aa'])
         .analyze();
 
-      if (violations.length) {
-        console.log(`\naxe findings on ${path}:\n` + violations
+      // Report-only for rules not yet gated — surface without failing.
+      const ungated = violations.filter((v) => !GATED_RULES.includes(v.id));
+      if (ungated.length) {
+        console.log(`\naxe findings (report-only) on ${path}:\n` + ungated
           .map((v) => `- ${v.id} (${v.impact}): ${v.help} [${v.nodes.length}]`).join('\n'));
         await testInfo.attach('axe.json', {
-          body: JSON.stringify(violations, null, 2), contentType: 'application/json',
+          body: JSON.stringify(ungated, null, 2), contentType: 'application/json',
         });
       }
 
-      // Graduation target — uncomment per rule as each is confirmed clean:
-      // const gated = violations.filter((v) => GATED_RULES.includes(v.id));
-      // expect(gated, `gated a11y violations on ${path}`).toEqual([]);
-      void GATED_RULES;
+      // Gating — the confirmed-clean set must stay clean.
+      const gated = violations
+        .filter((v) => GATED_RULES.includes(v.id))
+        .map((v) => `${v.id} [${v.nodes.length}]`);
+      expect(gated, `gated a11y violations on ${path}`).toEqual([]);
     });
   }
 });
