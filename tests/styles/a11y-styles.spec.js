@@ -41,7 +41,6 @@ test.describe(`axe per style: ${STYLE}`, () => {
         .filter((v) => v.id === 'color-contrast')
         .map((v) => `${v.id} [${v.nodes.length}]`);
       expect(contrast, `color-contrast violations on ${path} (${STYLE})`).toEqual([]);
-      void contrastNodes;
     });
   }
 });

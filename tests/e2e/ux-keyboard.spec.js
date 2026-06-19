@@ -38,6 +38,7 @@ test.describe('keyboard and overlay', () => {
     // the seed date, so it can't be a static slug).
     await page.goto('/archive/');
     const href = await page.locator('.wp-block-post-title a').first().getAttribute('href');
+    expect(href, 'a post link on the archive').toBeTruthy();
     await page.goto(href);
     const comment = page.locator('#comment, .comment-form textarea').first();
     await comment.focus();
