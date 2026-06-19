@@ -33,10 +33,10 @@ A Dirtbag site must remain readable, navigable, and understandable with WordPres
 
 ## Context
 
-- Local theme root: `/Users/danknauss/Documents/Dirtbag`.
-- Local Studio site: `/Users/danknauss/Studio/dirtbag`.
+- Local theme root: `/Users/danknauss/Developer/GitHub/dirtbag` (kept out of iCloud / cloud-synced folders).
+- Local Studio site: `/Users/danknauss/Studio/dirtbag` (the theme folder symlinks the repo).
 - Theme package should remain WordPress.org-review friendly: no hidden package files, no root `robots.txt`, no root `.well-known`, no bundled JS/fonts, and complete resource credits.
-- Development style is TDD-ish for a theme: write/maintain release checks first, then keep changes passing those checks.
+- Testing is a **calibrated pyramid, not test-first TDD** — the theme is mostly declarative. The static gate (`bin/package-check` + CI) owns "green"; render/accessibility E2E, Theme Check, and manual browser QA cover behaviour; TDD is reserved for the small islands of real logic. See `docs/testing-strategy.md`.
 
 ## Constraints
 
@@ -53,9 +53,10 @@ A Dirtbag site must remain readable, navigable, and understandable with WordPres
 |----------|-----------|---------|
 | Use `theme.json` custom variable for truck icon colour | Prevents sticky accumulated selector CSS in the Site Editor style picker | ✓ Good |
 | Keep site-root text/OPML files out of theme package | They are site policy/content files and can trip theme review | ✓ Good |
-| Add `bin/package-check` instead of a build step | Tests the package without changing the no-build philosophy | — Pending |
-| Track GSD planning docs in git | Project decisions should travel with the repo | — Pending |
+| Add `bin/package-check` instead of a build step | Tests the package without changing the no-build philosophy | ✓ Good — implemented and runs in CI |
+| Track GSD planning docs in git | Project decisions should travel with the repo | ✓ Good |
+| Calibrated test pyramid over test-first TDD | Theme is mostly declarative; static checks + render/a11y + Theme Check + manual QA fit better, TDD only for real logic | ✓ Good — see `docs/testing-strategy.md` |
 | Studio site is the authoring workbench; `seed-content.php` is derived from it | Reseeding Studio from the seed file runs the export backwards and destroys live content; clear DB overrides (not content) to match the theme, and reserve full wipe+reseed for throwaway/Playground clean-install checks | ✓ Good |
 
 ---
-*Last updated: 2026-06-18 after GSD initialization*
+*Last updated: 2026-06-19 — corrected repo path, added the calibrated testing strategy, marked package-check/GSD-docs decisions done.*

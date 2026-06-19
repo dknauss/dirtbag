@@ -114,6 +114,7 @@ Start with the docs index:
 - [Docs index](docs/README.md)
 - [Development guide](docs/development.md)
 - [Testing guide](docs/testing.md)
+- [Testing strategy](docs/testing-strategy.md)
 - [Style variations](docs/style-variations.md)
 - [WordPress.org theme review notes](docs/theme-review.md)
 - [Site-root open-web file templates](docs/site-root-open-web-files.md)
