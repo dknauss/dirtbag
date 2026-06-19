@@ -29,32 +29,59 @@ test.describe('structure (gating)', () => {
   });
 });
 
-// Rules we intend to gate first, once confirmed clean across pages and styles.
+// Gated rules — confirmed clean across the seeded pages (and, for color-contrast,
+// across every style via the per-style sweep). A regression here fails the suite.
+// Other axe findings stay report-only until they are likewise confirmed clean.
 const GATED_RULES = [
   'image-alt', 'link-name', 'label', 'heading-order',
-  'landmark-unique', 'region', 'color-contrast',
+  'landmark-unique', 'region', 'color-contrast', 'button-name',
 ];
 
-test.describe('axe (wcag2a/aa) — report-only', () => {
+// Run axe on the current page: gate the confirmed-clean set, report the rest.
+// `best-practice` is included alongside the WCAG tags because heading-order,
+// landmark-unique, and region are best-practice rules — without it they would
+// not be evaluated and gating them would be a silent no-op.
+async function checkAxe(page, label, testInfo) {
+  const { violations } = await new AxeBuilder({ page })
+    .withTags(['wcag2a', 'wcag2aa', 'best-practice'])
+    .analyze();
+
+  const ungated = violations.filter((v) => !GATED_RULES.includes(v.id));
+  if (ungated.length) {
+    console.log(`\naxe findings (report-only) on ${label}:\n` + ungated
+      .map((v) => `- ${v.id} (${v.impact}): ${v.help} [${v.nodes.length}]`).join('\n'));
+    await testInfo.attach('axe.json', {
+      body: JSON.stringify(ungated, null, 2), contentType: 'application/json',
+    });
+  }
+
+  const gated = violations
+    .filter((v) => GATED_RULES.includes(v.id))
+    .map((v) => `${v.id} [${v.nodes.length}]`);
+  expect(gated, `gated a11y violations on ${label}`).toEqual([]);
+}
+
+test.describe('axe (wcag2a/aa)', () => {
   for (const path of PAGES) {
     test(`axe: ${path}`, async ({ page }, testInfo) => {
       await page.goto(path);
-      const { violations } = await new AxeBuilder({ page })
-        .withTags(['wcag2a', 'wcag2aa'])
-        .analyze();
-
-      if (violations.length) {
-        console.log(`\naxe findings on ${path}:\n` + violations
-          .map((v) => `- ${v.id} (${v.impact}): ${v.help} [${v.nodes.length}]`).join('\n'));
-        await testInfo.attach('axe.json', {
-          body: JSON.stringify(violations, null, 2), contentType: 'application/json',
-        });
-      }
-
-      // Graduation target — uncomment per rule as each is confirmed clean:
-      // const gated = violations.filter((v) => GATED_RULES.includes(v.id));
-      // expect(gated, `gated a11y violations on ${path}`).toEqual([]);
-      void GATED_RULES;
+      await checkAxe(page, path, testInfo);
     });
   }
+
+  // Templates that can't be static slugs: a single post (its URL embeds the seed
+  // date) and the 404 fallback. Resolve the post link from the archive at runtime.
+  test('axe: a single post (with comment form)', async ({ page }, testInfo) => {
+    await page.goto('/archive/');
+    const href = await page.locator('.wp-block-post-title a').first().getAttribute('href');
+    expect(href, 'a post link on the archive').toBeTruthy();
+    await page.goto(href);
+    await expect(page.locator('.comment-form, #commentform').first()).toBeVisible();
+    await checkAxe(page, 'single post', testInfo);
+  });
+
+  test('axe: the 404 template', async ({ page }, testInfo) => {
+    await page.goto('/no-such-road-here/');
+    await checkAxe(page, '404', testInfo);
+  });
 });

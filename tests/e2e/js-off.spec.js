@@ -1,12 +1,12 @@
 // JavaScript-off fallbacks: the core enhancements Dirtbag opts into (overlay,
 // enhanced pagination, image lightbox) must degrade to a usable document.
-// Marked fixme: confirm selectors/behaviour in a browser-capable run, then
-// un-fixme. See docs/testing-strategy.md → "Implementation plan".
+// Behaviour validated against WP 7.0 in a browser run (Studio site) — see
+// docs/testing-strategy.md → "Implementation plan".
 const { test, expect } = require('@playwright/test');
 
 test.use({ javaScriptEnabled: false });
 
-test.describe.fixme('with JavaScript disabled', () => {
+test.describe('with JavaScript disabled', () => {
   test('query pagination still navigates via real links', async ({ page }) => {
     await page.goto('/archive/');
     const next = page.locator('.wp-block-query-pagination-next');

@@ -56,3 +56,56 @@ jobs:
           name: playwright-report
           path: tests/playwright-report
           retention-days: 7
+
+  # Per-style accessibility sweep — axe (with color-contrast gated) against each
+  # style variation. Playground is in-memory with no persistent wp-cli, so each
+  # style gets its own boot: the blueprint applies the variation at boot via
+  # playground/apply-style.php (locally this is the tests/axe-styles.sh loop).
+  e2e-styles:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        style: [default, terminal, amber-crt, blueprint, hi-vis, minimalist, newspaper]
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+
+      - name: Generate per-style CI blueprint
+        env:
+          REF: ${{ github.event.pull_request.head.sha || github.sha }}
+          STYLE: ${{ matrix.style }}
+        run: node tests/ci-style-blueprint.mjs > tests/blueprint.ci.json
+
+      - name: Install test dependencies
+        working-directory: tests
+        run: npm install
+
+      - name: Install Playwright Chromium
+        working-directory: tests
+        run: npx playwright install --with-deps chromium
+
+      - name: Boot WordPress Playground (theme + seed + style)
+        run: |
+          npx @wp-playground/cli@latest server --port 9400 --blueprint=tests/blueprint.ci.json &
+          for i in $(seq 1 60); do
+            curl -sf http://127.0.0.1:9400/ >/dev/null && break
+            sleep 2
+          done
+
+      - name: Run per-style axe sweep
+        working-directory: tests
+        run: npx playwright test --config playwright.styles.config.js
+        env:
+          DIRTBAG_BASE_URL: http://127.0.0.1:9400
+          DIRTBAG_STYLE: ${{ matrix.style }}
+
+      - uses: actions/upload-artifact@v7
+        if: ${{ failure() }}
+        with:
+          name: playwright-report-${{ matrix.style }}
+          path: tests/playwright-report
+          retention-days: 7

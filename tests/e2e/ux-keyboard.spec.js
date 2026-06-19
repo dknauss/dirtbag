@@ -1,10 +1,9 @@
 // Keyboard / UX behaviour, focused on the mobile navigation overlay and forms.
-// Marked fixme: selectors for the WP 7.0 navigation-overlay must be confirmed in
-// a browser-capable session (claude-playwright) on first run, then un-fixme'd.
-// See docs/testing-strategy.md → "Implementation plan".
+// Selectors validated against WP 7.0 in a browser run (Studio site, desktop +
+// mobile) — see docs/testing-strategy.md → "Implementation plan".
 const { test, expect } = require('@playwright/test');
 
-test.describe.fixme('keyboard and overlay (validate selectors in a browser run)', () => {
+test.describe('keyboard and overlay', () => {
   test('tab order reaches the skip link first', async ({ page }) => {
     await page.goto('/');
     await page.keyboard.press('Tab');
@@ -34,5 +33,15 @@ test.describe.fixme('keyboard and overlay (validate selectors in a browser run)'
     const search = page.locator('.wp-block-search__input').first();
     await search.focus();
     await expect(search).toBeFocused();
+
+    // Comment form on a single post (URL discovered from the archive — it embeds
+    // the seed date, so it can't be a static slug).
+    await page.goto('/archive/');
+    const href = await page.locator('.wp-block-post-title a').first().getAttribute('href');
+    expect(href, 'a post link on the archive').toBeTruthy();
+    await page.goto(href);
+    const comment = page.locator('#comment, .comment-form textarea').first();
+    await comment.focus();
+    await expect(comment).toBeFocused();
   });
 });
