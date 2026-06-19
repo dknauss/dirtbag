@@ -11,7 +11,9 @@
 
 ![Dirtbag theme screenshot](screenshot.png)
 
-Out of the box Dirtbag gives you a plain, brutalist, 1990s default, unstyled foundation. It's packaged with Web 1.0-inspired page templates, block patterns, and six global styles: Amber CRT, Blueprint (or BSOD), Hi-vis (No-Name), Minimalist, Newspaper, and Terminal. Unlike the default no-style style, these alternative global styles open the door to the the full powers of the site editor, if you want to go there. Dirtbag is about doing more with native WordPress, more without creating new external dependencies, and more wih less. Instead of packing everything into the theme, ensure the theme gets the most out of the document, the browser, and WordPress.
+Out of the box Dirtbag gives you a plain, brutalist, 1990s default, unstyled foundation. It's packaged with Web 1.0-inspired page templates, block patterns, and six global styles: Amber CRT, Blueprint (or BSOD), Hi-vis (No-Name), Minimalist, Newspaper, and Terminal. Unlike the default no-style style, these alternative global styles open the door to the the full powers of the site editor, if you want to go there. 
+
+Dirtbag is about doing more with native WordPress, more without creating new external dependencies, and more wih less. Instead of packing everything into the theme, ensure the theme gets the most out of the document, the browser, and WordPress.
 
 ## What it is
 
