@@ -188,6 +188,9 @@ allowed_playground_images = {
     'playground/media/roadside-curio-shop-sign-1972.jpg',
     'playground/media/sunny-side-truck-stop-cafe.jpg',
     'playground/media/toyota-corona-mark-ii-double-pick.jpg',
+    'playground/media/float-bug-context.png',
+    'playground/media/float-bug-context-early.png',
+    'playground/media/float-bug-symptom-purple.png',
 }
 actual_theme_images = set()
 actual_playground_images = set()

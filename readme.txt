@@ -3,7 +3,7 @@ Contributors: dpknauss
 Requires at least: 7.0
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 0.1.7
+Stable tag: 0.1.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: full-site-editing, one-column, style-variations
@@ -35,6 +35,11 @@ No. The theme uses web-safe font stacks and local icon assets.
 Open Appearance > Editor > Styles and choose a style variation.
 
 == Changelog ==
+
+= 0.1.8 =
+* Front page: shorten the masthead to "Roadside Almanac." and add a standfirst line below it.
+* Accessibility: render gallery image captions below the image in normal flow instead of a white-on-image overlay (fixes colour contrast and the scrollable-region-focusable overlay); frame gallery images with a 2px border.
+* Playground: seed the "We blamed the browser" screenshot gallery into the demo, via portable in-content media tokens resolved by the seed importer.
 
 = 0.1.7 =
 * Front-page sidebar: render posts as a magazine float (text wraps beside and under the thumbnail) or a media-object grid, toggled by one class; fix a Post Title inline-block collision that dropped long titles below the float.

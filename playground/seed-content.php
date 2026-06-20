@@ -174,11 +174,24 @@ if ( ! function_exists( 'dirtbag_playground_seed_posts' ) ) {
 
 		foreach ( $posts as $post ) {
 			$existing = get_page_by_path( $post['post_name'], OBJECT, $post['post_type'] );
+
+			// Resolve portable in-content media tokens (e.g. an image gallery) to the
+			// freshly imported attachment URLs/IDs. Seed content is authored with
+			// __DBSRC_<old-id>__ (image src) and __DBID_<old-id>__ (attachment id /
+			// wp-image-<id> class) placeholders so it stays portable across sites.
+			$content = $post['post_content'];
+			if ( false !== strpos( $content, '__DB' ) ) {
+				foreach ( $attachment_ids as $old_id => $new_id ) {
+					$content = str_replace( '__DBSRC_' . $old_id . '__', wp_get_attachment_url( $new_id ), $content );
+					$content = str_replace( '__DBID_' . $old_id . '__', (string) $new_id, $content );
+				}
+			}
+
 			$postarr  = array(
 				'post_author'       => isset( $author_ids[ $post['author_login'] ] ) ? $author_ids[ $post['author_login'] ] : 1,
 				'post_date'         => $post['post_date'],
 				'post_date_gmt'     => $post['post_date_gmt'],
-				'post_content'      => $post['post_content'],
+				'post_content'      => $content,
 				'post_title'        => $post['post_title'],
 				'post_excerpt'      => $post['post_excerpt'],
 				'post_status'       => $post['post_status'],

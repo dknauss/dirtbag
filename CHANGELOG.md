@@ -6,6 +6,21 @@ This project follows the spirit of [Keep a Changelog](https://keepachangelog.com
 
 ## [Unreleased]
 
+## [0.1.8] - 2026-06-20
+
+### Added
+
+- Front-page standfirst line under the masthead ("Rural speed, shed talk, hard chirps…").
+- The "We blamed the browser" post's three-screenshot gallery now seeds into the Playground demo. The seed importer gained a small, general token-rewrite step (`__DBSRC_<id>__` / `__DBID_<id>__`) so in-content media is portable across sites.
+
+### Changed
+
+- Front-page masthead: "A Roadside Almanac" → "Roadside Almanac." Gallery images get a 2px `currentColor` frame.
+
+### Fixed
+
+- Accessibility: gallery image captions render below the image in normal flow instead of WordPress core's white-on-image overlay — fixing colour contrast over light images and the `scrollable-region-focusable` overlay (the issue first removed in 0.1.4).
+
 ## [0.1.7] - 2026-06-20
 
 ### Added
