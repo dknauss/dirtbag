@@ -13,7 +13,9 @@ done
 
 echo "Required files OK"
 
-if ! grep -Eq '^playground/\*\*[[:space:]]+export-ignore$' .gitattributes; then
+# Accept either form: the directory itself (`/playground export-ignore`, which git
+# archive honours and which leaves no empty stub) or the glob (`playground/** ...`).
+if ! grep -Eq '^/?playground(/\*\*)?[[:space:]]+export-ignore$' .gitattributes; then
   echo "playground/ must be export-ignored from release archives" >&2
   exit 1
 fi
