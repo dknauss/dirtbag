@@ -43,8 +43,8 @@
 <!-- /wp:column -->
 
 <!-- wp:column {"width":"33.33%"} -->
-<div class="wp-block-column" style="flex-basis:33.33%"><!-- wp:heading -->
-<h2 class="wp-block-heading">Used Cars &amp; Unused Plans</h2>
+<div class="wp-block-column" style="flex-basis:33.33%"><!-- wp:heading {"className":"sidebar-head"} -->
+<h2 class="wp-block-heading sidebar-head">Used Cars &amp; Unused Plans</h2>
 <!-- /wp:heading -->
 
 <!-- wp:query {"queryId":1,"query":{"perPage":4,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"exclude","inherit":false},"className":"h-feed","layout":{"type":"default"}} -->
