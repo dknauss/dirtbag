@@ -106,6 +106,27 @@ engine trigger, but removing subgrid alone does not bring the magazine float bac
 Because the shipped grid has no float, it remains the safest front-page sidebar
 layout.
 
+## If you want to chase it further
+
+**Reproduce it** — the setup that actually surfaces the bug:
+
+- **Visible** Google Chrome 149 — *not* headless. Headless does one full layout pass
+  before painting and never reproduces it.
+- A **tall, narrow** viewport (e.g. `800 × 1200`) so the lower sidebar entries are
+  present during the first, progressive layout pass.
+- Detect the stack with **line fragments or a screenshot**, not the title's bounding
+  box. The box can sit at the entry top while the first *line fragment* is pushed
+  below the floated thumb — inspect `Range#getClientRects()` (or just screenshot it).
+
+**Best next step.** Hand a higher-reasoning model the job of building a **minimal,
+WordPress-free repro** — a plain HTML page with a CSS grid area containing several
+floated-thumbnail "entries" — plus a small **test matrix** (viewport sizes, grid vs.
+no outer grid, real float vs. `::before` float, image vs. no image). Run that matrix
+in the **same visible-Chrome setup**. If the bug survives *outside* WordPress, it's a
+clean, reportable **Chromium bug** worth filing upstream. If it doesn't reproduce in
+isolation, the trigger is something theme/WordPress-specific still in play and the
+matrix narrows it down.
+
 ## To flip the float back on
 
 Replace the grid block in `theme.json` → `styles.css` with this (the most robust
