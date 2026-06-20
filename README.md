@@ -9,7 +9,7 @@
 
 **Dirtbag is a simple WordPress block theme that does more with less.** It's for people who want to learn about WordPress theme design and front-end development by stripping down to fundamentals and building up from there. If you just dig the indieweb and dirtbag aesthetic, that's cool too, but I hope it's a gateway drug to tinkering.
 
-It favours plain HTML markup, as little JS (and CSS) as possible, core WordPress blocks, the fonts everyone already has, visible feeds, and old/open-web habits over front-end machinery.
+Dirtbag favours plain HTML markup, as little JS (and CSS) as possible, core WordPress blocks, the fonts everyone already has, visible feeds, and old/open-web habits over front-end machinery.
 
 ![Dirtbag](https://raw.githubusercontent.com/dknauss/dirtbag/main/docs/images/dirtbag-card.png)
 
