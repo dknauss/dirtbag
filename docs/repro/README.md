@@ -13,13 +13,18 @@ clean Chromium filing as currently reduced.
 
 ## How to run it (this matters)
 
-The bug **only** appears under specific conditions — it never shows in headless
-Chrome, Safari, or a short window:
+The bug is **deterministic CSS, not browser-specific**. It reproduces wherever a
+narrow-enough column forces a too-wide `inline-block` title link off the line beside
+the float — **including in headless Chrome** (`stacked: 14/14` at `800 × 1200`). It
+eluded the original investigation only because the live-page checks (our headless
+*screenshots* and a quick Safari look) happened to be at *wider* widths where the
+titles still fit.
 
-1. **Visible** Google Chrome (seen on **149.0.7827.156**), *not* headless. Headless
-   does one full layout pass before painting and never reproduces it.
-2. A **tall, narrow** viewport — `800 × 1200` is reliable. Short windows miss it
-   because less of the lower column is laid out during the first visible paint.
+1. Any Chromium browser, **headless or visible** (seen on Chrome 149.0.7827.156). The
+   behaviour is spec-level float/`inline-block`, so Safari and Firefox should match at
+   the same widths.
+2. A **tall, narrow** viewport — `800 × 1200` is reliable. The column must be narrow
+   enough that the longest title can't fit beside the 60px float.
 3. **Look on first paint, before scrolling.** Scrolling forces the relayout that
    heals the bug.
 4. Detection uses **title line-fragment rects** (`Range#getClientRects()`), not the
