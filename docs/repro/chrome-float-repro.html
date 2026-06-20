@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chrome float-in-grid below-the-fold repro</title>
+<!--
+  Minimal, WordPress-free reproduction of the Dirtbag sidebar float bug.
+  See README.md in this folder for the test matrix and how to run it.
+
+  Config via query string (all optional):
+    ?grid=outer|subgrid|none   (default: outer)  — is the entry list inside a CSS grid area?
+    ?float=before|div          (default: before) — floated empty ::before, or a floated real <div>
+    ?img=1|0                   (default: 1)       — include a loading="lazy" image (decoupled / absolute)
+    ?n=14                      (default: 14)       — number of entries (more = taller page)
+
+  Observe the LOWER entries on first paint (do NOT scroll first). BUG = the body
+  text starts BELOW the grey thumb instead of wrapping beside/under it.
+  A self-check banner reports the count using line-fragment rects (Range#getClientRects),
+  NOT bounding boxes — bounding boxes are misleading here (the <p> box can sit at the
+  top while its first line is pushed down).
+-->
+<style>
+  :root { --thumb: 60px; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.4 Georgia, serif; padding: 0 0 40vh; }
+  .banner {
+    position: sticky; top: 0; z-index: 10;
+    padding: 8px 12px; font: 13px/1.3 system-ui, sans-serif;
+    background: #111; color: #fff;
+  }
+  .banner b { color: #ffd24a; }
+  .layout { padding: 16px; }
+
+  /* ?grid=outer / subgrid : the entry list sits in the narrow (1fr) column of a 2fr|1fr grid. */
+  .grid { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: auto 1fr;
+          column-gap: 1.4em; align-items: start; }
+  .grid > .col { grid-row: 1 / span 2; }
+  .grid.subgrid > .col { display: grid; grid-template-rows: subgrid; }
+  /* ?grid=none : plain block; force the list narrow so the trigger (narrow column) still holds. */
+  .none .filler { display: none; }
+  .none .col { max-width: 320px; }
+
+  .filler h2, .col h2 { margin: 0 0 12px; font-size: 24px; }
+  .filler p { margin: 0 0 1em; }
+
+  /* An "entry": its own block formatting context, a floated fixed-size thumb, then text. */
+  .entry { display: flow-root; position: relative; margin: 0 0 1.5em; }
+  /* ?float=before : the floated thing is an empty pseudo-element (no image inside it at all). */
+  .entry.before::before {
+    content: ""; float: left; width: var(--thumb); height: var(--thumb);
+    margin: .15em .75em .25em 0; background: #c4c4c4;
+  }
+  /* ?float=div : the floated thing is a real <div>. */
+  .entry .thumb-float {
+    float: left; width: var(--thumb); height: var(--thumb);
+    margin: .15em .75em .25em 0; background: #c4c4c4; overflow: hidden;
+  }
+  /* ?img=1 with float=before : image absolutely positioned over the reserved float shape. */
+  .entry.before .thumb-abs {
+    position: absolute; top: .15em; left: 0; width: var(--thumb); height: var(--thumb);
+    overflow: hidden;
+  }
+  .entry img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .entry h3 { margin: 0 0 .15em; font-size: 20px; line-height: 1.2; }
+  .entry .body { margin: 0; }
+  .entry.flagged { outline: 2px solid #e23; }
+  .entry.flagged::after {
+    content: "STACKED"; position: absolute; right: 0; top: 0;
+    font: 11px/1 system-ui, sans-serif; color: #e23; background: #fff; padding: 2px 4px;
+  }
+</style>
+</head>
+<body>
+<div class="banner" id="banner">measuring…</div>
+<div class="layout" id="root"></div>
+
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var grid  = q.get('grid')  || 'outer';            // outer | subgrid | none
+  var float_= q.get('float') || 'before';           // before | div
+  var img   = q.get('img') === '0' ? false : true;  // default on
+  var n     = parseInt(q.get('n') || '14', 10);
+
+  // A pixel as a data URL so there is no network dependency, but it is still loading="lazy".
+  var PIX = "data:image/svg+xml;utf8," + encodeURIComponent(
+    "<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60'><rect width='60' height='60' fill='%23889'/></svg>");
+
+  var LOREM = "A reminder that documents are already responsive before we start " +
+              "decorating them, and that a small theme still teaches big lessons " +
+              "about layout, flow, and the ditch the page has to survive.";
+
+  function entry(i) {
+    var e = document.createElement('article');
+    e.className = 'entry ' + float_;
+    if (float_ === 'div') {
+      var t = document.createElement('div'); t.className = 'thumb-float';
+      if (img) t.innerHTML = "<img loading='lazy' src='" + PIX + "' alt=''>";
+      e.appendChild(t);
+    } else if (img) {
+      var a = document.createElement('div'); a.className = 'thumb-abs';
+      a.innerHTML = "<img loading='lazy' src='" + PIX + "' alt=''>";
+      e.appendChild(a);
+    }
+    var h = document.createElement('h3'); h.textContent = 'Entry ' + (i + 1) + ' — the build sheet';
+    var p = document.createElement('p'); p.className = 'body'; p.textContent = LOREM;
+    e.appendChild(h); e.appendChild(p);
+    return e;
+  }
+
+  var root = document.getElementById('root');
+  var col;
+  if (grid === 'none') {
+    root.className = 'layout none';
+    col = document.createElement('div'); col.className = 'col';
+    root.appendChild(col);
+  } else {
+    var g = document.createElement('div');
+    g.className = 'grid' + (grid === 'subgrid' ? ' subgrid' : '');
+    var filler = document.createElement('div'); filler.className = 'col filler';
+    filler.innerHTML = "<h2>Field Notes from the Shoulder</h2>";
+    for (var k = 0; k < n; k++) { var fp = document.createElement('p');
+      fp.textContent = LOREM + ' ' + LOREM; filler.appendChild(fp); }
+    col = document.createElement('div'); col.className = 'col';
+    col.innerHTML = "<h2>Used Cars &amp; Unused Plans</h2>";
+    g.appendChild(filler); g.appendChild(col);
+    root.appendChild(g);
+  }
+  for (var i = 0; i < n; i++) col.appendChild(entry(i));
+
+  // Self-check: an entry is "stacked" when the FIRST LINE of its body text begins
+  // at or below the bottom of the floated thumb (i.e. the float was not honored).
+  function check() {
+    var stacked = 0, total = 0;
+    document.querySelectorAll('.entry').forEach(function (e) {
+      total++;
+      var floatBottom;
+      if (float_ === 'div') {
+        floatBottom = e.querySelector('.thumb-float').getBoundingClientRect().bottom;
+      } else {
+        // ::before — derive its bottom from the entry top + margins (60px + .15em + .25em).
+        var top = e.getBoundingClientRect().top;
+        floatBottom = top + 60 + (0.40 * 16);
+      }
+      var p = e.querySelector('.body');
+      var r = document.createRange(); r.selectNodeContents(p);
+      var rects = r.getClientRects();
+      if (!rects.length) return;
+      var firstLineTop = rects[0].top;
+      // If the first text line sits at/under the float bottom (minus a 4px slack),
+      // the text did not wrap beside the float -> stacked.
+      if (firstLineTop >= floatBottom - 4) { stacked++; e.classList.add('flagged'); }
+    });
+    var b = document.getElementById('banner');
+    b.innerHTML = "config: grid=<b>" + grid + "</b> float=<b>" + float_ + "</b> img=<b>" +
+      (img ? '1' : '0') + "</b> n=<b>" + n + "</b> &nbsp;|&nbsp; stacked: <b>" +
+      stacked + " / " + total + "</b> &nbsp;|&nbsp; viewport " +
+      window.innerWidth + "×" + window.innerHeight +
+      (stacked ? " &nbsp; <b>BUG REPRODUCED</b>" : " &nbsp; (clean)");
+  }
+  // Check at first paint and again after load/relayout (the bug self-heals on relayout).
+  requestAnimationFrame(function(){ requestAnimationFrame(check); });
+  window.addEventListener('load', function(){ setTimeout(check, 50); });
+  addEventListener('keydown', function(e){ if (e.key === 'r') check(); });  // press r to re-measure
+})();
+</script>
+</body>
+</html>
