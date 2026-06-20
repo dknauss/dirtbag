@@ -88,12 +88,13 @@ doesn't need it (its title sits in its own column, where an atomic box wraps fin
 ## Is it a WordPress/Gutenberg bug worth filing?
 
 It is a **Gutenberg** (block-library) styling choice, not a Chromium bug — do **not**
-file Chromium (an atomic `inline-block` dropping below a float is correct CSS). It is
+file Chromium (an atomic `inline-block` dropping below a float is correct CSS). It was
 worth raising with Gutenberg as a documented gotcha and a question — *why is the Post
 Title link `display: inline-block`?* — because that one declaration silently breaks
-any theme that floats content beside a Post Title. But it is **low-severity**: the
-behavior is spec-correct and the theme-side workaround is a single rule. See the draft
-issue in [`repro/README.md`](repro/README.md).
+any theme that floats content beside a Post Title. It is **low-severity** (spec-correct
+behavior, single-rule theme-side workaround), and is filed as
+[WordPress/gutenberg #79372](https://github.com/WordPress/gutenberg/issues/79372)
+(write-up in [`repro/gutenberg-issue-draft.md`](repro/gutenberg-issue-draft.md)).
 
 ## A gotcha worth keeping
 
