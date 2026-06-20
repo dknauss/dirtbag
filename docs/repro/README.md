@@ -1,4 +1,25 @@
-# Chrome float-in-grid below-the-fold repro
+# Reproductions
+
+## Gutenberg Gallery caption overlay accessibility repro
+
+[`gutenberg-gallery-caption-a11y-repro.html`](gutenberg-gallery-caption-a11y-repro.html)
+is a minimal WordPress-free reduction of the current core Gallery overlay caption
+problem Dirtbag works around: nested Gallery captions are absolutely positioned
+over images with `overflow:auto`, which can produce an axe
+`scrollable-region-focusable` finding when the caption exceeds the image tile.
+
+Captured evidence lives in [`screenshots/`](screenshots/):
+
+- `wp-free-core-overlay.png` / `wp-free-core-overlay-axe.json`
+- `wp-free-dirtbag-fix.png` / `wp-free-dirtbag-fix-axe.json`
+- `current-wp-core-overlay.png` / `current-wp-core-overlay-axe.json`
+- `current-wp-dirtbag-fix.png` / `current-wp-dirtbag-fix-axe.json`
+- `caption-repro-summary.json`
+
+Draft supporting comment for the live upstream Gallery issue:
+[`gutenberg-gallery-caption-accessibility-comment-draft.md`](gutenberg-gallery-caption-accessibility-comment-draft.md).
+
+## Chrome float-in-grid below-the-fold repro
 
 A minimal, **WordPress-free** reduction of the Dirtbag sidebar float failure
 documented in [`../sidebar-thumbnail-layout.md`](../sidebar-thumbnail-layout.md):

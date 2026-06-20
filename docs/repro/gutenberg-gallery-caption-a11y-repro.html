@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gutenberg Gallery caption overlay accessibility repro</title>
+<style>
+  body { max-width: 980px; margin: 2rem auto; padding: 0 1rem; font: 18px/1.45 system-ui, sans-serif; color: #111; background: #fff; }
+  .note { border: 2px solid currentColor; padding: 0.75rem 1rem; margin: 1rem 0; }
+  .controls { display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 1rem 0; }
+  a { color: #004b8d; }
+
+  /* Minimal current-WP block-library gallery layout, copied from the WP 7.0 Studio site on 2026-06-20. */
+  .wp-block-gallery.has-nested-images { align-items: normal; display: flex; flex-wrap: wrap; gap: 1rem; }
+  .wp-block-gallery.has-nested-images figure.wp-block-image { align-self: inherit; display: flex; flex-direction: column; flex-grow: 1; justify-content: center; margin: 0; max-width: 100%; position: relative; width: calc(33.333% - 1rem); box-sizing: border-box; }
+  .wp-block-gallery.has-nested-images figure.wp-block-image img { display: block; height: 180px; max-width: 100% !important; object-fit: cover; width: 100%; }
+  .wp-block-gallery.has-nested-images figure.wp-block-image:has(figcaption)::before,
+  .wp-block-gallery.has-nested-images figure.wp-block-image figcaption { position: absolute; bottom: 0; right: 0; left: 0; max-height: 100%; }
+  .wp-block-gallery.has-nested-images figure.wp-block-image:has(figcaption)::before { content: ""; height: 100%; max-height: 3em; pointer-events: none; backdrop-filter: blur(3px); -webkit-mask-image: linear-gradient(0deg, #000 20%, transparent 100%); mask-image: linear-gradient(0deg, #000 20%, transparent 100%); }
+  .wp-block-gallery.has-nested-images figure.wp-block-image figcaption { color: #fff; text-shadow: 0 0 1.5px #000; font-size: 13px; margin: 0; overflow: auto; padding: 1em; text-align: center; box-sizing: border-box; scrollbar-width: thin; scrollbar-gutter: stable both-edges; scrollbar-color: transparent transparent; will-change: transform; background: linear-gradient(0deg, rgba(0, 0, 0, 0.4) 0%, transparent 100%); }
+  .wp-block-gallery.has-nested-images figure.wp-block-image figcaption:hover,
+  .wp-block-gallery.has-nested-images figure.wp-block-image figcaption:focus,
+  .wp-block-gallery.has-nested-images figure.wp-block-image figcaption:focus-within { scrollbar-color: rgba(255, 255, 255, 0.8) transparent; }
+  .wp-block-gallery.has-nested-images figure.wp-block-image figcaption a { color: inherit; }
+
+  /* A deliberately light image surrogate to make white overlay-caption contrast visible. */
+  .fake-image { min-height: 180px; background: linear-gradient(135deg, #fff 0%, #f5f1dc 45%, #d8e8ff 100%); border: 1px solid #ddd; display: grid; place-items: center; color: #777; }
+
+  /* Dirtbag workaround from theme.json/docs: scope caption escape to nested Gallery images. */
+  body.dirtbag-fix .wp-block-gallery.has-nested-images figure.wp-block-image img,
+  body.dirtbag-fix .fake-image { border: 2px solid currentColor; }
+  body.dirtbag-fix .wp-block-gallery.has-nested-images figure.wp-block-image:has(figcaption)::before { content: none; }
+  body.dirtbag-fix .wp-block-gallery.has-nested-images figure.wp-block-image figcaption { position: static; max-width: none; max-height: none; overflow: visible; margin: 0.4em 0 0; padding: 0; background: none; color: inherit; text-shadow: none; text-align: left; font-size: 0.8em; scrollbar-width: auto; scrollbar-gutter: auto; }
+</style>
+<script>
+  addEventListener('DOMContentLoaded', () => {
+    if (new URLSearchParams(location.search).get('fix') === '1') {
+      document.body.classList.add('dirtbag-fix');
+    }
+  });
+</script>
+</head>
+<body>
+<h1>Gallery caption overlay accessibility repro</h1>
+<p class="note">Baseline: current core nested Gallery captions are absolutely positioned overlays with <code>overflow:auto</code>. Use <code>?fix=1</code> to apply Dirtbag's scoped normal-flow workaround.</p>
+<p class="controls"><a href="?">Core overlay baseline</a><a href="?fix=1">Dirtbag scoped fix</a></p>
+<main>
+<figure class="wp-block-gallery has-nested-images columns-3 is-cropped">
+  <figure class="wp-block-image size-large">
+    <div class="fake-image" role="img" aria-label="Very light placeholder image">Light image</div>
+    <figcaption class="wp-element-caption">A long caption on a very light image: this text is intentionally verbose so it exceeds the visible overlay area, creates an internal scroll container, and still uses white text over pale pixels where the gradient is insufficient. It includes attribution, context, and an extra sentence that a real travel or photo essay might need. The important point is not the exact words; the important point is that core makes this figcaption an internal scrolling box without adding keyboard focus.</figcaption>
+  </figure>
+  <figure class="wp-block-image size-large">
+    <div class="fake-image" role="img" aria-label="Very light placeholder image">Light image</div>
+    <figcaption class="wp-element-caption">Another long caption with attribution and context. It becomes a scrollable region without keyboard focus in the core overlay rendering. Add a second sentence, a credit, a license note, and a description of what the image shows so the caption is taller than the cropped image tile.</figcaption>
+  </figure>
+  <figure class="wp-block-image size-large">
+    <div class="fake-image" role="img" aria-label="Very light placeholder image">Light image</div>
+    <figcaption class="wp-element-caption">Short caption over a light image.</figcaption>
+  </figure>
+</figure>
+</main>
+</body>
+</html>
