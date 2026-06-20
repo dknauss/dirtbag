@@ -43,10 +43,15 @@ jobs:
           # content (the wp-post-image class), not just returns 200. A bare 200
           # can precede the seed import, leaving the front page imageless and
           # flaking the JS-off "images remain plain images" check.
+          seeded=
           for i in $(seq 1 60); do
-            curl -sf http://127.0.0.1:9400/ | grep -q wp-post-image && break
+            if curl -sf http://127.0.0.1:9400/ | grep -q wp-post-image; then seeded=1; break; fi
             sleep 2
           done
+          if [ -z "$seeded" ]; then
+            echo "::error::Seeded content (wp-post-image) never appeared after 120s; aborting so the suite does not run against an unseeded site."
+            exit 1
+          fi
 
       - name: Run Playwright (smoke + accessibility)
         working-directory: tests
@@ -99,10 +104,15 @@ jobs:
           # content (the wp-post-image class), not just returns 200. A bare 200
           # can precede the seed import, leaving the front page imageless and
           # flaking the JS-off "images remain plain images" check.
+          seeded=
           for i in $(seq 1 60); do
-            curl -sf http://127.0.0.1:9400/ | grep -q wp-post-image && break
+            if curl -sf http://127.0.0.1:9400/ | grep -q wp-post-image; then seeded=1; break; fi
             sleep 2
           done
+          if [ -z "$seeded" ]; then
+            echo "::error::Seeded content (wp-post-image) never appeared after 120s; aborting so the suite does not run against an unseeded site."
+            exit 1
+          fi
 
       - name: Run per-style axe sweep
         working-directory: tests
