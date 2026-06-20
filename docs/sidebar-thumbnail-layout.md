@@ -37,11 +37,14 @@ To switch, add or remove `is-grid` on the `wp:group` className in
 
 ## The bug, and the one line that fixes it
 
-For weeks the float "didn't work": in live Chrome, the title of the lower sidebar
-entries stacked *below* the thumbnail instead of wrapping beside it. It never
-reproduced in headless Chrome or Safari, healed on scroll, and got worse as the
-window narrowed (breaking bottom-up). We chased — and ruled out — a long list of
-suspects:
+For weeks the float "didn't work": on one maintainer's screen the title of the lower
+sidebar entries stacked *below* the thumbnail instead of wrapping beside it, and it
+got worse as the window narrowed (breaking bottom-up). It seemed to dodge our
+headless screenshots and a quick Safari look — but that was a red herring: those
+checks were at *wider* widths where the titles still fit. The failure is
+**deterministic and not browser-specific** — the minimal repro reproduces it in
+headless Chrome too (`stacked: 14/14` at `800×1200`). We chased — and ruled out — a
+long list of suspects before finding that:
 
 | Suspected cause | Verdict |
 |---|---|
