@@ -6,6 +6,20 @@ This project follows the spirit of [Keep a Changelog](https://keepachangelog.com
 
 ## [Unreleased]
 
+## [0.1.6] - 2026-06-20
+
+### Added
+
+- Front page: a "Used Cars & Unused Plans" sidebar — a compact secondary feed of non-featured posts with square thumbnails — and a small "The Almanac" card. The masthead gains an `<h1>`, "A Roadside Almanac".
+- Published "The build sheet" post.
+- `docs/sidebar-thumbnail-layout.md`: the full investigation of a Chrome below-the-fold float bug and the layout shipped in response.
+
+### Changed
+
+- Front page: shorter tagline ("Good bones and road grit."); a CSS subgrid aligns the two section columns so their first post rows start on the same line, and the sidebar heading is baseline-aligned to the taller wide-column heading.
+- Sidebar thumbnails use a CSS grid (fixed thumbnail track + text column). A `float` wrap-under was the goal but proved unreliable in Chrome for below-the-fold entries on narrow/scaled viewports; the float is kept as a documented one-block alternative.
+- Every post now has a distinct featured image — "The build sheet" gets its own (a rusty Ford pickup), no longer sharing the Datsun with "Tools that earn their keep".
+
 ## [0.1.5] - 2026-06-19
 
 ### Added
