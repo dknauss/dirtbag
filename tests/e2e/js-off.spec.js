@@ -17,7 +17,10 @@ test.describe('with JavaScript disabled', () => {
 
   test('images remain plain images (lightbox degrades)', async ({ page }) => {
     await page.goto('/');
-    expect(await page.locator('main img').count()).toBeGreaterThan(0);
+    // Web-first assertion (auto-waits) so a slow seed/boot can't flake this the
+    // way a bare count() snapshot does; the CI boot gate also waits for seeded
+    // images, so this is defense in depth.
+    await expect(page.locator('main img').first()).toBeVisible();
     // No lightbox dialog should be present/usable without JS.
     await expect(page.locator('.wp-lightbox-overlay')).toHaveCount(0);
   });

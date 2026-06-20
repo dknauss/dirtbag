@@ -39,8 +39,12 @@ jobs:
       - name: Boot WordPress Playground (theme + seeded content)
         run: |
           npx @wp-playground/cli@latest server --port 9400 --blueprint=tests/blueprint.ci.json &
+          # Wait until the homepage actually renders seeded featured-image
+          # content (the wp-post-image class), not just returns 200. A bare 200
+          # can precede the seed import, leaving the front page imageless and
+          # flaking the JS-off "images remain plain images" check.
           for i in $(seq 1 60); do
-            curl -sf http://127.0.0.1:9400/ >/dev/null && break
+            curl -sf http://127.0.0.1:9400/ | grep -q wp-post-image && break
             sleep 2
           done
 
@@ -91,8 +95,12 @@ jobs:
       - name: Boot WordPress Playground (theme + seed + style)
         run: |
           npx @wp-playground/cli@latest server --port 9400 --blueprint=tests/blueprint.ci.json &
+          # Wait until the homepage actually renders seeded featured-image
+          # content (the wp-post-image class), not just returns 200. A bare 200
+          # can precede the seed import, leaving the front page imageless and
+          # flaking the JS-off "images remain plain images" check.
           for i in $(seq 1 60); do
-            curl -sf http://127.0.0.1:9400/ >/dev/null && break
+            curl -sf http://127.0.0.1:9400/ | grep -q wp-post-image && break
             sleep 2
           done
 
