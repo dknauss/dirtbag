@@ -9,7 +9,7 @@
  */
 
 ?>
-<!-- wp:group {"className":"byline p-author h-card","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"flex","flexWrap":"wrap"}} -->
+<!-- wp:group {"className":"byline p-author h-card","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"flex","flexWrap":"nowrap"}} -->
 <div class="wp-block-group byline p-author h-card"><!-- wp:paragraph {"className":"byline-prefix"} -->
 <p class="byline-prefix"><?php esc_html_e( 'From', 'dirtbag' ); ?>&nbsp;</p>
 <!-- /wp:paragraph -->
