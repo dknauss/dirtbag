@@ -67,7 +67,7 @@ The fix is one line. Tell the title link, in this one spot, to behave like norma
 
 The float has worked on every screen since.
 
-That `inline-block` isn't really ours to fix, though — it ships with WordPress itself, on every post-title link. So we wrote the case up to raise upstream: is the atomic box load-bearing, or would plain `inline` do the job? Until that's answered, the one-line override is the honest patch.
+That `inline-block` isn't really ours to fix, though — it ships with WordPress itself, on every post-title link. So we filed it upstream ([WordPress/gutenberg #79372](https://github.com/WordPress/gutenberg/issues/79372)) and asked the obvious question: is the atomic box load-bearing, or would plain `inline` do the job? Until that's answered, the one-line override is the honest patch.
 
 ## What we actually learned
 

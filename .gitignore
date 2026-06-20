@@ -12,6 +12,9 @@
 /robots.txt
 /security.txt
 
+# macOS Finder artifacts (package-check rejects these).
+.DS_Store
+
 # Dev-only test harness artifacts (the tests themselves are committed).
 node_modules/
 tests/node_modules/
