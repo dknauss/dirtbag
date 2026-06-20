@@ -1,9 +1,13 @@
 # Keep development/demo infrastructure out of release archives.
-.github/** export-ignore
-.githooks/** export-ignore
-.planning/** export-ignore
-docs/** export-ignore
-playground/** export-ignore
-tests/** export-ignore
-.gitignore export-ignore
-.gitattributes export-ignore
+# Mark the directories themselves (not just `dir/**`) so `git archive` omits the
+# whole subtree — a `dir/** export-ignore` glob strips the files but leaves an
+# empty directory stub in the zip.
+/.github export-ignore
+/.githooks export-ignore
+/bin export-ignore
+/.planning export-ignore
+/docs export-ignore
+/playground export-ignore
+/tests export-ignore
+/.gitignore export-ignore
+/.gitattributes export-ignore

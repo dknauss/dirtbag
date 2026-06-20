@@ -3,7 +3,7 @@ Contributors: dpknauss
 Requires at least: 7.0
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 0.1.4
+Stable tag: 0.1.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: full-site-editing, one-column, style-variations
@@ -35,6 +35,11 @@ No. The theme uses web-safe font stacks and local icon assets.
 Open Appearance > Editor > Styles and choose a style variation.
 
 == Changelog ==
+
+= 0.1.5 =
+* Accessibility: graduate the confirmed-clean axe rule set to gating (image-alt, link-name, label, heading-order, landmark-unique, region, color-contrast, button-name) and add a per-style sweep that checks color contrast on every global style variation.
+* Accessibility: fix an unnamed image-lightbox control on the h-card avatar by disabling the lightbox on that decorative icon.
+* Ship a photo-free package: remove the bundled CC-licensed photographs and refresh the theme screenshot.
 
 = 0.1.4 =
 * Accessibility: remove the scrollable overlay captions from the front-page gallery (alt text kept; credits remain in this readme).
