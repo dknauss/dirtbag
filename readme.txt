@@ -3,7 +3,7 @@ Contributors: dpknauss
 Requires at least: 7.0
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 0.1.5
+Stable tag: 0.1.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: full-site-editing, one-column, style-variations
@@ -35,6 +35,11 @@ No. The theme uses web-safe font stacks and local icon assets.
 Open Appearance > Editor > Styles and choose a style variation.
 
 == Changelog ==
+
+= 0.1.6 =
+* Front page: add a "Used Cars & Unused Plans" sidebar (a compact secondary feed with square thumbnails) and a small "The Almanac" card; add a masthead heading, "A Roadside Almanac", and shorten the tagline.
+* Front page: align the two section columns with a CSS subgrid and baseline-align the sidebar heading; lay out the sidebar thumbnails with a CSS grid after a float wrap-under proved unreliable in Chrome (documented in docs/sidebar-thumbnail-layout.md).
+* Content: give every post a distinct featured image and publish "The build sheet".
 
 = 0.1.5 =
 * Accessibility: graduate the confirmed-clean axe rule set to gating (image-alt, link-name, label, heading-order, landmark-unique, region, color-contrast, button-name) and add a per-style sweep that checks color contrast on every global style variation.
