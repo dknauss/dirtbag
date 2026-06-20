@@ -7,15 +7,15 @@ _Last refreshed: 2026-06-20._
 See: `.planning/PROJECT.md` (updated 2026-06-18)
 
 **Core value:** A Dirtbag site must remain readable, navigable, and understandable with WordPress core blocks, native browser behaviour, and minimal theme machinery.
-**Current focus:** Phase 6 — Educational aspects. Research/planning is complete and merged (PR #28); the build is prepped and **on hold** pending go-ahead — see [`phase-6/BUILD-KICKOFF.md`](phase-6/BUILD-KICKOFF.md).
+**Current focus:** Phase 6 — Educational aspects (research/planning) is complete and merged (PR #28). The build is tracked as **Phase 7 — Educational build**, prepped and **on hold** pending go-ahead — see [`phase-6/BUILD-KICKOFF.md`](phase-6/BUILD-KICKOFF.md).
 
 ## Current Status
 
 - **Published and released.** Submitted to the WordPress.org theme directory at 0.1.8; current release is **0.1.9** (git tag `v0.1.9` + GitHub release, latest). The stable Playground blueprint is pinned to 0.1.9 (PR #53).
 - **CI-gated.** Every PR runs `package-check`, `e2e`, and the per-style `e2e-styles` axe sweep (7 style variations); `bin/package-check` runs locally. Playground stable/main blueprints are live.
 - **WordPress.org review notes triaged.** The 0.1.9 upload scan (Theme Check) has no required or warning notes; the remaining Recommended/Info notes are block-theme false positives or intentional — documented in [`docs/theme-review.md`](../docs/theme-review.md).
-- **Upstream contribution in flight.** A Gallery caption accessibility repro is published under `docs/repro/` and linked from Gutenberg [#56587](https://github.com/WordPress/gutenberg/issues/56587) (PR #52). A follow-up e2e seed-readiness flake fix is open in PR #54.
-- **Phase 6 build is prepped but HELD** — no lesson content written yet. Build order and guardrails in [`phase-6/BUILD-KICKOFF.md`](phase-6/BUILD-KICKOFF.md).
+- **Upstream contribution.** A Gallery caption accessibility repro is published under `docs/repro/` and linked from Gutenberg [#56587](https://github.com/WordPress/gutenberg/issues/56587) (PR #52). The e2e seed-readiness flake fix + fail-loud gate merged (PR #54).
+- **Phase 7 (Educational build) is prepped but HELD** — no lesson content written yet. Build order and guardrails in [`phase-6/BUILD-KICKOFF.md`](phase-6/BUILD-KICKOFF.md), now also on the roadmap as Phase 7.
 
 ## Last Known Good Checks
 
