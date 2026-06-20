@@ -12,7 +12,7 @@
 
 <!-- wp:group {"tagName":"main","anchor":"main-content"} -->
 <main id="main-content" class="wp-block-group"><!-- wp:heading {"level":1} -->
-<h1 class="wp-block-heading">Roadside Almanac.</h1>
+<h1 class="wp-block-heading">Roadside Almanac</h1>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
