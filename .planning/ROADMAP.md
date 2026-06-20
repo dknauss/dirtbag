@@ -113,6 +113,8 @@ Success criteria:
 
 ## Phase 6 — Educational aspects (research and planning)
 
+**Status: complete.** All five deliverables are merged (PR #28); see `.planning/phase-6/`. The build is tracked separately as Phase 7 below.
+
 Goal: research and plan how Dirtbag and its docs can *teach*. The theme is already pitched at people who want to get under the hood, tinker, and "build up from the fundamentals" — this phase turns that intent into a deliberate learning vehicle for block-theme basics, the open web, and accessible, build-free WordPress. Research and planning only; build later.
 
 Research questions:
@@ -135,3 +137,27 @@ Success criteria:
 - Audience and learning objectives are documented.
 - A concrete content plan exists, with each piece assigned a home (docs, seed, or external) so the shipped theme stays minimal.
 - No educational assets bloat the WordPress.org package — everything teachable is `export-ignore`d or external.
+
+## Phase 7 — Educational build (the learning path)
+
+**Status: prepped, ON HOLD** — awaiting go-ahead. No lesson content written yet. Full build order and guardrails: [`phase-6/BUILD-KICKOFF.md`](phase-6/BUILD-KICKOFF.md).
+
+Goal: execute the Phase 6 plan — turn the "Garage" learning path into real material under `docs/learn/` and the seeded demo, without adding anything to the shipped package.
+
+Build order (from `LEARNING-PATH-STRUCTURE.md`):
+
+1. `docs/learn/README.md` — the path index (highest leverage; routes a learner through existing material, closes audit gap #1).
+2. Gap #5 wording fixes (LO-4 slogans in seed Field Guide / Features / About / Colour Styles, `readme.txt`, old posts).
+3. Stage 1 reframes → `docs/learn/on-the-lot.md` + the LO-1 read.
+4. `docs/learn/read-the-theme.md` (LO-3, first write-new).
+5. `read-the-flashlight.md` (LO-7) + `why-this-is-accessible.md` (LO-6).
+6. `build-your-own.md` (LO-8 capstone) + optional `playground/blueprint-learn.json`.
+7. `glossary.md` grows alongside; final pass last.
+
+Guardrails: nothing teaching-related ships in the package (no comments in `patterns/`, `templates/`, `theme.json`); everything lives under `docs/` or `playground/` (both `export-ignore`d); each piece passes `readability-check` before being linked as canonical; `bin/package-check` stays green.
+
+Success criteria:
+
+- The learning path is navigable from `docs/learn/README.md`, with each LO reachable.
+- Every new prose piece passes `readability-check` (Flesch 60–70 target for path prose).
+- `bin/package-check` stays green and the WordPress.org package gains no educational assets.
