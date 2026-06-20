@@ -13,7 +13,7 @@ suggested_tags:
 excerpt: "A magazine layout kept breaking in one browser and nowhere else. We accused the cache, an extension, lazy images, the screen, and finally Chrome itself. The culprit was one line of CSS — ours, sort of — and it took a stripped-down test page to catch it."
 ---
 
-The sidebar wanted one small thing: a thumbnail on the left with the headline tucked in beside it and the blurb wrapping underneath, the way a magazine sets a column. There is exactly one tool in CSS that wraps text *under* an element — the float — so we floated the thumbnail and moved on.
+The sidebar wanted one small thing: a thumbnail on the left with the headline tucked in beside it and the blurb wrapping underneath, the way a magazine sets a column. There is one old, reliable CSS tool for making text wrap *under* an element: the float. So we floated the thumbnail and moved on.
 
 It worked. Then it didn't. In one person's Chrome, the lower items dropped their headlines *below* the thumbnail instead of beside it. Not everywhere. Not in Safari. Not in the screenshots our tooling takes. Just there, on that screen, near the bottom of the list.
 
@@ -53,21 +53,25 @@ With the WordPress-style link, every item stacked. Flip it back to a plain link,
 
 WordPress styles the link around a post title as `display: inline-block`. That sounds like a detail, and it is, and it is also the entire bug.
 
-A normal run of text is allowed to break across lines. An `inline-block` is not — it is one solid, unbreakable tile. When that tile is wider than the gap left beside the float, it cannot squeeze in and it cannot wrap, so it does the only thing left: it drops to the next clear line, below the float.
+A normal run of text breaks across lines wherever it must. An `inline-block` won't: it is a single atomic tile. Its *contents* can wrap inside the tile, but the tile itself can't be split — it can't take the narrow line beside the float and finish on the full line below. So once it is wider than the gap beside the float, it abandons that gap and drops whole to the next clear line, under the float.
 
-Which titles are widest? The long ones. Which items had the long titles? The ones lower in the list. Narrow the window and the gap beside the float shrinks, so more titles tip over, from the bottom up. Every spooky symptom we'd catalogued — *lower items, narrow screens, breaks from the bottom* — was just a long unbreakable title running out of room. Nothing was below the fold. Nothing healed on scroll except our own mismeasurement.
+Which titles are widest? The long ones. Which items had the long titles? The ones lower in the list. Narrow the window and the gap beside the float shrinks, so more titles tip over, from the bottom up. Every spooky symptom we'd catalogued — *lower items, narrow screens, breaks from the bottom* — was just a long unbreakable title running out of room. Nothing was below the fold. And once the inline-block was in plain sight, none of it needed a browser-engine theory at all.
 
 The fix is one line. Tell the title link, in this one spot, to behave like normal text again:
 
 ```css
-.sidebar-entry .wp-block-post-title a { display: inline; }
+.sidebar-content:not(.is-grid) .sidebar-entry > .wp-block-post-title :where(a) {
+  display: inline;
+}
 ```
 
 The float has worked on every screen since.
 
+That `inline-block` isn't really ours to fix, though — it ships with WordPress itself, on every post-title link. So we wrote the case up to raise upstream: is the atomic box load-bearing, or would plain `inline` do the job? Until that's answered, the one-line override is the honest patch.
+
 ## What we actually learned
 
-We kept both layouts — the magazine float and the plain grid — behind a single switch, because now we can. Pick the look; the wrap-under is no longer a gamble.
+We kept both layouts — the magazine float and the plain grid — behind a single class: drop `is-grid` on the sidebar and it swaps to the boxy, beside-not-under version. Pick the look; the wrap-under is no longer a gamble.
 
 But the layout is the souvenir, not the lesson. The lesson is older than CSS.
 
