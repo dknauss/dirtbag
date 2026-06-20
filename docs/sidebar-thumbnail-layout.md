@@ -50,27 +50,28 @@ Each row below is a hypothesis we tested and *ruled out*:
 | Fractional DPR / sub-pixel | `window.devicePixelRatio` | `2` (clean) → not sub-pixel |
 | `.front-grid` column subgrid | remove only `grid-template-rows: subgrid` from `.front-grid > .wp-block-column` | still breaks → not subgrid |
 | Sidebar column wrapper grid | force only the sidebar column wrapper to `display: block` | still breaks → not the column wrapper grid |
+| WordPress Post Title link `display:inline-block` | override `.sidebar-entry > .wp-block-post-title :where(a)` to `display:inline` in the float variant | **fixes captured/live-page reduction** |
 
-**What it *is*.** The one thing that reliably moves the failure is **how far down the
-column an entry sits, and how narrow the column is**:
+**What it turned out to be.** The decisive missing trigger was WordPress core's
+Post Title block CSS:
 
-- Narrow the window and the entries break **bottom-up** — the further down the page,
-  the sooner they fail, because narrowing makes the text taller and pushes them down.
-- On a scaled "high readability" display the built-in screen reports a *narrower CSS
-  viewport*, so the condition is met for the lower entries at the default width — it
-  looks "always broken" there, but it's the same narrow-column effect.
-- It **self-heals on scroll** (any forced relayout fixes it).
-- Safari and headless Chrome never reproduce it — headless does one full layout pass
-  before painting; the bug lives in Chrome's *initial/progressive* layout of
-  below-the-fold floats.
+```css
+.wp-block-post-title :where(a) { display: inline-block; }
+```
 
-So: a **Chrome float-and-wrap layout bug for below-the-fold content in a tall, narrow
-column**, independent of images, DPR, cache, extensions, and now the sidebar column's
-subgrid. The clean escape hatch a normal theme would use — a `functions.php` filter,
-or a sliver of JS to force a relayout — is off the table by Dirtbag's no-PHP/no-JS
-rule.
+That makes the linked title an atomic inline box. In the float layout, when that box
+is wider than the remaining line box beside the 60px thumbnail, it drops below the
+float instead of letting the title text wrap around it. Longer titles fail first,
+which made the symptom look like a below-the-fold/progressive Chrome bug. Images,
+lazy-loading, DPR, the sidebar column's subgrid, and the column wrapper grid were all
+red herrings.
 
-## Chrome 149 follow-up: subgrid lead ruled out
+So: the magazine float can be made mechanically sound only if the float variant also
+undoes the Post Title link's atomic inline-block behaviour with a scoped
+`display:inline` override. The shipped grid remains the safest default because it does
+not depend on float wrapping at all.
+
+## Reduction follow-up: title link trigger found
 
 Codex reproduced the failure in **visible Google Chrome 149.0.7827.156** on macOS
 using the live Studio site, a fresh Chrome profile, and Chrome DevTools Protocol only
@@ -87,10 +88,10 @@ details mattered:
   floated thumb. Inspect line-fragment rectangles (`Range#getClientRects()`), or use a
   screenshot, to detect the stack reliably.
 
-The current best explanation is therefore **not subgrid**. It looks like a Chrome
-initial line-layout / float-exclusion invalidation bug for floats inside the front
-page's grid area when content is narrow enough and far enough down the page. A later
-scroll or any forced relayout recomputes the float exclusions and the wrap heals.
+The current best explanation is therefore **not subgrid** and not the outer grid by
+itself. A captured live-page reduction stayed broken until the WordPress Post Title
+link's `display:inline-block` was overridden to `display:inline`; that one scoped
+override made the captured float clean.
 
 Tests run against the imageless `::before` float variant:
 
@@ -100,36 +101,25 @@ Tests run against the imageless `::before` float variant:
 | Imageless `::before` float with current `.front-grid` subgrid | lower entries stack |
 | Remove only `grid-template-rows: subgrid` from `.front-grid > .wp-block-column` | lower entries still stack |
 | Also force the sidebar column wrapper to `display: block` | lower entries still stack |
+| Override `.sidebar-entry > .wp-block-post-title :where(a)` to `display:inline` | captured float becomes clean |
 
-That leaves the broader outer grid/progressive-layout interaction as a possible
-engine trigger, but removing subgrid alone does not bring the magazine float back.
-Because the shipped grid has no float, it remains the safest front-page sidebar
-layout.
+That leaves the Post Title link display as the first-order cause. The broader grid
+context helped hide the real trigger, but removing subgrid alone could not help
+because the title link was still an atomic inline-block. Because the shipped grid has
+no float, it remains the safest front-page sidebar layout.
 
-## If you want to chase it further
+## Repro status
 
-**Reproduce it** — the setup that actually surfaces the bug:
-
-- **Visible** Google Chrome 149 — *not* headless. Headless does one full layout pass
-  before painting and never reproduces it.
-- A **tall, narrow** viewport (e.g. `800 × 1200`) so the lower sidebar entries are
-  present during the first, progressive layout pass.
-- Detect the stack with **line fragments or a screenshot**, not the title's bounding
-  box. The box can sit at the entry top while the first *line fragment* is pushed
-  below the floated thumb — inspect `Range#getClientRects()` (or just screenshot it).
-
-**Current reduction state.** A WordPress-free repro now lives in
+A WordPress-free repro now lives in
 [`repro/chrome-float-repro.html`](repro/chrome-float-repro.html), with the matrix in
-[`repro/README.md`](repro/README.md). Codex ran that matrix in visible Chrome 149 at
-`800 × 1200` and every standalone case was clean (`stacked: 0`). That means the
-minimal "outer grid + float + narrow column" story is still missing a trigger.
+[`repro/README.md`](repro/README.md). The decisive comparison is:
 
-The next reduction target is a **captured live front page**: save the real rendered
-WordPress HTML with its inline global styles/core block CSS, inject the float variant,
-serve it over `http://localhost`, and reduce from there. A temporary captured-page
-run did reproduce the bug in visible Chrome 149 (`stacked: 2 / 4`), so the missing
-piece is in the real WordPress/theme page shape rather than in network, cache, or
-headless-vs-visible alone.
+- `link=inline-block` (WordPress-like Post Title link) → stacks.
+- `link=inline` (float variant override) → clean.
+
+So there is no Chromium bug to file from the current reduction. If this is ever
+reopened, test in visible Chrome and detect with title line fragments or screenshots,
+not heading bounding boxes.
 
 ## To flip the float back on
 
@@ -141,14 +131,14 @@ floated box carries no lazy descendant). The flat markup needs no change.
 .sidebar-entry { position: relative; display: flow-root; }
 .sidebar-entry::before { content: ""; float: left; width: 60px; height: 60px; margin: 0 0.75em 0.25em 0; }
 .sidebar-entry > .wp-block-post-title { margin-top: 0; margin-bottom: 0.15em; font-size: 20px; line-height: 1.2; }
+.sidebar-entry > .wp-block-post-title :where(a) { display: inline; }
 .wp-block-post-featured-image.sidebar-thumb { position: absolute; top: 0; left: 0; width: 60px; height: 60px; overflow: hidden; margin: 0; }
 .wp-block-post-featured-image.sidebar-thumb img { width: 100%; height: 100%; object-fit: cover; }
 ```
 
 (In `theme.json` the `content: ""` must be written `content: \"\"` — it sits inside a
-JSON string.) This gives the wrap-under in Safari, headless, and Chrome on a clean
-wide viewport; it will stack the lower entries in Chrome on a narrow/scaled display
-until the bug above is solved.
+JSON string.) This keeps the title link from becoming an atomic inline-block, so the wrap-under
+has the line boxes it needs beside the floated thumbnail.
 
 ## A gotcha worth keeping
 

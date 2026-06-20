@@ -1,15 +1,15 @@
 # Chrome float-in-grid below-the-fold repro
 
-A minimal, **WordPress-free** reproduction of the Dirtbag sidebar float bug
+A minimal, **WordPress-free** reduction of the Dirtbag sidebar float failure
 documented in [`../sidebar-thumbnail-layout.md`](../sidebar-thumbnail-layout.md):
-in live Chrome, a floated thumbnail's sibling text **stacks below** the float
-instead of wrapping beside it, for entries low in a tall, narrow column — and it
-self-heals on scroll/relayout.
+when a floated thumbnail precedes a WordPress Post Title link, the title can stack
+below the float instead of wrapping beside it.
 
-The goal is to decide whether the bug survives **outside** WordPress. If
-[`chrome-float-repro.html`](chrome-float-repro.html) reproduces it standalone, it
-is a clean [Chromium bug](https://issues.chromium.org/) to file. If it does *not*,
-the trigger is something WordPress/theme-specific and the matrix narrows it down.
+The reduction found the missing trigger: WordPress core styles Post Title links as
+`display: inline-block`. That atomic inline box cannot occupy the remaining line box
+beside the 60px float when the title is too wide, so it drops below the float. A
+float variant must override the title link back to `display: inline`; this is not a
+clean Chromium filing as currently reduced.
 
 ## How to run it (this matters)
 
@@ -22,11 +22,11 @@ Chrome, Safari, or a short window:
    because less of the lower column is laid out during the first visible paint.
 3. **Look on first paint, before scrolling.** Scrolling forces the relayout that
    heals the bug.
-4. Detection uses **line-fragment rects** (`Range#getClientRects()`), not the
-   paragraph's bounding box — the `<p>` box can sit at the entry top while its
-   first *line* is pushed below the float. The page's self-check banner already
-   does this and prints `stacked: N / total` plus `BUG REPRODUCED`. Press `r` to
-   re-measure; a screenshot is the ground truth.
+4. Detection uses **title line-fragment rects** (`Range#getClientRects()`), not the
+   heading's bounding box — the `<h3>` box can sit at the entry top while its first
+   *line* is pushed below the float. The page's self-check banner already does this
+   and prints `stacked: N / total` plus `BUG REPRODUCED`. Press `r` to re-measure;
+   a screenshot is the ground truth.
 
 Driving it: a CDP-capable visible-Chrome session (the way Codex reproduced the
 original) or a browser-handoff session. Open:
@@ -42,89 +42,63 @@ file:///…/docs/repro/chrome-float-repro.html?grid=outer&float=before&img=1&n=1
 | `grid` | `outer` \| `subgrid` \| `none` | `outer` | Is the entry list inside a CSS grid area? `none` keeps the column narrow without a grid. |
 | `float` | `before` \| `div` | `before` | Floated empty `::before` (no image in the float) or a floated real `<div>`. |
 | `img` | `1` \| `0` | `1` | Include a `loading="lazy"` image (absolutely positioned over the reserved shape). |
+| `link` | `inline-block` \| `inline` | `inline-block` | Mimic WordPress core's Post Title link CSS, or override it to normal inline text. |
 | `n` | integer | `14` | Number of entries; more = taller page = more below the fold. |
 
 ## Test matrix
 
 Run each at `800 × 1200`, first paint, no scroll. Record `stacked N/total`.
 
-| # | grid | float | img | Hypothesis isolated |
-|---|---|---|---|---|
-| 1 | outer | before | 1 | Baseline — closest to the shipped float. |
-| 2 | outer | before | 0 | Is a lazy image required? (We expect: no — imageless still stacks.) |
-| 3 | outer | div | 1 | Real floated element vs pseudo-element. |
-| 4 | **none** | before | 1 | **Is the outer CSS grid required?** The key untested lead. |
-| 5 | subgrid | before | 1 | Does `grid-template-rows: subgrid` change it? (Ruled out in-app.) |
-| 6 | outer | before | 1, `n=4` | Does a short list (less below the fold) hide it? |
+| # | Query | Hypothesis isolated |
+|---|---|---|
+| 1 | `grid=outer&float=before&img=1&link=inline-block&n=14` | Baseline — WordPress-like Post Title link. |
+| 2 | `grid=outer&float=before&img=0&link=inline-block&n=14` | Lazy image not required. |
+| 3 | `grid=outer&float=div&img=1&link=inline-block&n=14` | Real floated element vs pseudo-element. |
+| 4 | `grid=none&float=before&img=1&link=inline-block&n=14` | Outer grid not required. |
+| 5 | `grid=subgrid&float=before&img=1&link=inline-block&n=14` | Subgrid not required. |
+| 6 | `grid=outer&float=before&img=1&link=inline&n=14` | CSS escape hatch: normal inline title link. |
 
 Interpretation:
-- If **#4 (`grid=none`) is clean** but **#1 stacks**, the **outer grid context** is
-  the trigger — strong signal for a Chromium grid/float-exclusion layout bug.
-- If **#4 also stacks**, the trigger is float-in-a-narrow-tall-column alone,
-  independent of grid — an even simpler, more reportable Chromium bug.
-- If **nothing stacks in any config**, the standalone repro does not capture it and
-  the trigger is WordPress/theme-specific (e.g. progressive HTML streaming, core
-  block CSS); note that and stop before filing.
+- If `link=inline-block` stacks and `link=inline` is clean, the trigger is the
+  WordPress Post Title link's atomic inline-block box, not images, subgrid, or the
+  outer grid.
+- A theme float variant can fix this with a scoped rule such as
+  `.sidebar-entry > .wp-block-post-title :where(a) { display: inline; }`.
+- Do not file Chromium from this repro unless a later reduction still fails after
+  removing the `inline-block` title-link trigger.
 
 ## Visible Chrome 149 result (2026-06-20)
 
-Codex ran the six-case matrix in **visible Chrome 149.0.7827.156** with an
-`800 × 1200` CSS viewport, first paint, no scroll. All standalone cases were clean:
+Codex first ran the original six-case matrix in **visible Chrome 149.0.7827.156**
+with an `800 × 1200` CSS viewport, first paint, no scroll. All standalone cases were
+clean until the reduction incorporated the real WordPress Post Title link rule:
+
+```css
+.wp-block-post-title :where(a) { display: inline-block; }
+```
+
+With that trigger represented, the matrix became:
 
 | # | Query | Result |
 |---|---|---|
-| 1 | `grid=outer&float=before&img=1&n=14` | `stacked: 0 / 14` |
-| 2 | `grid=outer&float=before&img=0&n=14` | `stacked: 0 / 14` |
-| 3 | `grid=outer&float=div&img=1&n=14` | `stacked: 0 / 14` |
-| 4 | `grid=none&float=before&img=1&n=14` | `stacked: 0 / 14` |
-| 5 | `grid=subgrid&float=before&img=1&n=14` | `stacked: 0 / 14` |
-| 6 | `grid=outer&float=before&img=1&n=4` | `stacked: 0 / 4` |
+| 1 | `grid=outer&float=before&img=1&link=inline-block&n=14` | `stacked: 14 / 14` |
+| 2 | `grid=outer&float=before&img=0&link=inline-block&n=14` | `stacked: 14 / 14` |
+| 3 | `grid=outer&float=div&img=1&link=inline-block&n=14` | `stacked: 14 / 14` |
+| 4 | `grid=none&float=before&img=1&link=inline-block&n=14` | `stacked: 14 / 14` |
+| 5 | `grid=subgrid&float=before&img=1&link=inline-block&n=14` | `stacked: 14 / 14` |
+| 6 | `grid=outer&float=before&img=1&link=inline&n=14` | `stacked: 0 / 14` |
 
-A temporary variant with a large top offset, closer to the live front page's masthead
-height, was also clean. **Do not file a Chromium issue with this standalone repro as
-currently written**; it does not capture the live bug.
+A captured live front page with the injected float reproduced the failure
+(`stacked: 2 / 4`); adding only the scoped title-link override made it clean
+(`stacked: 0 / 4`). So the root cause is now narrow: the WordPress Post Title link's
+`display:inline-block` interacts badly with the float layout. The title link is an
+atomic inline box; when it cannot fit beside the float, it drops below the floated
+thumbnail. Longer titles fail first, which made the symptom look like a lower-entry /
+below-the-fold Chrome issue.
 
-The useful positive result came from the next reduction step: capture the actual
-rendered Studio front page, replace the shipped sidebar grid CSS with the imageless
-`::before` float variant, inject a first-paint checker, and serve the captured page
-over `http://localhost`. That static captured page reproduced in visible Chrome 149
-at `800 × 1200` (`stacked: 2 / 4` in the local run). So the missing trigger is in the
-real WordPress/theme page shape — likely some combination of block markup, global
-styles/core block CSS, intrinsic media/layout timing, or the full page's progressive
-layout — not merely "outer grid plus narrow floated entries."
+## Chromium filing status
 
-Next reduction path:
-
-1. Keep the captured live page as the failing source specimen.
-2. Remove unrelated WordPress/global CSS in chunks until the stack disappears.
-3. Then reduce markup around `.front-grid`, `.wp-block-post-template`, and
-   `.sidebar-entry` until only the trigger remains.
-4. File Chromium only after the reduced captured-page case is small enough to attach
-   and still fails in visible Chrome.
-
-## Draft Chromium bug report (fill in once confirmed)
-
-> **Title:** Floated element's sibling text stacks below it (float exclusion not
-> applied) for below-the-fold content in a tall, narrow [grid] column on first paint
->
-> **Chrome version:** 149.0.7827.156 (arm64, macOS). Not reproduced in Safari.
->
-> **Steps to reproduce:**
-> 1. Open the attached `chrome-float-repro.html?grid=outer&float=before&img=0&n=14`.
-> 2. Size the window to ~800×1200. Load the page and look at the lower entries
->    **without scrolling**.
->
-> **Expected:** each entry's body text wraps to the right of (and under) its 60×60
-> floated box, on every entry.
->
-> **Actual:** entries low in the column render their first text line *below* the
-> floated box (the float exclusion is not applied) until a scroll/relayout, after
-> which they correct. Detection via `Range#getClientRects()` on the first line; a
-> screenshot shows the stack. (See the in-page self-check banner: `BUG REPRODUCED`.)
->
-> **Notes:** independent of `loading=lazy` images (reproduces with `img=0`), of
-> `devicePixelRatio` (seen at a clean `2`), and of caching/extensions (reproduces in
-> Incognito). Does **not** reproduce in headless Chrome (single layout pass).
-> Minimal repro attached; no framework, no network.
-
-Attach the HTML file and a first-paint screenshot of a failing config.
+Do **not** file a Chromium issue from this reproduction as currently understood. The
+standalone reduction points to a CSS/layout interaction caused by WordPress core's
+Post Title link being `display:inline-block`. The project can avoid the float stack by
+scoping the float variant to normal inline title links.
