@@ -12,13 +12,14 @@
     ?grid=outer|subgrid|none   (default: outer)  — is the entry list inside a CSS grid area?
     ?float=before|div          (default: before) — floated empty ::before, or a floated real <div>
     ?img=1|0                   (default: 1)       — include a loading="lazy" image (decoupled / absolute)
+    ?link=inline-block|inline  (default: inline-block) — mimic WP Post Title link CSS, or override it
     ?n=14                      (default: 14)       — number of entries (more = taller page)
 
-  Observe the LOWER entries on first paint (do NOT scroll first). BUG = the body
-  text starts BELOW the grey thumb instead of wrapping beside/under it.
-  A self-check banner reports the count using line-fragment rects (Range#getClientRects),
-  NOT bounding boxes — bounding boxes are misleading here (the <p> box can sit at the
-  top while its first line is pushed down).
+  Observe the entries on first paint (do NOT scroll first). BUG = the title/text
+  starts BELOW the grey thumb instead of wrapping beside/under it.
+  A self-check banner reports the count using title line-fragment rects
+  (Range#getClientRects), NOT bounding boxes — bounding boxes are misleading here
+  (the heading box can sit at the top while its first line is pushed down).
 -->
 <style>
   :root { --thumb: 60px; }
@@ -63,6 +64,9 @@
   }
   .entry img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .entry h3 { margin: 0 0 .15em; font-size: 20px; line-height: 1.2; }
+  .entry h3 a { color: inherit; font: inherit; text-decoration: underline; }
+  .link-inline-block .entry h3 a { display: inline-block; }
+  .link-inline .entry h3 a { display: inline; }
   .entry .body { margin: 0; }
   .entry.flagged { outline: 2px solid #e23; }
   .entry.flagged::after {
@@ -82,6 +86,7 @@
   var float_= q.get('float') || 'before';           // before | div
   var img   = q.get('img') === '0' ? false : true;  // default on
   var n     = parseInt(q.get('n') || '14', 10);
+  var link  = q.get('link') || 'inline-block';       // inline-block | inline
 
   // A pixel as a data URL so there is no network dependency, but it is still loading="lazy".
   var PIX = "data:image/svg+xml;utf8," + encodeURIComponent(
@@ -103,7 +108,10 @@
       a.innerHTML = "<img loading='lazy' src='" + PIX + "' alt=''>";
       e.appendChild(a);
     }
-    var h = document.createElement('h3'); h.textContent = 'Entry ' + (i + 1) + ' — the build sheet';
+    var h = document.createElement('h3');
+    var a = document.createElement('a'); a.href = '#entry-' + (i + 1);
+    a.textContent = 'Entry ' + (i + 1) + ' — the build sheet';
+    h.appendChild(a);
     var p = document.createElement('p'); p.className = 'body'; p.textContent = LOREM;
     e.appendChild(h); e.appendChild(p);
     return e;
@@ -112,12 +120,12 @@
   var root = document.getElementById('root');
   var col;
   if (grid === 'none') {
-    root.className = 'layout none';
+    root.className = 'layout none link-' + link;
     col = document.createElement('div'); col.className = 'col';
     root.appendChild(col);
   } else {
     var g = document.createElement('div');
-    g.className = 'grid' + (grid === 'subgrid' ? ' subgrid' : '');
+    g.className = 'grid link-' + link + (grid === 'subgrid' ? ' subgrid' : '');
     var filler = document.createElement('div'); filler.className = 'col filler';
     filler.innerHTML = "<h2>Field Notes from the Shoulder</h2>";
     for (var k = 0; k < n; k++) { var fp = document.createElement('p');
@@ -129,7 +137,7 @@
   }
   for (var i = 0; i < n; i++) col.appendChild(entry(i));
 
-  // Self-check: an entry is "stacked" when the FIRST LINE of its body text begins
+  // Self-check: an entry is "stacked" when the FIRST LINE of its title begins
   // at or below the bottom of the floated thumb (i.e. the float was not honored).
   function check() {
     var stacked = 0, total = 0;
@@ -143,8 +151,8 @@
         var top = e.getBoundingClientRect().top;
         floatBottom = top + 60 + (0.40 * 16);
       }
-      var p = e.querySelector('.body');
-      var r = document.createRange(); r.selectNodeContents(p);
+      var title = e.querySelector('h3');
+      var r = document.createRange(); r.selectNodeContents(title);
       var rects = r.getClientRects();
       if (!rects.length) return;
       var firstLineTop = rects[0].top;
@@ -154,12 +162,12 @@
     });
     var b = document.getElementById('banner');
     b.innerHTML = "config: grid=<b>" + grid + "</b> float=<b>" + float_ + "</b> img=<b>" +
-      (img ? '1' : '0') + "</b> n=<b>" + n + "</b> &nbsp;|&nbsp; stacked: <b>" +
+      (img ? '1' : '0') + "</b> link=<b>" + link + "</b> n=<b>" + n + "</b> &nbsp;|&nbsp; stacked: <b>" +
       stacked + " / " + total + "</b> &nbsp;|&nbsp; viewport " +
       window.innerWidth + "×" + window.innerHeight +
       (stacked ? " &nbsp; <b>BUG REPRODUCED</b>" : " &nbsp; (clean)");
   }
-  // Check at first paint and again after load/relayout (the bug self-heals on relayout).
+  // Check at first paint and again after load, because image/font timing can change layout.
   requestAnimationFrame(function(){ requestAnimationFrame(check); });
   window.addEventListener('load', function(){ setTimeout(check, 50); });
   addEventListener('keydown', function(e){ if (e.key === 'r') check(); });  // press r to re-measure
