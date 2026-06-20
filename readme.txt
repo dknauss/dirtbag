@@ -3,10 +3,10 @@ Contributors: dpknauss
 Requires at least: 7.0
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 0.1.8
+Stable tag: 0.1.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Tags: full-site-editing, one-column, style-variations
+Tags: full-site-editing, one-column, block-patterns, style-variations, translation-ready, microformats, blog
 
 A hyper-simple block theme for plain HTML, core blocks, web-safe fonts, and road grit.
 
@@ -35,6 +35,11 @@ No. The theme uses web-safe font stacks and local icon assets.
 Open Appearance > Editor > Styles and choose a style variation.
 
 == Changelog ==
+
+= 0.1.9 =
+* Translation: regenerate languages/dirtbag.pot — correct the Theme URI and Author URI (danknauss → dknauss), refresh version metadata, and add 13 newly-extracted pattern and template strings.
+* Directory listing: add accurate theme tags — block-patterns, translation-ready, microformats, and the blog subject tag — to better reflect what the theme ships.
+* Theme review: document the WordPress.org upload-scanner (Theme Check) triage. The 0.1.8 release zip produced no required or warning notes; the remaining Recommended/Info notes are block-theme false positives or intentional, and need no code change.
 
 = 0.1.8 =
 * Front page: shorten the masthead to "Roadside Almanac." and add a standfirst line below it.

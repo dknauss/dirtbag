@@ -6,6 +6,24 @@ This project follows the spirit of [Keep a Changelog](https://keepachangelog.com
 
 ## [Unreleased]
 
+## [0.1.9] - 2026-06-20
+
+### Fixed
+
+- `languages/dirtbag.pot`: corrected the Theme URI and Author URI (`danknauss` → `dknauss`, matching `style.css` and the git remote) and refreshed the version metadata.
+
+### Added
+
+- Theme tags for the WordPress.org directory listing: `block-patterns` (17 patterns), `translation-ready` (full `.pot`, patterns use translation functions), `microformats` (h-card / u-url / h-entry markup), and the `blog` subject tag. All verified against Theme Check's allowed-tag list.
+
+### Changed
+
+- Regenerated `languages/dirtbag.pot` after the 0.1.6–0.1.8 content additions, picking up 13 previously-missing translatable strings (the Almanac-card and Byline patterns, the front-page pattern title, the Navigation Overlay template part, and the Archive/Search custom-template names).
+
+### Documentation
+
+- `docs/theme-review.md`: documented the WordPress.org upload-scanner (Theme Check) triage. Scanning the 0.1.8 release zip yields no required or warning notes; the remaining two Recommended notes (`register_block_style` / `register_block_pattern` not found) are block-theme false positives, and the two Info notes (hard-coded blogroll links, single text-domain) are intentional. None require a code change.
+
 ## [0.1.8] - 2026-06-20
 
 ### Added
