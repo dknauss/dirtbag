@@ -6,10 +6,14 @@ they are **not** interchangeable.
 
 ## The choice
 
-| | Float | Flex (shipped) |
+| | Float (shipped) | Flex (fallback) |
 |---|---|---|
 | Text wraps **under** the thumbnail (magazine look) | ✅ yes | ❌ no |
 | Deterministic across browsers | ⚠️ see below | ✅ yes |
+
+The production sidebar now uses the **bulletproof float** below (image absolutely
+positioned out of the box's flow). The flex version is the documented fallback if
+the float is ever found to misrender in the wild again.
 
 **Only `float` can make text wrap *under* an element.** Flexbox and grid produce
 rigid rectangular cells, so a "thumbnail column" always leaves the space under the
