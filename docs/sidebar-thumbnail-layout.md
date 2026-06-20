@@ -48,6 +48,8 @@ Each row below is a hypothesis we tested and *ruled out*:
 | Lazy image *at all* | float an **empty `::before`** (no image anywhere) | **still breaks** → not lazy-loading |
 | Fractional float width (`6vw`) | pin to a fixed integer `60px` | still breaks |
 | Fractional DPR / sub-pixel | `window.devicePixelRatio` | `2` (clean) → not sub-pixel |
+| `.front-grid` column subgrid | remove only `grid-template-rows: subgrid` from `.front-grid > .wp-block-column` | still breaks → not subgrid |
+| Sidebar column wrapper grid | force only the sidebar column wrapper to `display: block` | still breaks → not the column wrapper grid |
 
 **What it *is*.** The one thing that reliably moves the failure is **how far down the
 column an entry sits, and how narrow the column is**:
@@ -63,21 +65,46 @@ column an entry sits, and how narrow the column is**:
   below-the-fold floats.
 
 So: a **Chrome float-and-wrap layout bug for below-the-fold content in a tall, narrow
-column**, independent of images, DPR, cache, and extensions. The clean escape hatch a
-normal theme would use — a `functions.php` filter, or a sliver of JS to force a
-relayout — is off the table by Dirtbag's no-PHP/no-JS rule.
+column**, independent of images, DPR, cache, extensions, and now the sidebar column's
+subgrid. The clean escape hatch a normal theme would use — a `functions.php` filter,
+or a sliver of JS to force a relayout — is off the table by Dirtbag's no-PHP/no-JS
+rule.
 
-## Open lead for a future attempt (Codex / anyone)
+## Chrome 149 follow-up: subgrid lead ruled out
 
-The one ancestor we have **not** eliminated is the **CSS subgrid** on `.front-grid`.
-The sidebar entries live inside a subgridded column (added for the heading
-row-alignment). Chrome's subgrid is recent, and a subgrid ancestor mis-laying its
-below-the-fold descendants would break a float *and* a nested grid identically — which
-matches everything above. **Untested:** does removing the subgrid from the sidebar
-column let the float wrap correctly? If yes, the wrap-under could come back at the
-cost of the cross-column heading alignment (or by aligning the headings some other
-way). This is the most promising next experiment, and it can only be verified in a
-real (non-headless) Chrome on a narrow window.
+Codex reproduced the failure in **visible Google Chrome 149.0.7827.156** on macOS
+using the live Studio site, a fresh Chrome profile, and Chrome DevTools Protocol only
+to size/navigate/capture the visible tab. The reproduction that made the bug obvious
+used a tall, narrow CSS viewport (`800 × 1200`) to match the scaled/high-readability
+condition where lower sidebar entries are present during initial layout. Two testing
+details mattered:
+
+- Short physical windows can miss the bug because less of the lower sidebar is laid
+  out/painted during the first visible pass. A tall narrow viewport exposes the
+  bottom-up failure consistently.
+- Checking the title element's bounding box is misleading: the element can still
+  start at the entry's top while its first **line fragment** is placed below the
+  floated thumb. Inspect line-fragment rectangles (`Range#getClientRects()`), or use a
+  screenshot, to detect the stack reliably.
+
+The current best explanation is therefore **not subgrid**. It looks like a Chrome
+initial line-layout / float-exclusion invalidation bug for floats inside the front
+page's grid area when content is narrow enough and far enough down the page. A later
+scroll or any forced relayout recomputes the float exclusions and the wrap heals.
+
+Tests run against the imageless `::before` float variant:
+
+| Test | Result |
+|---|---|
+| Current shipped grid sidebar | stable |
+| Imageless `::before` float with current `.front-grid` subgrid | lower entries stack |
+| Remove only `grid-template-rows: subgrid` from `.front-grid > .wp-block-column` | lower entries still stack |
+| Also force the sidebar column wrapper to `display: block` | lower entries still stack |
+
+That leaves the broader outer grid/progressive-layout interaction as a possible
+engine trigger, but removing subgrid alone does not bring the magazine float back.
+Because the shipped grid has no float, it remains the safest front-page sidebar
+layout.
 
 ## To flip the float back on
 
