@@ -14,7 +14,7 @@ column. It has no `float`, so it cannot hit the bug described below on any displ
 
 ```css
 .sidebar-entry { display: grid; grid-template-columns: 60px 1fr; column-gap: 0.75em; align-items: start; }
-.sidebar-entry > .wp-block-post-featured-image.sidebar-thumb { grid-column: 1; grid-row: 1 / span 3; width: 100%; height: 60px; overflow: hidden; margin: 0.15em 0 0 0; }
+.sidebar-entry > .wp-block-post-featured-image.sidebar-thumb { grid-column: 1; grid-row: 1 / span 3; width: 100%; height: 60px; overflow: hidden; margin: 0; }
 .sidebar-entry > :not(.wp-block-post-featured-image) { grid-column: 2; }
 .sidebar-entry > .wp-block-post-title { margin-top: 0; margin-bottom: 0.15em; font-size: 20px; line-height: 1.2; }
 .wp-block-post-featured-image.sidebar-thumb img { width: 100%; height: 100%; object-fit: cover; }
@@ -118,14 +118,18 @@ layout.
   box. The box can sit at the entry top while the first *line fragment* is pushed
   below the floated thumb — inspect `Range#getClientRects()` (or just screenshot it).
 
-**Best next step.** Hand a higher-reasoning model the job of building a **minimal,
-WordPress-free repro** — a plain HTML page with a CSS grid area containing several
-floated-thumbnail "entries" — plus a small **test matrix** (viewport sizes, grid vs.
-no outer grid, real float vs. `::before` float, image vs. no image). Run that matrix
-in the **same visible-Chrome setup**. If the bug survives *outside* WordPress, it's a
-clean, reportable **Chromium bug** worth filing upstream. If it doesn't reproduce in
-isolation, the trigger is something theme/WordPress-specific still in play and the
-matrix narrows it down.
+**Current reduction state.** A WordPress-free repro now lives in
+[`repro/chrome-float-repro.html`](repro/chrome-float-repro.html), with the matrix in
+[`repro/README.md`](repro/README.md). Codex ran that matrix in visible Chrome 149 at
+`800 × 1200` and every standalone case was clean (`stacked: 0`). That means the
+minimal "outer grid + float + narrow column" story is still missing a trigger.
+
+The next reduction target is a **captured live front page**: save the real rendered
+WordPress HTML with its inline global styles/core block CSS, inject the float variant,
+serve it over `http://localhost`, and reduce from there. A temporary captured-page
+run did reproduce the bug in visible Chrome 149 (`stacked: 2 / 4`), so the missing
+piece is in the real WordPress/theme page shape rather than in network, cache, or
+headless-vs-visible alone.
 
 ## To flip the float back on
 
@@ -135,9 +139,9 @@ floated box carries no lazy descendant). The flat markup needs no change.
 
 ```css
 .sidebar-entry { position: relative; display: flow-root; }
-.sidebar-entry::before { content: ""; float: left; width: 60px; height: 60px; margin: 0.15em 0.75em 0.25em 0; }
+.sidebar-entry::before { content: ""; float: left; width: 60px; height: 60px; margin: 0 0.75em 0.25em 0; }
 .sidebar-entry > .wp-block-post-title { margin-top: 0; margin-bottom: 0.15em; font-size: 20px; line-height: 1.2; }
-.wp-block-post-featured-image.sidebar-thumb { position: absolute; top: 0.15em; left: 0; width: 60px; height: 60px; overflow: hidden; margin: 0; }
+.wp-block-post-featured-image.sidebar-thumb { position: absolute; top: 0; left: 0; width: 60px; height: 60px; overflow: hidden; margin: 0; }
 .wp-block-post-featured-image.sidebar-thumb img { width: 100%; height: 100%; object-fit: cover; }
 ```
 

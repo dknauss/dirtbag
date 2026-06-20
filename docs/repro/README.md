@@ -66,6 +66,42 @@ Interpretation:
   the trigger is WordPress/theme-specific (e.g. progressive HTML streaming, core
   block CSS); note that and stop before filing.
 
+## Visible Chrome 149 result (2026-06-20)
+
+Codex ran the six-case matrix in **visible Chrome 149.0.7827.156** with an
+`800 × 1200` CSS viewport, first paint, no scroll. All standalone cases were clean:
+
+| # | Query | Result |
+|---|---|---|
+| 1 | `grid=outer&float=before&img=1&n=14` | `stacked: 0 / 14` |
+| 2 | `grid=outer&float=before&img=0&n=14` | `stacked: 0 / 14` |
+| 3 | `grid=outer&float=div&img=1&n=14` | `stacked: 0 / 14` |
+| 4 | `grid=none&float=before&img=1&n=14` | `stacked: 0 / 14` |
+| 5 | `grid=subgrid&float=before&img=1&n=14` | `stacked: 0 / 14` |
+| 6 | `grid=outer&float=before&img=1&n=4` | `stacked: 0 / 4` |
+
+A temporary variant with a large top offset, closer to the live front page's masthead
+height, was also clean. **Do not file a Chromium issue with this standalone repro as
+currently written**; it does not capture the live bug.
+
+The useful positive result came from the next reduction step: capture the actual
+rendered Studio front page, replace the shipped sidebar grid CSS with the imageless
+`::before` float variant, inject a first-paint checker, and serve the captured page
+over `http://localhost`. That static captured page reproduced in visible Chrome 149
+at `800 × 1200` (`stacked: 2 / 4` in the local run). So the missing trigger is in the
+real WordPress/theme page shape — likely some combination of block markup, global
+styles/core block CSS, intrinsic media/layout timing, or the full page's progressive
+layout — not merely "outer grid plus narrow floated entries."
+
+Next reduction path:
+
+1. Keep the captured live page as the failing source specimen.
+2. Remove unrelated WordPress/global CSS in chunks until the stack disappears.
+3. Then reduce markup around `.front-grid`, `.wp-block-post-template`, and
+   `.sidebar-entry` until only the trigger remains.
+4. File Chromium only after the reduced captured-page case is small enough to attach
+   and still fails in visible Chrome.
+
 ## Draft Chromium bug report (fill in once confirmed)
 
 > **Title:** Floated element's sibling text stacks below it (float exclusion not
