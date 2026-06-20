@@ -12,11 +12,11 @@
 
 <!-- wp:group {"tagName":"main","anchor":"main-content"} -->
 <main id="main-content" class="wp-block-group"><!-- wp:heading {"level":1} -->
-<h1 class="wp-block-heading">Car Wheels on a Gravel Road</h1>
+<h1 class="wp-block-heading">A Roadside Almanac</h1>
 <!-- /wp:heading -->
 
-<!-- wp:columns {"align":"wide"} -->
-<div class="wp-block-columns alignwide"><!-- wp:column {"width":"66.66%"} -->
+<!-- wp:columns {"align":"wide","className":"front-grid"} -->
+<div class="wp-block-columns alignwide front-grid"><!-- wp:column {"width":"66.66%"} -->
 <div class="wp-block-column" style="flex-basis:66.66%"><!-- wp:heading -->
 <h2 class="wp-block-heading">Field Notes from the Shoulder</h2>
 <!-- /wp:heading -->

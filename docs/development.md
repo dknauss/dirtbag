@@ -35,9 +35,10 @@ Dirtbag ships **no enqueued or bundled CSS file**: `style.css` is header-only, a
 It does not mean the theme authors zero CSS. Theme styling is expressed the WordPress-native way, through `theme.json`:
 
 - **Global styles.** Typography, spacing, colour, and per-block/element rules in `theme.json` (and the style variations) compile to WordPress's inline global-styles output. This is theme-authored styling — it just isn't a separate stylesheet.
-- **A small custom-CSS block.** `theme.json` → `styles.css` carries two rules that core settings cannot express declaratively:
+- **A small custom-CSS block.** `theme.json` → `styles.css` is the theme's one sanctioned home for hand-written CSS — the deliberate exception, for rules core settings cannot express declaratively. Keep it short and justified; every rule here ships inline on every page. It currently carries three:
   1. A `byline` gap/margin reset so the author byline reads as one line.
   2. The truck-icon `filter` rule that reads the `--wp--custom--dirtbag--truck-icon-filter` variable (see [style variations](style-variations.md)).
+  3. The `.front-grid` column alignment. The front page's two section columns each lead with a heading; in styles whose heading font wraps the narrow (33%) column's heading to two lines, its first post drops ~one line below the wide column's. `theme.json`'s structured layout cannot align rows across sibling columns, so a CSS **subgrid** rule shares the heading/content row tracks between the two columns. It is wrapped in `@supports (grid-template-rows: subgrid)` and a `min-width: 782px` query, so browsers without subgrid — and all mobile widths — keep the default flex columns and stack normally. Headings stay nested in their columns, preserving reading order.
 
 So the accurate claim is: **no CSS files, no enqueued theme stylesheet, no front-end JavaScript** — not "no CSS at all." WordPress core may additionally print block, layout, and global-style assets required by the active blocks.
 
