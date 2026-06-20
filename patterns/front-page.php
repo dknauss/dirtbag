@@ -12,8 +12,12 @@
 
 <!-- wp:group {"tagName":"main","anchor":"main-content"} -->
 <main id="main-content" class="wp-block-group"><!-- wp:heading {"level":1} -->
-<h1 class="wp-block-heading">A Roadside Almanac</h1>
+<h1 class="wp-block-heading">Roadside Almanac.</h1>
 <!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Rural speed, shed talk, hard chirps, and the suspicion that a simple job should stay simple.</p>
+<!-- /wp:paragraph -->
 
 <!-- wp:columns {"align":"wide","className":"front-grid"} -->
 <div class="wp-block-columns alignwide front-grid"><!-- wp:column {"width":"66.66%"} -->
