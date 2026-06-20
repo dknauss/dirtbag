@@ -6,6 +6,23 @@ This project follows the spirit of [Keep a Changelog](https://keepachangelog.com
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-06-19
+
+### Added
+
+- Per-style accessibility sweep: axe runs against every global style variation with `color-contrast` gated, in CI and via a local `npm run test:styles` runner. All seven styles (including the dark Terminal, Amber CRT, and Blueprint themes) are contrast-clean.
+- Commit attribution: a `commit-msg` hook (`.githooks/`) requires a `Co-Authored-By` trailer on every commit.
+
+### Changed
+
+- Accessibility test suite graduated to **gating**: the confirmed-clean axe rule set (`image-alt`, `link-name`, `label`, `heading-order`, `landmark-unique`, `region`, `color-contrast`, `button-name`) now fails the build on regression, with coverage widened to a single post and the 404 template. The scan includes the `best-practice` tag so the heading/landmark rules are actually evaluated.
+- Photo-free package: removed the bundled CC-licensed photographs and refreshed the theme screenshot.
+- README overview and JavaScript-policy wording.
+
+### Fixed
+
+- Accessibility: the decorative h-card avatar (a 96px icon, `alt=""`) inherited the theme-wide image lightbox, so core rendered an unnamed "enlarge" control (axe `button-name`, critical). Disabled the lightbox on that block.
+
 ## [0.1.4] - 2026-06-19
 
 ### Fixed
