@@ -6,7 +6,7 @@
 
 ---
 
-**Title:** Post Title block: the title link is `display: inline-block`, which prevents text from wrapping beside a float (and breaks `shape-outside`)
+**Title:** Post Title block link uses `display: inline-block`, limiting float and `shape-outside` text wrapping
 
 ### What
 
@@ -18,15 +18,20 @@ inline box:
 .wp-block-post-title :where(a) { display: inline-block; }
 ```
 
-Because an `inline-block` cannot break across lines, a linked Post Title placed in
-content that flows around a `float` (or uses `shape-outside`) will **drop entirely
-below the float** the moment it is too wide to fit in the remaining line box, instead
-of wrapping its text beside and under the float. A plain inline link wraps correctly.
+(Still present on `trunk` as of this writing:
+[post-title/style.scss](https://github.com/WordPress/gutenberg/blob/trunk/packages/block-library/src/post-title/style.scss).)
 
-This is technically correct CSS — an atomic box that doesn't fit beside a float moves
-below it — so it is **not a browser bug**. But the `inline-block` is easy to miss as
-the cause, and it silently constrains any theme that wants a magazine-style float
-beside a post title (a common pattern for compact post lists / sidebars).
+An `inline-block` is an atomic inline-level box. Its *contents* may wrap internally,
+but the box itself cannot split across the separate line boxes a float creates beside
+and below it. So a linked Post Title flowing around a `float` (or `shape-outside`)
+**drops whole below the float** the moment it is too wide for the line box beside it,
+instead of wrapping its text beside and under the float. A plain inline link wraps
+correctly.
+
+This is spec-correct CSS — an atomic box that doesn't fit beside a float moves below
+it — so it is **not a browser bug**. But the `inline-block` is easy to miss as the
+cause, and it silently constrains any theme that wants a magazine-style float beside a
+post title (a common pattern for compact post lists / sidebars).
 
 ### Steps to reproduce (no WordPress required)
 
@@ -58,10 +63,12 @@ titles / narrower containers fail first.
 
 ### Evidence
 
-A reduced standalone matrix (visible Chrome 149, `800×1200`, first paint) isolates
-the trigger cleanly — every layout variant (CSS grid / no grid / subgrid, lazy image
-or none, real float or `::before`) stacks the title **only** when the link is
-`inline-block`, and is clean when it is `inline`:
+Chrome 149 was just the debugging environment; the reduced case is ordinary CSS, so
+it reproduces in any engine (including **headless** Chrome) at a narrow-enough column.
+A standalone matrix (`800×1200`, first paint) isolates the trigger cleanly — every
+layout variant (CSS grid / no grid / subgrid, lazy image or none, real float or
+`::before`) stacks the title **only** when the link is `inline-block`, and is clean
+when it is `inline`:
 
 | title link | result |
 |---|---|
@@ -75,16 +82,19 @@ or none, real float or `::before`) stacks the title **only** when the link is
 
 - Is `display: inline-block` on the Post Title link load-bearing, or could it be
   `inline`? What does the inline-block buy here?
-- The same pattern appears on other title-link blocks (Comment Title, Query Title,
-  Post Navigation Link) — worth a consistent answer.
+- Are there other linked title-style blocks using the same `inline-block`-on-the-link
+  pattern that should be evaluated consistently?
 
 ### Workaround (for theme authors hitting this)
 
-Scope the link back to inline where you float beside it:
+Scope the title link back to `inline` where you float beside it:
 
 ```css
-.your-entry .wp-block-post-title :where(a) { display: inline; }
+.your-entry > .wp-block-post-title :where(a) { display: inline; }
 ```
+
+(For example, Dirtbag's float sidebar uses
+`.sidebar-content:not(.is-grid) .sidebar-entry > .wp-block-post-title :where(a) { display: inline; }`.)
 
 ### Environment
 
