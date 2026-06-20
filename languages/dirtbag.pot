@@ -2,14 +2,14 @@
 # This file is distributed under the GNU General Public License v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Dirtbag 0.1.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/theme/Dirtbag\n"
+"Project-Id-Version: Dirtbag 0.1.9\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/theme/dirtbag\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-18T17:32:48+00:00\n"
+"POT-Creation-Date: 2026-06-20T19:37:39+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: dirtbag\n"
@@ -22,7 +22,7 @@ msgstr ""
 
 #. Theme URI of the theme
 #: style.css
-msgid "https://github.com/danknauss/dirtbag"
+msgid "https://github.com/dknauss/dirtbag"
 msgstr ""
 
 #. Description of the theme
@@ -37,7 +37,7 @@ msgstr ""
 
 #. Author URI of the theme
 #: style.css
-msgid "https://github.com/danknauss"
+msgid "https://github.com/dknauss"
 msgstr ""
 
 #: patterns/accessible-table.php
@@ -78,6 +78,36 @@ msgstr ""
 msgid "Accessible table sample"
 msgstr ""
 
+#: patterns/almanac-card.php
+msgctxt "Pattern title"
+msgid "Almanac card"
+msgstr ""
+
+#: patterns/almanac-card.php
+msgctxt "Pattern description"
+msgid "A small roadside-almanac card for the front-page sidebar — a saying for the road and a feed nudge."
+msgstr ""
+
+#: patterns/almanac-card.php:14
+msgid "The Almanac"
+msgstr ""
+
+#: patterns/almanac-card.php:18
+msgid "Saying for the road"
+msgstr ""
+
+#: patterns/almanac-card.php:22
+msgid "“A page that loads is worth two that buffer.”"
+msgstr ""
+
+#: patterns/almanac-card.php:26
+msgid "Filed in the glovebox."
+msgstr ""
+
+#: patterns/almanac-card.php:26
+msgid "Subscribe by feed"
+msgstr ""
+
 #: patterns/blogroll-xfn.php
 msgctxt "Pattern title"
 msgid "Blogroll with XFN"
@@ -110,6 +140,26 @@ msgstr ""
 
 #: patterns/blogroll-xfn.php:29
 msgid "TEXTFILES.COM"
+msgstr ""
+
+#: patterns/byline.php
+msgctxt "Pattern title"
+msgid "Byline"
+msgstr ""
+
+#: patterns/byline.php
+msgctxt "Pattern description"
+msgid "Translatable author byline (h-card) for use inside post loops and single posts."
+msgstr ""
+
+#: patterns/byline.php:14
+#: patterns/post-meta.php:16
+msgid "From"
+msgstr ""
+
+#: patterns/byline.php:20
+#: patterns/post-meta.php:20
+msgid "’s dashboard"
 msgstr ""
 
 #: patterns/colophon.php
@@ -201,6 +251,11 @@ msgstr ""
 msgid "Observed: one useful thing, one broken thing, one link worth keeping."
 msgstr ""
 
+#: patterns/front-page.php
+msgctxt "Pattern title"
+msgid "front-page"
+msgstr ""
+
 #: patterns/h-card-profile.php
 msgctxt "Pattern title"
 msgid "h-card profile"
@@ -290,14 +345,6 @@ msgctxt "Pattern description"
 msgid "Date, author, categories, tags, and permalink."
 msgstr ""
 
-#: patterns/post-meta.php:16
-msgid "From"
-msgstr ""
-
-#: patterns/post-meta.php:20
-msgid "’s dashboard"
-msgstr ""
-
 #: patterns/post-meta.php:23
 msgid "Filed under: "
 msgstr ""
@@ -379,347 +426,6 @@ msgid "If your site supports Webmention, link to this permalink and send it alon
 msgstr ""
 
 #: theme.json
-msgctxt "Style variation name"
-msgid "Brutalist"
-msgstr ""
-
-#: theme.json
-#: styles/hi-vis.json
-#: styles/minimalist.json
-msgctxt "Color name"
-msgid "Black"
-msgstr ""
-
-#: theme.json
-#: styles/minimalist.json
-msgctxt "Color name"
-msgid "White"
-msgstr ""
-
-#: theme.json
-#: styles/minimalist.json
-msgctxt "Color name"
-msgid "Grey 20"
-msgstr ""
-
-#: theme.json
-#: styles/minimalist.json
-msgctxt "Color name"
-msgid "Grey 40"
-msgstr ""
-
-#: theme.json
-#: styles/minimalist.json
-msgctxt "Color name"
-msgid "Grey 60"
-msgstr ""
-
-#: theme.json
-#: styles/minimalist.json
-msgctxt "Color name"
-msgid "Grey 80"
-msgstr ""
-
-#: theme.json
-#: styles/minimalist.json
-msgctxt "Color name"
-msgid "Red"
-msgstr ""
-
-#: theme.json
-#: styles/minimalist.json
-msgctxt "Color name"
-msgid "Maroon"
-msgstr ""
-
-#: theme.json
-#: styles/minimalist.json
-msgctxt "Color name"
-msgid "Orange"
-msgstr ""
-
-#: theme.json
-#: styles/minimalist.json
-msgctxt "Color name"
-msgid "Yellow"
-msgstr ""
-
-#: theme.json
-#: styles/minimalist.json
-msgctxt "Color name"
-msgid "Olive"
-msgstr ""
-
-#: theme.json
-#: styles/minimalist.json
-msgctxt "Color name"
-msgid "Lime"
-msgstr ""
-
-#: theme.json
-#: styles/minimalist.json
-msgctxt "Color name"
-msgid "Green"
-msgstr ""
-
-#: theme.json
-#: styles/minimalist.json
-msgctxt "Color name"
-msgid "Aqua"
-msgstr ""
-
-#: theme.json
-#: styles/minimalist.json
-msgctxt "Color name"
-msgid "Teal"
-msgstr ""
-
-#: theme.json
-#: styles/hi-vis.json
-#: styles/minimalist.json
-msgctxt "Color name"
-msgid "Blue"
-msgstr ""
-
-#: theme.json
-#: styles/minimalist.json
-msgctxt "Color name"
-msgid "Navy"
-msgstr ""
-
-#: theme.json
-#: styles/hi-vis.json
-#: styles/minimalist.json
-msgctxt "Color name"
-msgid "Fuchsia"
-msgstr ""
-
-#: theme.json
-#: styles/minimalist.json
-msgctxt "Color name"
-msgid "Purple"
-msgstr ""
-
-#: theme.json
-#: styles/amber-crt.json
-#: styles/blueprint.json
-#: styles/hi-vis.json
-#: styles/minimalist.json
-#: styles/newspaper.json
-#: styles/terminal.json
-msgctxt "Font family name"
-msgid "Arial"
-msgstr ""
-
-#: theme.json
-#: styles/amber-crt.json
-#: styles/blueprint.json
-#: styles/hi-vis.json
-#: styles/minimalist.json
-#: styles/newspaper.json
-#: styles/terminal.json
-msgctxt "Font family name"
-msgid "Arial Black"
-msgstr ""
-
-#: theme.json
-#: styles/amber-crt.json
-#: styles/blueprint.json
-#: styles/hi-vis.json
-#: styles/minimalist.json
-#: styles/newspaper.json
-#: styles/terminal.json
-msgctxt "Font family name"
-msgid "Comic Sans MS"
-msgstr ""
-
-#: theme.json
-#: styles/amber-crt.json
-#: styles/blueprint.json
-#: styles/hi-vis.json
-#: styles/minimalist.json
-#: styles/newspaper.json
-#: styles/terminal.json
-msgctxt "Font family name"
-msgid "Courier New"
-msgstr ""
-
-#: theme.json
-#: styles/amber-crt.json
-#: styles/blueprint.json
-#: styles/hi-vis.json
-#: styles/minimalist.json
-#: styles/newspaper.json
-#: styles/terminal.json
-msgctxt "Font family name"
-msgid "Georgia"
-msgstr ""
-
-#: theme.json
-#: styles/amber-crt.json
-#: styles/blueprint.json
-#: styles/hi-vis.json
-#: styles/minimalist.json
-#: styles/newspaper.json
-#: styles/terminal.json
-msgctxt "Font family name"
-msgid "Impact"
-msgstr ""
-
-#: theme.json
-#: styles/amber-crt.json
-#: styles/blueprint.json
-#: styles/hi-vis.json
-#: styles/minimalist.json
-#: styles/newspaper.json
-#: styles/terminal.json
-msgctxt "Font family name"
-msgid "Lucida Console"
-msgstr ""
-
-#: theme.json
-#: styles/amber-crt.json
-#: styles/blueprint.json
-#: styles/hi-vis.json
-#: styles/minimalist.json
-#: styles/newspaper.json
-#: styles/terminal.json
-msgctxt "Font family name"
-msgid "Lucida Sans Unicode"
-msgstr ""
-
-#: theme.json
-#: styles/amber-crt.json
-#: styles/blueprint.json
-#: styles/hi-vis.json
-#: styles/minimalist.json
-#: styles/newspaper.json
-#: styles/terminal.json
-msgctxt "Font family name"
-msgid "Palatino"
-msgstr ""
-
-#: theme.json
-#: styles/amber-crt.json
-#: styles/blueprint.json
-#: styles/hi-vis.json
-#: styles/minimalist.json
-#: styles/newspaper.json
-#: styles/terminal.json
-msgctxt "Font family name"
-msgid "Tahoma"
-msgstr ""
-
-#: theme.json
-#: styles/amber-crt.json
-#: styles/blueprint.json
-#: styles/hi-vis.json
-#: styles/minimalist.json
-#: styles/newspaper.json
-#: styles/terminal.json
-msgctxt "Font family name"
-msgid "Times New Roman"
-msgstr ""
-
-#: theme.json
-#: styles/amber-crt.json
-#: styles/blueprint.json
-#: styles/hi-vis.json
-#: styles/minimalist.json
-#: styles/newspaper.json
-#: styles/terminal.json
-msgctxt "Font family name"
-msgid "Trebuchet MS"
-msgstr ""
-
-#: theme.json
-#: styles/amber-crt.json
-#: styles/blueprint.json
-#: styles/hi-vis.json
-#: styles/minimalist.json
-#: styles/newspaper.json
-#: styles/terminal.json
-msgctxt "Font family name"
-msgid "Verdana"
-msgstr ""
-
-#: theme.json
-#: styles/amber-crt.json
-#: styles/blueprint.json
-#: styles/hi-vis.json
-#: styles/minimalist.json
-#: styles/newspaper.json
-#: styles/terminal.json
-msgctxt "Font size name"
-msgid "Small"
-msgstr ""
-
-#: theme.json
-#: styles/amber-crt.json
-#: styles/blueprint.json
-#: styles/hi-vis.json
-#: styles/minimalist.json
-#: styles/newspaper.json
-#: styles/terminal.json
-msgctxt "Font size name"
-msgid "Base"
-msgstr ""
-
-#: theme.json
-#: styles/amber-crt.json
-#: styles/blueprint.json
-#: styles/hi-vis.json
-#: styles/minimalist.json
-#: styles/newspaper.json
-#: styles/terminal.json
-msgctxt "Font size name"
-msgid "Medium"
-msgstr ""
-
-#: theme.json
-#: styles/amber-crt.json
-#: styles/blueprint.json
-#: styles/hi-vis.json
-#: styles/minimalist.json
-#: styles/newspaper.json
-#: styles/terminal.json
-msgctxt "Font size name"
-msgid "Large"
-msgstr ""
-
-#: theme.json
-#: styles/amber-crt.json
-#: styles/blueprint.json
-#: styles/hi-vis.json
-#: styles/minimalist.json
-#: styles/newspaper.json
-#: styles/terminal.json
-msgctxt "Font size name"
-msgid "Extra Large"
-msgstr ""
-
-#: theme.json
-#: styles/amber-crt.json
-#: styles/blueprint.json
-#: styles/hi-vis.json
-#: styles/minimalist.json
-#: styles/newspaper.json
-#: styles/terminal.json
-msgctxt "Font size name"
-msgid "Huge"
-msgstr ""
-
-#: theme.json
-msgctxt "Template part name"
-msgid "Header"
-msgstr ""
-
-#: theme.json
-msgctxt "Template part name"
-msgid "Footer"
-msgstr ""
-
-#: theme.json
 msgctxt "Custom template name"
 msgid "No title page"
 msgstr ""
@@ -762,6 +468,229 @@ msgstr ""
 #: theme.json
 msgctxt "Custom template name"
 msgid "Uses page"
+msgstr ""
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Archive index"
+msgstr ""
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Search page"
+msgstr ""
+
+#: theme.json
+#: styles/hi-vis.json
+msgctxt "Color name"
+msgid "Black"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "White"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Grey 20"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Grey 40"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Grey 60"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Grey 80"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Red"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Maroon"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Orange"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Yellow"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Olive"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Lime"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Green"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Aqua"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Teal"
+msgstr ""
+
+#: theme.json
+#: styles/hi-vis.json
+msgctxt "Color name"
+msgid "Blue"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Navy"
+msgstr ""
+
+#: theme.json
+#: styles/hi-vis.json
+msgctxt "Color name"
+msgid "Fuchsia"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Purple"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Arial"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Arial Black"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Comic Sans MS"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Courier New"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Georgia"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Impact"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Lucida Console"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Lucida Sans Unicode"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Palatino"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Tahoma"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Times New Roman"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Trebuchet MS"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Verdana"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Small"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Base"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Medium"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Large"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Extra Large"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Huge"
+msgstr ""
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Header"
+msgstr ""
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Footer"
+msgstr ""
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Navigation Overlay"
+msgstr ""
+
+#: theme.json
+msgctxt "Style variation name"
+msgid "Brutalist"
 msgstr ""
 
 #: styles/amber-crt.json
