@@ -6,6 +6,24 @@ This project follows the spirit of [Keep a Changelog](https://keepachangelog.com
 
 ## [Unreleased]
 
+## [0.1.7] - 2026-06-20
+
+### Added
+
+- Front-page sidebar can render two ways, toggled by one class on `.sidebar-content`: a magazine **float** (title/date/excerpt wrap beside and under the thumbnail; the default) or a media-object **grid** (`.is-grid`; thumbnail column + text column).
+- Posts "The price of a pun" and "We blamed the browser".
+- `docs/repro/`: a WordPress-free reproduction and write-up of the Post Title float interaction, filed upstream as [WordPress/gutenberg#79372](https://github.com/WordPress/gutenberg/issues/79372).
+
+### Changed
+
+- Every post now uses a distinct featured image.
+- Baseline-aligned the two front-page section headings; the sidebar's first thumbnail top is flush with the wide column's first image.
+- Pinned the stable Playground blueprint to the current release; ignore `.DS_Store`.
+
+### Fixed
+
+- Front-page sidebar float: WordPress core styles the Post Title link `display: inline-block`, an atomic box that drops below the float when it can't fit beside it (longest titles first). A scoped `display: inline` override restores the wrap. It is not lazy-loading, DPR, subgrid, or a browser bug — see [docs/sidebar-thumbnail-layout.md](docs/sidebar-thumbnail-layout.md).
+
 ## [0.1.6] - 2026-06-20
 
 ### Added
