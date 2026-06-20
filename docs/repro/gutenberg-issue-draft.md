@@ -1,8 +1,8 @@
-# Draft Gutenberg issue — review before filing
+# Gutenberg issue — filed
 
-> File at <https://github.com/WordPress/gutenberg/issues> once you're happy with it.
-> This is a **question / low-severity report**, not a bug claim — the behavior is
-> spec-correct CSS. Delete this banner before pasting.
+> **Filed 2026-06-20 as [WordPress/gutenberg #79372](https://github.com/WordPress/gutenberg/issues/79372).**
+> Kept here as the source/record. It is a **question / low-severity report**, not a
+> bug claim — the behavior is spec-correct CSS.
 
 ---
 

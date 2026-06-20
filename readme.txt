@@ -3,7 +3,7 @@ Contributors: dpknauss
 Requires at least: 7.0
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 0.1.6
+Stable tag: 0.1.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: full-site-editing, one-column, style-variations
@@ -35,6 +35,11 @@ No. The theme uses web-safe font stacks and local icon assets.
 Open Appearance > Editor > Styles and choose a style variation.
 
 == Changelog ==
+
+= 0.1.7 =
+* Front-page sidebar: render posts as a magazine float (text wraps beside and under the thumbnail) or a media-object grid, toggled by one class; fix a Post Title inline-block collision that dropped long titles below the float.
+* Give every post a distinct featured image; publish "The price of a pun" and "We blamed the browser".
+* Add a WordPress-free repro of the float interaction (filed as WordPress/gutenberg#79372); baseline-align the section headings and flush the sidebar thumbnail top; pin the stable Playground blueprint.
 
 = 0.1.6 =
 * Front page: add a "Used Cars & Unused Plans" sidebar (a compact secondary feed with square thumbnails) and a small "The Almanac" card; add a masthead heading, "A Roadside Almanac", and shorten the tagline.
