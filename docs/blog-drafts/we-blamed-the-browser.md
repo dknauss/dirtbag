@@ -1,8 +1,8 @@
 ---
 title: "We blamed the browser"
 slug: "we-blamed-the-browser"
-status: "draft"
-published: ""
+status: "published"
+published: "2026-06-20"
 type: "post"
 suggested_category: "Garage"
 suggested_tags:
