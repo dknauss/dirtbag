@@ -1,0 +1,22 @@
+--- a/packages/block-library/src/image/index.php
++++ b/packages/block-library/src/image/index.php
+@@ -293,12 +293,19 @@
+ 	$img = null;
+ 	preg_match( '/<img[^>]+>/', $body_content, $img );
+ 
++	// A static aria-label gives the trigger an accessible name without
++	// JavaScript and before the Interactivity API hydrates; the
++	// data-wp-bind--aria-label below refines it at runtime. See
++	// https://github.com/WordPress/gutenberg/issues/79380.
++	$trigger_button_aria_label = esc_attr__( 'Enlarge' );
++
+ 	$button =
+ 		$img[0]
+ 		. '<button
+ 			class="lightbox-trigger"
+ 			type="button"
+ 			aria-haspopup="dialog"
++			aria-label="' . $trigger_button_aria_label . '"
+ 			data-wp-bind--aria-label="state.thisImage.triggerButtonAriaLabel"
+ 			data-wp-init="callbacks.initTriggerButton"
+ 			data-wp-on--click="actions.showLightbox"

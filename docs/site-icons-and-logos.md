@@ -78,13 +78,15 @@ Dirtbag sets **`shouldSyncIcon:false`** on both header Site Logo blocks
 (`parts/header.html`) precisely so the two marks can diverge:
 
 - `custom_logo` → **transparent** truck → recoloured in-page per style.
-- `site_icon` → **opaque** manila-backed truck
-  (`assets/icons/dirtbag-site-icon-opaque.png`) → visible on any tab.
+- `site_icon` → **opaque** manila-backed truck → visible on any tab.
 
 The Playground seed (`playground/seed-content.php`,
 `dirtbag_playground_seed_site_icon()`) imports both assets and wires them up
-this way. Studio does **not** run that seed — set the two in the Customizer /
-Site Editor (or via WP-CLI) on a Studio site to reproduce it.
+this way. Both source images live under `playground/media/` (export-ignored),
+not in `assets/`, because the **shipped theme never references them** — a real
+install lets the owner set their own logo and favicon. Studio does **not** run
+that seed — set the two in the Customizer / Site Editor (or via WP-CLI) on a
+Studio site to reproduce it.
 
 ## The theme fallback (no logo set at all)
 
@@ -99,12 +101,15 @@ the site a favicon.
 
 ## Asset inventory
 
-| File | Background | Used for |
-| --- | --- | --- |
-| `pickup-truck-header.svg` (+ `-white`) | transparent | in-page logo fallback |
-| `pickup-truck.svg` (+ `-white`) | transparent | source artwork / `.h-card` photo |
-| `dirtbag-site-icon.png` (+ `-white`) | transparent | seeded `custom_logo` (in-page) |
-| `dirtbag-site-icon-opaque.png` | opaque manila | seeded `site_icon` (favicon/admin) |
+Only assets the **shipped** theme references live in `assets/` (and go into the
+wp.org zip). Demo-only icons live in `playground/media/` (export-ignored).
+
+| File | Location | Background | Used for |
+| --- | --- | --- | --- |
+| `pickup-truck-header.svg` | `assets/icons/` (ships) | transparent | in-page logo fallback (`functions.php`) |
+| `pickup-truck.svg` | `assets/icons/` (ships) | transparent | `.h-card` profile photo (`patterns/`) |
+| `dirtbag-site-icon.png` | `playground/media/` (demo) | transparent | seeded `custom_logo` (in-page) |
+| `dirtbag-site-icon-opaque.png` | `playground/media/` (demo) | opaque manila | seeded `site_icon` (favicon/admin) |
 
 The opaque PNG is generated from
 `docs/images/dirtbag-site-icon-opaque.svg` (export-ignored) via:
@@ -112,12 +117,19 @@ The opaque PNG is generated from
 ```sh
 inkscape docs/images/dirtbag-site-icon-opaque.svg \
   --export-type=png \
-  --export-filename=assets/icons/dirtbag-site-icon-opaque.png \
+  --export-filename=playground/media/dirtbag-site-icon-opaque.png \
   -w 512 -h 512
 ```
 
-Every image under `assets/` is allowlisted in `bin/package-check`; adding or
-renaming one without updating the allowlist fails the image-inventory check.
+`bin/package-check` allowlists images in **both** trees separately: assets that
+ship (`allowed_theme_images`) and Playground demo media
+(`allowed_playground_images`). Adding or renaming an image in either without
+updating its allowlist fails the image-inventory check.
+
+Earlier unused `-white` variants (`pickup-truck-header-white.svg`,
+`pickup-truck-white.svg`, `dirtbag-site-icon-white.png`) were referenced by
+nothing and have been removed from the repo; copies are parked in the adjacent
+local `dirtbag-asset-archive/` store, outside the theme.
 
 ## Alternatives considered
 
