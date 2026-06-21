@@ -1,0 +1,522 @@
+/**
+ * Admin Menu Maestro — edit-mode styles.
+ *
+ * Scoped under body.maestro-editing so nothing leaks into normal admin use.
+ * The editor uses a click-to-select model: there are no per-item controls or
+ * drag handles — clicking a row selects it (a subtle highlight) and the whole
+ * row is draggable to reorder. All controls live in the shared bottom toolbar
+ * panel, not on each item.
+ */
+
+/* ---------- folded-mode override -----------------------------------------
+ * The JS strips body.folded / body.auto-fold on init and re-strips them if
+ * common.js writes them back. These rules are defensive: if anything sneaks
+ * the class in for a frame, the layout still holds at the expanded width.
+ */
+body.maestro-editing.folded #adminmenu,
+body.maestro-editing.folded #adminmenuwrap,
+body.maestro-editing.folded #adminmenuback,
+body.maestro-editing.auto-fold #adminmenu,
+body.maestro-editing.auto-fold #adminmenuwrap,
+body.maestro-editing.auto-fold #adminmenuback {
+	width: 160px !important;
+}
+body.maestro-editing.folded #wpcontent,
+body.maestro-editing.folded #wpfooter,
+body.maestro-editing.auto-fold #wpcontent,
+body.maestro-editing.auto-fold #wpfooter {
+	margin-left: 160px !important;
+}
+body.maestro-editing #collapse-menu {
+	display: none !important;
+}
+
+/* ---------- expanded submenus while editing ------------------------------ */
+.maestro-editing #adminmenu .wp-submenu {
+	display: block !important;
+	position: static !important;
+	width: auto !important;
+	box-shadow: none !important;
+	min-width: 0 !important;
+}
+/* WordPress repeats the parent title in a hidden .wp-submenu-head for folded
+ * flyouts. With submenus force-expanded here it would show as a second, icon-
+ * less copy of the label — keep it hidden. */
+.maestro-editing #adminmenu .wp-submenu-head {
+	display: none !important;
+}
+
+/* ---------- accessibility utilities ------------------------------------- */
+
+/* Canonical WordPress .screen-reader-text implementation (clip-path variant).
+ * Scoped under .maestro-editing to avoid colliding with any WP-core
+ * .screen-reader-text already on the page. Used to expose the "(modified)"
+ * semantic label to assistive technology without showing it visually.
+ * WCAG note: display:none/visibility:hidden also hide from AT — do NOT use
+ * those here. clip-path:inset(50%) hides visually while remaining accessible. */
+.maestro-editing .screen-reader-text {
+	border: 0;
+	clip-path: inset( 50% );
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px;
+	word-wrap: normal !important;
+}
+
+/* ---------- modified-state indicator ------------------------------------ */
+
+/* Non-color-only: a filled bullet glyph (•) visible at ≥ 3:1 contrast against
+ * the dark admin-menu background (#1d2327), PLUS a .screen-reader-text sibling
+ * exposing "(modified)" to AT. The glyph is the graphical object (WCAG 1.4.11);
+ * the screen-reader-text carries the semantic meaning so color is never the
+ * sole signal (WCAG 1.4.1).
+ *
+ * Amber #dba617 on #1d2327 gives contrast ratio ≈ 5.5:1 (well above the 3:1
+ * threshold for graphical objects required by WCAG 1.4.11). */
+.maestro-editing #adminmenu .maestro-modified > a {
+	position: relative;
+}
+.maestro-editing #adminmenu .maestro-modified-badge {
+	color: #dba617;
+	font-size: 10px;
+	line-height: 1;
+	margin-left: 4px;
+	vertical-align: middle;
+	pointer-events: none;
+	user-select: none;
+}
+
+/* Per-item reset button: focus-visible outline so keyboard users can see focus */
+.maestro-reset-item:focus-visible {
+	outline: 2px solid #2271b1;
+	outline-offset: 2px;
+}
+/* Emphasise the reset button when the selected item is modified */
+.maestro-reset-item.is-modified {
+	border-color: #dba617;
+	color: #1d2327;
+	background: #dba617;
+}
+.maestro-reset-item.is-modified:hover,
+.maestro-reset-item.is-modified:focus-visible {
+	border-color: #c9961a;
+	background: #c9961a;
+}
+
+/* ---------- per-item DOM: selection only -------------------------------- */
+
+/* No drag handles: the whole row is the drag target (see initSortables). A
+ * plain click selects; only real movement drags. We deliberately avoid a grab/
+ * hand cursor — the single selection highlight is the only affordance. */
+.maestro-editing #adminmenu a {
+	cursor: default;
+}
+
+/* Subtle, selection-only highlight: a tinted row with a left accent bar. */
+.maestro-editing #adminmenu .maestro-selected > a {
+	background: rgba( 34, 113, 177, 0.22 );
+	box-shadow: inset 3px 0 0 #2271b1;
+}
+/* Keyboard focus ring on the selected item's anchor for keyboard-reorder users.
+   Uses :focus-visible so it only shows for keyboard navigation, not mouse clicks. */
+.maestro-editing #adminmenu .maestro-selected > a:focus-visible {
+	outline: 2px solid #2271b1;
+	outline-offset: -2px;
+}
+.maestro-editing #adminmenu .maestro-item.maestro-has-hidden > a,
+.maestro-editing #adminmenu .maestro-subitem.maestro-has-hidden > a {
+	opacity: 0.55;
+}
+
+/* Sortable drag visuals. */
+.maestro-editing #adminmenu .ui-sortable-helper {
+	background: #2c3338;
+	box-shadow: 0 2px 8px rgba( 0, 0, 0, 0.4 );
+}
+.maestro-editing #adminmenu .ui-sortable-placeholder {
+	visibility: visible !important;
+	background: rgba( 34, 113, 177, 0.25 );
+	height: 34px;
+}
+
+/* ---------- popovers (icon picker, visibility) -------------------------- */
+.maestro-popover {
+	position: absolute;
+	z-index: 100000;
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	box-shadow: 0 4px 16px rgba( 0, 0, 0, 0.18 );
+	padding: 10px;
+}
+.maestro-icon-popover {
+	width: 300px;
+	max-width: 92vw;
+}
+.maestro-icon-search {
+	width: 100%;
+	box-sizing: border-box;
+	margin: 0 0 8px;
+	padding: 6px 8px;
+	border: 1px solid #8c8f94;
+	border-radius: 3px;
+}
+.maestro-icon-none {
+	margin: 0 0 8px;
+	width: 100%;
+}
+.maestro-icon-none[aria-pressed="true"] {
+	border-color: #2271b1;
+	box-shadow: 0 0 0 1px #2271b1;
+}
+.maestro-icon-tabs {
+	display: flex;
+	gap: 4px;
+	margin: 0 0 8px;
+	border-bottom: 1px solid #dcdcde;
+}
+.maestro-icon-tab {
+	background: transparent;
+	border: 0;
+	border-bottom: 2px solid transparent;
+	padding: 6px 10px;
+	cursor: pointer;
+	color: #50575e;
+	font-size: 13px;
+}
+.maestro-icon-tab[aria-selected="true"] {
+	color: #1d2327;
+	border-bottom-color: #2271b1;
+	font-weight: 600;
+}
+.maestro-icon-grid {
+	display: grid;
+	/* 40px cell min-size: 20px glyph + 10px padding each side → consistent visual grid.
+	 * Matches the dashicons tab cell density so both tabs read as one system. */
+	grid-template-columns: repeat( auto-fill, minmax( 40px, 1fr ) );
+	gap: 3px;
+	max-height: 240px;
+	overflow-y: auto;
+}
+/* display:grid/flex above outrank the UA [hidden] rule, so tab-switching and
+   the search filter wouldn't hide anything without this. */
+.maestro-icon-grid[hidden],
+.maestro-icon-cell[hidden] {
+	display: none;
+}
+.maestro-icon-cell {
+	background: #f6f7f7;
+	border: 1px solid transparent;
+	border-radius: 3px;
+	min-height: 40px; /* matches min-size so solid glyphs sit on a consistent 20px grid */
+	padding: 9px; /* (40px - 20px img - 2px border) / 2 = 9px; centers glyph precisely */
+	cursor: pointer;
+	color: #1d2327;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+}
+.maestro-icon-cell img {
+	width: 20px;
+	height: 20px;
+	display: block;
+}
+.maestro-icon-cell:hover { background: #e0e7ec; }
+.maestro-icon-cell:focus-visible {
+	outline: 2px solid #2271b1;
+	outline-offset: 1px;
+}
+.maestro-icon-cell.is-current {
+	border-color: #2271b1;
+	background: #dbe9f5;
+}
+.maestro-vis-popover { min-width: 200px; }
+.maestro-vis-head {
+	margin: 0 0 6px;
+	font-weight: 600;
+	color: #1d2327;
+}
+.maestro-vis-row {
+	display: block;
+	padding: 3px 0;
+	color: #1d2327;
+	font-size: 13px;
+}
+
+/* ---------- toolbar + shared controls panel ----------------------------- */
+.maestro-toolbar {
+	position: fixed;
+	bottom: 0;
+	left: 160px; /* clears the admin menu column */
+	right: 0;
+	z-index: 99999;
+	display: flex;
+	flex-wrap: wrap; /* BUG-03: wrap zones onto extra rows when narrow, never overlap */
+	align-items: center;
+	gap: 8px 16px; /* row-gap when wrapped | inter-zone gap: status | panel | right-actions */
+	padding: 10px 16px;
+	background: #1d2327;
+	border-top: 2px solid #2271b1;
+	box-shadow: 0 -2px 10px rgba( 0, 0, 0, 0.25 );
+}
+.maestro-toolbar .button { margin: 0; }
+
+/* Status zone — sits to the left, never overlapped by the panel label. */
+.maestro-status {
+	color: #c3c4c7;
+	font-size: 13px;
+	white-space: nowrap;
+	flex-shrink: 0; /* never compress: keeps status visible when label is long */
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
+
+/* Persistent mode indicator — always visible, text never changes (UX-03).
+ * Idle icon is a real aria-hidden <span class="dashicons dashicons-edit"> child
+ * of .maestro-mode-label (NOT a ::before pseudo-element on .maestro-status).
+ * This avoids BUG-04 (idle glyph reading as a fake interactive control) while
+ * still providing a non-colour shape cue beside the green label (WCAG 1.4.1). */
+.maestro-mode-label {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	color: #6bc187; /* same green as .maestro-status-saved — signals active/success state */
+	font-size: 13px;
+	font-weight: 600;
+	white-space: nowrap;
+	flex-shrink: 0;
+}
+.maestro-mode-icon {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+	line-height: 1;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* Per-state leading dashicon for the transient save states, so status is
+ * distinguishable by shape as well as colour (WCAG 1.4.1). Dashicons (always
+ * present in wp-admin, and declared as a style dependency) render consistently,
+ * unlike the previous Unicode dingbats which some platforms substituted with
+ * colour-emoji or dropped when emoji were disabled.
+ *
+ * The idle state has no ::before glyph on .maestro-status — the persistent
+ * .maestro-mode-label element above carries the edit icon. The ::before
+ * pseudo-element is used only for saving/saved/error save-state feedback. */
+.maestro-status::before {
+	font-family: dashicons;
+	font-size: 16px;
+	line-height: 1;
+	width: 16px;
+	height: 16px;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	speak: never; /* presentational; screen reader hears the text label */
+	content: none; /* idle: no glyph; save states below supply one */
+}
+@keyframes maestro-spin {
+	to { transform: rotate( 360deg ); }
+}
+.maestro-status-saving::before {
+	content: '\f463'; /* dashicons-update: rotating arrows = "in progress" */
+	opacity: 1;
+	animation: maestro-spin 1.2s linear infinite;
+}
+@media ( prefers-reduced-motion: reduce ) {
+	.maestro-status-saving::before {
+		animation: none;
+	}
+}
+.maestro-status-saved::before {
+	content: '\f147'; /* dashicons-yes: success */
+	opacity: 1;
+}
+.maestro-status-error::before {
+	content: '\f534'; /* dashicons-warning: failure */
+	opacity: 1;
+}
+
+.maestro-status-saving { color: #f0b849; }
+.maestro-status-saved  { color: #6bc187; }
+.maestro-status-error  { color: #f86368; }
+
+.maestro-panel {
+	display: flex;
+	flex-wrap: wrap; /* BUG-03: panel controls stack onto rows when narrow, never overlap */
+	align-items: center;
+	gap: 8px;
+	flex: 1;
+	min-width: 0;
+	padding-left: 16px; /* wider inset reinforces the left-separator as a zone boundary */
+	border-left: 2px solid #3c434a; /* 2px makes the divider more prominent */
+}
+.maestro-panel[hidden] { display: none; }
+.maestro-panel-label {
+	color: #c3c4c7;
+	font-size: 13px;
+	font-weight: 600;
+	max-width: 200px; /* tighter cap: status zone must not be overrun */
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	flex-shrink: 1;
+}
+.maestro-panel-field {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	color: #c3c4c7;
+	font-size: 12px;
+}
+.maestro-rename-input {
+	width: 180px;
+	max-width: 100%;
+	font-size: 13px;
+	padding: 2px 6px;
+	border-radius: 2px;
+	border: 1px solid #2271b1;
+	background: #fff;
+	color: #1d2327;
+}
+/* Placeholder contrast: when the field is empty the placeholder is the only
+ * visible hint, so it counts as TEXT (WCAG 1.4.3 → 4.5:1), not the 3:1 non-text
+ * threshold. #8c8f94 (~3.3:1) fails that; #50575e is WP admin's secondary-text
+ * token at ~7:1 on #fff. opacity:1 overrides Firefox's default 0.54. */
+.maestro-rename-input::placeholder {
+	color: #50575e;
+	opacity: 1;
+}
+
+.maestro-toolbar-right {
+	display: flex;
+	gap: 8px;
+	margin-left: auto;
+	flex-shrink: 0; /* keeps reset-all/exit reachable; never squeezed */
+	padding-left: 16px;
+	border-left: 2px solid #3c434a; /* mirrors panel zone separator */
+}
+
+/* ---------- first-run cue ----------------------------------------------- */
+
+/* A small inline notice placed above the toolbar, telling a first-time user
+ * how to begin. Shown once (localStorage-gated), dismissible by keyboard.
+ * Native admin colours; does not cover the menu being explained. */
+.maestro-firstrun {
+	position: fixed;
+	bottom: 53px; /* sits just above the toolbar (which is ~53px tall at default font) */
+	left: 160px; /* aligns with the admin menu right edge, same as the toolbar */
+	right: 0;
+	z-index: 99998; /* below popover (100000) and toolbar (99999), above WP content */
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 8px 16px;
+	background: #f0f6fc; /* light tint — distinct from the dark toolbar, native admin */
+	border-top: 1px solid #c3c4c7;
+	border-bottom: 1px solid #c3c4c7;
+	font-size: 13px;
+	color: #1d2327;
+}
+.maestro-firstrun-text {
+	flex: 1;
+}
+.maestro-firstrun-dismiss {
+	flex-shrink: 0;
+	background: transparent;
+	border: 1px solid #8c8f94;
+	border-radius: 3px;
+	padding: 3px 10px;
+	font-size: 12px;
+	color: #50575e;
+	cursor: pointer;
+	line-height: 1.4;
+}
+.maestro-firstrun-dismiss:hover {
+	border-color: #2271b1;
+	color: #2271b1;
+}
+.maestro-firstrun-dismiss:focus-visible {
+	outline: 2px solid #2271b1;
+	outline-offset: 2px;
+}
+
+/* One-shot attention cue on the first editable menu item during first run.
+ * Teaches the "click an item to edit" gesture by drawing the eye to the menu.
+ * Single animation (iteration-count 1), then stops. Never loops (WCAG 2.3.3 spirit).
+ * Removed by animationend (motion path) OR by dismiss() (reduced-motion / early path). */
+@keyframes maestro-pulse-item {
+	0%   { outline: 2px solid transparent; outline-offset: 2px; }
+	40%  { outline: 2px solid #2271b1;     outline-offset: 2px; }
+	60%  { outline: 2px solid #2271b1;     outline-offset: 2px; }
+	100% { outline: 2px solid transparent; outline-offset: 2px; }
+}
+#adminmenu li.maestro-firstrun-pulse {
+	animation: maestro-pulse-item 1.5s ease-in-out 1 forwards;
+}
+@media ( prefers-reduced-motion: reduce ) {
+	#adminmenu li.maestro-firstrun-pulse {
+		animation: none;
+		outline: 2px solid #2271b1;
+		outline-offset: 2px;
+	}
+}
+
+/* Inherit the WP admin column collapse breakpoint. */
+@media screen and ( max-width: 782px ) {
+	.maestro-toolbar { left: 0; }
+	.maestro-firstrun { left: 0; } /* matches toolbar at collapsed width */
+	.maestro-panel-label { max-width: 120px; }
+	.maestro-rename-input { width: 120px; }
+
+	/* UX-07: denser controls at narrow widths so the toolbar fits without overflow.
+	 * The toolbar already flex-wraps (BUG-03); density shrinks each row so fewer rows
+	 * form. min-height (not height) keeps each tap target >= 44px while letting the
+	 * browser use more height if content demands it. */
+	.maestro-toolbar {
+		gap: 6px 10px;
+		padding: 8px 10px;
+	}
+	.maestro-toolbar .button {
+		padding: 4px 8px;
+		font-size: 12px;
+		min-height: 44px; /* tap-target floor — WCAG 2.5.5 AAA */
+	}
+	/* Scope under .maestro-toolbar (specificity 0,2,0) so the 44px floor beats
+	 * WP core's own ≤782px input rule (input[type="text"], 0,1,1 → min-height:40px). */
+	.maestro-toolbar .maestro-rename-input {
+		padding: 0 6px;
+		font-size: 12px;
+		min-height: 44px; /* tap-target floor — WCAG 2.5.5 AAA */
+	}
+
+	/* Comfortable touch targets and a viewport-fitting picker on small screens.
+	 * The 44px min-height here OVERRIDES the 40px desktop rule — touch law wins. */
+	.maestro-icon-popover { width: 92vw; }
+	.maestro-icon-grid {
+		grid-template-columns: repeat( auto-fill, minmax( 44px, 1fr ) );
+		max-height: 50vh;
+	}
+	.maestro-icon-cell {
+		min-height: 44px; /* 44px touch target preserved exactly as before */
+		padding: 12px;    /* (44px - 20px) / 2 = 12px — keeps glyph centred */
+	}
+	.maestro-icon-tab { padding: 10px 12px; }
+	.maestro-vis-row { padding: 8px 0; }
+
+	/* UX-08a: WP core hides all top-level admin-bar nodes at <=782px via
+	 * #wp-toolbar > ul > li { display:none } and whitelists only built-in nodes.
+	 * Keep our editor entry reachable on mobile. Specificity (0,2,1) matches
+	 * core's own whitelist pattern — no !important needed. */
+	#wpadminbar li#wp-admin-bar-maestro-toggle { display: block; }
+
+	/* Icon-only: hide the label text, keep the dashicon so the tap target
+	 * remains identifiable without eating toolbar width on a phone. The
+	 * accessible name is preserved in the <a title="..."> from meta.title. */
+	#wpadminbar li#wp-admin-bar-maestro-toggle .maestro-ab-label { display: none; }
+}

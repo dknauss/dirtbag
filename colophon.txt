@@ -1,0 +1,25 @@
+Dirtbag Colophon
+================
+
+Site/theme: Dirtbag
+Platform: WordPress block theme
+Build step: none
+Bundled frontend JavaScript: none
+Text domain: dirtbag
+Language folder: /languages
+Default style: Brutalist
+Other style variations: Minimalist, Newspaper, Terminal, Amber CRT, Blueprint, Hi-vis
+
+Principles:
+
+- HTML before ceremony.
+- CSS only where a style variation needs it.
+- JavaScript only after a real job is named and approved.
+- WordPress core CSS/JS may load when core blocks need it.
+- Feeds, comments, OPML, XFN, and microformats are not nostalgia. They are useful roads.
+
+Credits:
+
+- Typography defaults are informed by Butterick's Practical Typography.
+- Pickup truck icon is CC0 from SVG Repo.
+- Old-web habits borrowed from everyone who kept a links page.

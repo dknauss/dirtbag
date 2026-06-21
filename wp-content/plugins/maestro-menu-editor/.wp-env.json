@@ -1,0 +1,11 @@
+{
+	"core": "WordPress/WordPress#7.0",
+	"plugins": [],
+	"mappings": {
+		"wp-content/plugins/maestro-menu-editor": "."
+	},
+	"config": {
+		"WP_DEBUG": true,
+		"SCRIPT_DEBUG": true
+	}
+}

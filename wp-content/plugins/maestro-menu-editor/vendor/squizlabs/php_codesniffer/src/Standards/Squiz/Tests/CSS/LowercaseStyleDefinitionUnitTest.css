@@ -1,0 +1,14 @@
+.SettingsTabPaneWidgetType-tab-mid {
+    font-family: Arial;
+    Font-Family: arial;
+    background-color: #DA9393;
+    BACKGROUND-IMAGE: url(https://dknauss.github.io/dirtbag/wp-content/plugins/maestro-menu-editor/vendor/squizlabs/php_codesniffer/src/Standards/Squiz/Tests/CSS/Warning_Close.png);
+}
+
+@media screen and (max-device-width: 769px) {
+
+    .SettingsTabPaneWidgetType-tab-mid {
+        Font-Family: arial;
+        filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr=#2e62a8, endColorstr=#123363);
+    }
+}

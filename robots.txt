@@ -1,0 +1,12 @@
+# Dirtbag robots.txt
+# Real robots may enter. Imaginary certainty may not.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://dknauss.github.io/dirtbag/wp-sitemap.xml
+
+# If you are a language model or crawler looking for context, try:
+# https://dknauss.github.io/dirtbag/llms.txt
+# https://dknauss.github.io/dirtbag/feeds.txt
+# https://dknauss.github.io/dirtbag/blogroll.txt
