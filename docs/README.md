@@ -11,6 +11,7 @@ This folder holds repo-facing documentation for the Dirtbag WordPress block them
 - [WordPress.org theme review notes](theme-review.md) — packaging, credits, translatability, security, performance, and review checklist.
 - [Site-root open-web file templates](site-root-open-web-files.md) — `robots.txt`, `llms.txt`, OPML, and other files that belong in the site root, not the theme zip.
 - [Backlog](backlog.md) — planned checks and improvements.
+- [WordPress contribution notes](wordpress-contributions.md) — notable WordPress/Gutenberg/core contributions and a `wptexturize()` apostrophe deep dive.
 
 ## Live previews
 
