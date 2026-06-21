@@ -10,6 +10,7 @@ This folder holds repo-facing documentation for the Dirtbag WordPress block them
 - [Site logos, site icons, and favicons](site-icons-and-logos.md) — the three separate brand marks, where each displays, and which ones CSS can recolour.
 - [WordPress.org theme review notes](theme-review.md) — packaging, credits, translatability, security, performance, and review checklist.
 - [Site-root open-web file templates](site-root-open-web-files.md) — `robots.txt`, `llms.txt`, OPML, and other files that belong in the site root, not the theme zip.
+- [GitHub Pages static export](github-pages-static-export.md) — how the live demo at `dknauss.github.io/dirtbag` is crawled, rewritten, and deployed to the `gh-pages` branch.
 - [Backlog](backlog.md) — planned checks and improvements.
 - [WordPress contribution notes](wordpress-contributions.md) — notable WordPress/Gutenberg/core contributions and a `wptexturize()` apostrophe deep dive.
 
@@ -17,6 +18,7 @@ This folder holds repo-facing documentation for the Dirtbag WordPress block them
 
 - [Playground preview: stable tag](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/dknauss/dirtbag/main/playground/blueprint-stable.json)
 - [Playground preview: main branch](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/dknauss/dirtbag/main/playground/blueprint-main.json)
+- [Static demo (GitHub Pages)](https://dknauss.github.io/dirtbag/) — a crawled, backend-free snapshot. See [github-pages-static-export.md](github-pages-static-export.md).
 
 ## Project memory
 
