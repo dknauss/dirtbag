@@ -4,7 +4,7 @@
   "meta": {
     "title": "Dirtbag Theme — Stable Tag",
     "author": "Dan Knauss",
-    "description": "Preview the Dirtbag WordPress block theme pinned to the v0.1.11 release.",
+    "description": "Preview the Dirtbag WordPress block theme pinned to the v0.1.12 release.",
     "categories": [
       "theme",
       "block-theme"
@@ -21,7 +21,7 @@
       "themeData": {
         "resource": "git:directory",
         "url": "https://github.com/dknauss/dirtbag",
-        "ref": "9f03d9e59445bd17c41041873b39d39bbd079ea6",
+        "ref": "8efddc476f48c663f71d88fd24922558485b8efb",
         "refType": "commit",
         "path": "/"
       },
