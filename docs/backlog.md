@@ -65,6 +65,18 @@ Planned checks and improvements before a formal public release or WordPress.org 
   - Define persistence, privacy, accessibility, keyboard, and screen-reader behaviour before adding any public template surface.
   - Avoid app-like machinery in the theme; use a companion plugin if saving or private dashboard behaviour is needed.
 
+- **Amber/orange truck icon on Terminal and Hi-Vis**
+  - Try the amber/orange `truckIconFilter` (the value Amber CRT and Blueprint already use) on the **Terminal** and **Hi-Vis** styles. It looked good in passing. This only affects the in-page header logo; the browser-tab favicon is decoupled (opaque site icon) and is unaffected. Scope is tiny: edit `truckIconFilter` in `styles/terminal.json` (currently green) and `styles/hi-vis.json` (currently `none`, i.e. dark).
+  - **Terminal (amber truck on black)**
+    - Pro: amber-on-black is itself a classic CRT look (amber phosphor), so it reads as deliberate; warm/rusty tones suit a dirt truck better than acid green; strong contrast on pure black.
+    - Con: Terminal's palette is monochrome green by design — a non-green logo breaks that single-hue discipline and can look like a stray, un-themed element.
+    - Con: it visually collides with the **Amber CRT** style, whose identity *is* amber-on-black; sharing the amber truck blurs the Terminal vs Amber CRT distinction.
+  - **Hi-Vis (orange truck on yellow)**
+    - Pro: orange + yellow is a genuine safety/hi-vis pairing (hazard tape, cones); adds a warm focal accent to an otherwise flat yellow/black style.
+    - Con: contrast regression — Hi-Vis's whole premise is maximum legibility, and black-on-yellow (current) is near-max contrast; orange-on-yellow is markedly lower and undercuts the style's own accessibility selling point.
+    - Con: the amber filter was tuned against black backgrounds; on yellow it may look muddy or vibrate and likely needs a different orange.
+  - **If pursued:** re-check logo contrast on each affected style at small sizes, and re-run the style-picker "colour does not stick between styles" regression (Release QA item 2). Tentative lean: keep **Hi-Vis dark** for contrast integrity; amber on **Terminal** is worth an A/B, accepting (or otherwise resolving) the overlap with Amber CRT.
+
 ## Compatibility notes
 
 - **Breadcrumbs and WordPress 7.0**
