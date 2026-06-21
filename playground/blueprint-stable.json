@@ -21,7 +21,7 @@
       "themeData": {
         "resource": "git:directory",
         "url": "https://github.com/dknauss/dirtbag",
-        "ref": "e491f80ef7cd7531422b8f2671354c09c1f0df5e",
+        "ref": "5c228a8e22b1e2fc86a98957bd3fc7a92bc215c7",
         "refType": "commit",
         "path": "/"
       },
