@@ -6,6 +6,12 @@ This project follows the spirit of [Keep a Changelog](https://keepachangelog.com
 
 ## [Unreleased]
 
+## [0.1.14] - 2026-06-21
+
+### Changed
+
+- Packaging: `assets/icons/` now ships only the two SVGs the theme actually references (`pickup-truck-header.svg` for the Site Logo fallback, `pickup-truck.svg` for the h-card photo). The demo site-logo and favicon PNGs moved to `playground/media/` (export-ignored; the seed imports them from there), and three unused variants (`pickup-truck-header-white.svg`, `pickup-truck-white.svg`, `dirtbag-site-icon-white.png`) were removed. Trims the WordPress.org zip; the Playground demo's favicon behaviour is unchanged.
+
 ## [0.1.13] - 2026-06-21
 
 ### Added
