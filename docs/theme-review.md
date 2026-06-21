@@ -87,7 +87,7 @@ notes are non-blocking and intentional:
 
 | Note | Level | Verdict |
 | --- | --- | --- |
-| No `register_block_style` reference found | RECOMMENDED | **Ignore.** Block-theme false positive. Style variations live in `styles/*.json` and `theme.json`, not in PHP. The theme has no `functions.php` and ships no PHP runtime by design. |
+| No `register_block_style` reference found | RECOMMENDED | **Ignore.** Optional recommendation, not a defect. Dirtbag ships no custom per-block styles by design — it stays close to core blocks. `register_block_style()` registers per-block toolbar style options, which is a *different* feature from the global style variations in `styles/*.json` (those are whole-site looks, not block styles). Not adding block styles is an intentional choice. |
 | No `register_block_pattern` reference found | RECOMMENDED | **Ignore.** Block-theme false positive. Patterns are auto-registered by core from `patterns/*.php` headers; calling `register_block_pattern()` would double-register them. |
 | Possible hard-coded links in `patterns/blogroll-xfn.php` | INFO | **Ignore.** Intentional. A blogroll/XFN pattern is by definition a curated list of external links (indieweb.org, microformats.org, archive.org, textfiles.com). |
 | Only one text-domain (`dirtbag`) is used | INFO | **Ignore.** This is a pass confirmation — the single domain matches the theme slug, as required for language-pack compatibility. |
