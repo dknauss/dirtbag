@@ -7,7 +7,8 @@
 # Local (WordPress Studio) is the default. Override DIRTBAG_WP_CLI to point at a
 # different WP-CLI (e.g. a Playground/wp-now invocation) in other environments.
 #
-#   ./axe-styles.sh                       # sweep all variations on the Studio site
+#   ./axe-styles.sh                       # sweep a11y + truck-icon + screenshots per style
+#   ./axe-styles.sh truck-icon            # one spec across all styles (see test:styles:* scripts)
 #   DIRTBAG_BASE_URL=http://… ./axe-styles.sh
 set -uo pipefail
 
@@ -16,6 +17,12 @@ BASE="${DIRTBAG_BASE_URL:-http://localhost:8887}"
 WP_CLI="${DIRTBAG_WP_CLI:-studio wp --path $SITE}"
 APPLIER="${DIRTBAG_APPLIER:-/wordpress/wp-content/themes/dirtbag/playground/apply-style.php}"
 STYLES=(default terminal amber-crt blueprint hi-vis minimalist newspaper)
+
+# Optional Playwright file filter (e.g. `truck-icon`, `screenshots`, `a11y-styles`)
+# passed by the test:styles:* npm scripts. With no argument, run the per-style
+# specs EXCEPT the in-session sticking test — it self-switches styles via the
+# applier and must not run inside this per-style loop.
+SPEC="${1:-}"
 
 cd "$(dirname "$0")"
 
@@ -32,8 +39,13 @@ for style in "${STYLES[@]}"; do
     fail=1
     continue
   fi
-  DIRTBAG_STYLE="$style" DIRTBAG_BASE_URL="$BASE" \
-    npx playwright test --config playwright.styles.config.js || fail=1
+  if [ -n "$SPEC" ]; then
+    DIRTBAG_STYLE="$style" DIRTBAG_BASE_URL="$BASE" \
+      npx playwright test --config playwright.styles.config.js "$SPEC" || fail=1
+  else
+    DIRTBAG_STYLE="$style" DIRTBAG_BASE_URL="$BASE" \
+      npx playwright test --config playwright.styles.config.js --grep-invert "does not stick" || fail=1
+  fi
 done
 
 exit "$fail"
