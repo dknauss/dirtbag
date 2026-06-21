@@ -1,0 +1,719 @@
+Index: src/wp-includes/formatting.php
+===================================================================
+--- src/wp-includes/formatting.php	(revision 38586)
++++ src/wp-includes/formatting.php	(working copy)
+@@ -54,9 +54,9 @@
+ 		$closing_quote = null,
+ 		$opening_single_quote = null,
+ 		$closing_single_quote = null,
+-		$open_q_flag = '<!--oq-->',
+-		$open_sq_flag = '<!--osq-->',
+-		$apos_flag = '<!--apos-->';
++		$apos_flag, $open_sq_flag, $open_q_flag, $close_sq_flag, $close_q_flag, $prime_sq_flag, $prime_q_flag, $sq_flag, $q_flag, $primes_flag,
++		$flags_sq, $flags_q, $reals_sq, $reals_q,
++		$spaces;
+ 
+ 	// If there's nothing to do, just stop.
+ 	if ( empty( $text ) || false === $run_texturize ) {
+@@ -107,6 +107,27 @@
+ 		/* translators: em dash */
+ 		$em_dash = _x( '&#8212;', 'em dash' );
+ 
++		// Standardize size of flags to max of primes/quotes manipulated by wptexturize_primes().
++		// This will allow wptexturize_primes() to do its replacements without worrying about offsets changing.
++		$flag_len = max( 5, strlen( $closing_quote ), strlen( $prime ), strlen( $double_prime ), strlen( $closing_single_quote ) );
++
++		$apos_flag = str_pad( '<i a>', $flag_len, '>' );
++		$open_sq_flag = str_pad( '<i o>', $flag_len, '>' );
++		$close_sq_flag = str_pad( '<i c>', $flag_len, '>' );
++		$prime_sq_flag = str_pad( '<i p>', $flag_len, '>' );
++		$prime_q_flag = str_pad( '<i P>', $flag_len, '>' );
++		$open_q_flag = str_pad( '<i O>', $flag_len, '>' );
++		$close_q_flag = str_pad( '<i C>', $flag_len, '>' );
++		$sq_flag = str_repeat( "'", $flag_len );
++		$q_flag = str_repeat( '"', $flag_len );
++		$primes_flag = str_pad( '<i f>', $flag_len, '>' );
++
++		// Flags & reals arrays - used to reinstate the real values.
++		$flags_sq = array( $sq_flag, $prime_sq_flag, $open_sq_flag, $close_sq_flag, $apos_flag );
++		$reals_sq = array( "'", $prime, $opening_single_quote, $closing_single_quote, $apos );
++		$flags_q = array( $q_flag, $prime_q_flag, $open_q_flag, $close_q_flag );
++		$reals_q = array( '"', $double_prime, $opening_quote, $closing_quote );
++
+ 		$default_no_texturize_tags = array('pre', 'code', 'kbd', 'style', 'script', 'tt');
+ 		$default_no_texturize_shortcodes = array('code');
+ 
+@@ -139,10 +160,10 @@
+ 
+ 		// '99' and '99" are ambiguous among other patterns; assume it's an abbreviated year at the end of a quotation.
+ 		if ( "'" !== $apos || "'" !== $closing_single_quote ) {
+-			$dynamic[ '/\'(\d\d)\'(?=\Z|[.,:;!?)}\-\]]|&gt;|' . $spaces . ')/' ] = $apos_flag . '$1' . $closing_single_quote;
++			$dynamic[ '/\'(\d\d)\'(?=\Z|[.,:;!?)}\-\]]|&gt;|' . $spaces . ')/' ] = $apos_flag . '$1' . $close_sq_flag;
+ 		}
+ 		if ( "'" !== $apos || '"' !== $closing_quote ) {
+-			$dynamic[ '/\'(\d\d)"(?=\Z|[.,:;!?)}\-\]]|&gt;|' . $spaces . ')/' ] = $apos_flag . '$1' . $closing_quote;
++			$dynamic[ '/\'(\d\d)"(?=\Z|[.,:;!?)}\-\]]|&gt;|' . $spaces . ')/' ] = $apos_flag . '$1' . $close_q_flag;
+ 		}
+ 
+ 		// '99 '99s '99's (apostrophe)  But never '9 or '99% or '999 or '99.0.
+@@ -151,8 +172,8 @@
+ 		}
+ 
+ 		// Quoted Numbers like '0.42'
+-		if ( "'" !== $opening_single_quote && "'" !== $closing_single_quote ) {
+-			$dynamic[ '/(?<=\A|' . $spaces . ')\'(\d[.,\d]*)\'/' ] = $open_sq_flag . '$1' . $closing_single_quote;
++		if ( "'" !== $opening_single_quote || "'" !== $closing_single_quote ) {
++			$dynamic[ '/(?<=\A|' . $spaces . ')\'(\d[.,\d]*)\'/' ] = $open_sq_flag . '$1' . $close_sq_flag;
+ 		}
+ 
+ 		// Single quote at start, or preceded by (, {, <, [, ", -, or spaces.
+@@ -170,8 +191,8 @@
+ 		$dynamic = array();
+ 
+ 		// Quoted Numbers like "42"
+-		if ( '"' !== $opening_quote && '"' !== $closing_quote ) {
+-			$dynamic[ '/(?<=\A|' . $spaces . ')"(\d[.,\d]*)"/' ] = $open_q_flag . '$1' . $closing_quote;
++		if ( '"' !== $opening_quote || '"' !== $closing_quote ) {
++			$dynamic[ '/(?<=\A|' . $spaces . ')"(\d[.,\d]*)"/' ] = $open_q_flag . '$1' . $close_q_flag;
+ 		}
+ 
+ 		// Double quote at start, or preceded by (, {, <, [, -, or spaces, and not followed by spaces.
+@@ -214,71 +235,115 @@
+ 	$no_texturize_tags_stack = array();
+ 	$no_texturize_shortcodes_stack = array();
+ 
+-	// Look for shortcodes and HTML elements.
+-
+ 	preg_match_all( '@\[/?([^<>&/\[\]\x00-\x20=]++)@', $text, $matches );
+ 	$tagnames = array_intersect( array_keys( $shortcode_tags ), $matches[1] );
+-	$found_shortcodes = ! empty( $tagnames );
+-	$shortcode_regex = $found_shortcodes ? _get_wptexturize_shortcode_regex( $tagnames ) : '';
+-	$regex = _get_wptexturize_split_regex( $shortcode_regex );
+ 
+-	$textarr = preg_split( $regex, $text, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY );
++	if ( $tagnames ) {
++		// Set up shortcodes regular expression (used to strip within each split text part).
++		$shortcode_regex = '|' . _get_wptexturize_shortcode_regex( $tagnames );
+ 
+-	foreach ( $textarr as &$curl ) {
+-		// Only call _wptexturize_pushpop_element if $curl is a delimiter.
+-		$first = $curl[0];
+-		if ( '<' === $first ) {
+-			if ( '<!--' === substr( $curl, 0, 4 ) ) {
+-				// This is an HTML comment delimiter.
+-				continue;
+-			} else {
+-				// This is an HTML element delimiter.
++		// Set up no texturize shortcodes regular expression (used to split text input).
++		// No texturize shortcodes must also be registered to be ignored, so intersect with tagnames array.
++		$no_texturize_shortcodes = array_intersect( $no_texturize_shortcodes, $tagnames );
++		$no_texturize_shortcode_regex = $no_texturize_shortcodes ? _get_wptexturize_shortcode_regex( $no_texturize_shortcodes ) : '';
++	} else {
++		$shortcode_regex = $no_texturize_shortcode_regex = '';
++	}
+ 
+-				// Replace each & with &#038; unless it already looks like an entity.
+-				$curl = preg_replace( '/&(?!#(?:\d+|x[a-f0-9]+);|[a-z1-4]{1,8};)/i', '&#038;', $curl );
++	// Look for comments, non-inline (non-split) HTML elements and no texturize shortcodes.
+ 
+-				_wptexturize_pushpop_element( $curl, $no_texturize_tags_stack, $no_texturize_tags );
++	$regex = _get_wptexturize_split_regex( $no_texturize_shortcode_regex );
++
++	$textarr = preg_split( $regex, $text, -1, PREG_SPLIT_DELIM_CAPTURE );
++
++	foreach ( $textarr as $curl_idx => &$curl ) {
++		if ( 1 === $curl_idx % 2 ) {
++			// Delimiter.
++			$first = $curl[0];
++			if ( '<' === $first ) {
++				// If not a comment.
++				if ( '<!--' !== substr( $curl, 0, 4 ) ) {
++					// This is an HTML element delimiter.
++
++					// Replace each & with &#038; unless it already looks like an entity.
++					$curl = preg_replace( '/&(?!#(?:\d+|x[a-f0-9]+);|[a-z1-4]{1,8};)/i', '&#038;', $curl );
++
++					_wptexturize_pushpop_element( $curl, $no_texturize_tags_stack, $no_texturize_tags );
++				}
++			} elseif ( '[' === $first ) {
++				// This is a shortcode delimiter.
++
++				if ( '[[' !== substr( $curl, 0, 2 ) && ']]' !== substr( $curl, -2 ) ) {
++					// Looks like a normal shortcode.
++					_wptexturize_pushpop_element( $curl, $no_texturize_shortcodes_stack, $no_texturize_shortcodes );
++				} else {
++					// Looks like an escaped shortcode.
++				}
+ 			}
++		} elseif ( empty( $no_texturize_shortcodes_stack ) && empty( $no_texturize_tags_stack ) && '' !== trim( $curl ) ) {
++			// This is neither a delimiter, nor is this content inside of no_texturize pairs.  Do texturize.
+ 
+-		} elseif ( '' === trim( $curl ) ) {
+-			// This is a newline between delimiters.  Performance improves when we check this.
+-			continue;
++			// Add a space to any <br>s so that when stripped will be recognized as whitespace.
++			if ( $have_br = ( false !== stripos( $curl, '<br' ) ) ) {
++				$curl = preg_replace( '/<br[^>]*>/i', '$0 ', $curl );
++			}
+ 
+-		} elseif ( '[' === $first && $found_shortcodes && 1 === preg_match( '/^' . $shortcode_regex . '$/', $curl ) ) {
+-			// This is a shortcode delimiter.
++			if ( wptexturize_replace_init( $curl, '/<[^>]*>' . $shortcode_regex . '/S' ) ) { // The study option here makes a big difference.
+ 
+-			if ( '[[' !== substr( $curl, 0, 2 ) && ']]' !== substr( $curl, -2 ) ) {
+-				// Looks like a normal shortcode.
+-				_wptexturize_pushpop_element( $curl, $no_texturize_shortcodes_stack, $no_texturize_shortcodes );
++				wptexturize_replace_str( $curl, $static_characters, $static_replacements );
++
++				if ( false !== strpos( $curl, "'" ) ) {
++					wptexturize_replace_regex( $curl, $dynamic_characters['apos'], $dynamic_replacements['apos'] );
++					wptexturize_replace_str( $curl, "'", $sq_flag ); // Substitute single quotes with same-sized dummy so that wptexturize_primes() doesn't alter size of string.
++					$curl = wptexturize_primes( $curl, $sq_flag, $prime_sq_flag, $open_sq_flag, $close_sq_flag, $primes_flag, $spaces );
++					wptexturize_replace_str( $curl, $flags_sq, $reals_sq ); // Reinstate real values.
++				}
++				if ( false !== strpos( $curl, '"' ) ) {
++					wptexturize_replace_regex( $curl, $dynamic_characters['quote'], $dynamic_replacements['quote'] );
++					wptexturize_replace_str( $curl, '"', $q_flag ); // Substitute double quotes with same-sized dummy so that wptexturize_primes() doesn't alter size of string.
++					$curl = wptexturize_primes( $curl, $q_flag, $prime_q_flag, $open_q_flag, $close_q_flag, $primes_flag, $spaces );
++					wptexturize_replace_str( $curl, $flags_q, $reals_q ); // Reinstate real values.
++				}
++				if ( false !== strpos( $curl, '-' ) ) {
++					wptexturize_replace_regex( $curl, $dynamic_characters['dash'], $dynamic_replacements['dash'] );
++				}
++
++				// 9x9 (times), but never 0x9999
++				if ( 1 === preg_match( '/(?<=\d)x\d/', $curl ) ) {
++					// Searching for a digit is 10 times more expensive than for the x, so we avoid doing this one!
++					wptexturize_replace_regex( $curl, '/\b(\d(?(?<=0)[\d\.,]+|[\d\.,]*))x(?=\d[\d\.,]*\b)/', '$1&#215;' ); // Changed to use look ahead as can only deal with a single sub-replacement.
++				}
++
++				wptexturize_replace_final( $curl );
++
+ 			} else {
+-				// Looks like an escaped shortcode.
+-				continue;
+-			}
+ 
+-		} elseif ( empty( $no_texturize_shortcodes_stack ) && empty( $no_texturize_tags_stack ) ) {
+-			// This is neither a delimiter, nor is this content inside of no_texturize pairs.  Do texturize.
++				$curl = str_replace( $static_characters, $static_replacements, $curl );
+ 
+-			$curl = str_replace( $static_characters, $static_replacements, $curl );
++				if ( false !== strpos( $curl, "'" ) ) {
++					$curl = preg_replace( $dynamic_characters['apos'], $dynamic_replacements['apos'], $curl );
++					$curl = wptexturize_primes( $curl, "'", $prime, $open_sq_flag, $close_sq_flag, $primes_flag, $spaces );
++					$curl = str_replace( array( $apos_flag, $open_sq_flag, $close_sq_flag ), array( $apos, $opening_single_quote, $closing_single_quote ), $curl );
++				}
++				if ( false !== strpos( $curl, '"' ) ) {
++					$curl = preg_replace( $dynamic_characters['quote'], $dynamic_replacements['quote'], $curl );
++					$curl = wptexturize_primes( $curl, '"', $double_prime, $open_q_flag, $close_q_flag, $primes_flag, $spaces );
++					$curl = str_replace( array( $open_q_flag, $close_q_flag ), array( $opening_quote, $closing_quote ), $curl );
++				}
++				if ( false !== strpos( $curl, '-' ) ) {
++					$curl = preg_replace( $dynamic_characters['dash'], $dynamic_replacements['dash'], $curl );
++				}
+ 
+-			if ( false !== strpos( $curl, "'" ) ) {
+-				$curl = preg_replace( $dynamic_characters['apos'], $dynamic_replacements['apos'], $curl );
+-				$curl = wptexturize_primes( $curl, "'", $prime, $open_sq_flag, $closing_single_quote );
+-				$curl = str_replace( $apos_flag, $apos, $curl );
+-				$curl = str_replace( $open_sq_flag, $opening_single_quote, $curl );
++				// 9x9 (times), but never 0x9999
++				if ( 1 === preg_match( '/(?<=\d)x\d/', $curl ) ) {
++					// Searching for a digit is 10 times more expensive than for the x, so we avoid doing this one!
++					$curl = preg_replace( '/\b(\d(?(?<=0)[\d\.,]+|[\d\.,]*))x(\d[\d\.,]*)\b/', '$1&#215;$2', $curl );
++				}
+ 			}
+-			if ( false !== strpos( $curl, '"' ) ) {
+-				$curl = preg_replace( $dynamic_characters['quote'], $dynamic_replacements['quote'], $curl );
+-				$curl = wptexturize_primes( $curl, '"', $double_prime, $open_q_flag, $closing_quote );
+-				$curl = str_replace( $open_q_flag, $opening_quote, $curl );
+-			}
+-			if ( false !== strpos( $curl, '-' ) ) {
+-				$curl = preg_replace( $dynamic_characters['dash'], $dynamic_replacements['dash'], $curl );
+-			}
+ 
+-			// 9x9 (times), but never 0x9999
+-			if ( 1 === preg_match( '/(?<=\d)x\d/', $curl ) ) {
+-				// Searching for a digit is 10 times more expensive than for the x, so we avoid doing this one!
+-				$curl = preg_replace( '/\b(\d(?(?<=0)[\d\.,]+|[\d\.,]*))x(\d[\d\.,]*)\b/', '$1&#215;$2', $curl );
++			// Remove any spaces added to <br>s at the start.
++			if ( $have_br ) {
++				$curl = preg_replace( '/(<br[^>]*>) /i', '$1', $curl );
+ 			}
+ 
+ 			// Replace each & with &#038; unless it already looks like an entity.
+@@ -285,7 +350,6 @@
+ 			$curl = preg_replace( '/&(?!#(?:\d+|x[a-f0-9]+);|[a-z1-4]{1,8};)/i', '&#038;', $curl );
+ 		}
+ 	}
+-
+ 	return implode( '', $textarr );
+ }
+ 
+@@ -303,9 +367,8 @@
+  * @param string $close_quote The closing quote char to use for replacement.
+  * @return string The $haystack value after primes and quotes replacements.
+  */
+-function wptexturize_primes( $haystack, $needle, $prime, $open_quote, $close_quote ) {
+-	$spaces = wp_spaces_regexp();
+-	$flag = '<!--wp-prime-or-quote-->';
++function wptexturize_primes( $haystack, $needle, $prime, $open_quote, $close_quote, $flag, $spaces ) {
++	$flag_len = strlen( $flag );
+ 	$quote_pattern = "/$needle(?=\\Z|[.,:;!?)}\\-\\]]|&gt;|" . $spaces . ")/";
+ 	$prime_pattern    = "/(?<=\\d)$needle/";
+ 	$flag_after_digit = "/(?<=\\d)$flag/";
+@@ -332,13 +395,12 @@
+ 						// This is most likely to be problematic in the context of bug #18549.
+ 						$pos = strrpos( $sentence, $flag );
+ 					}
+-					$sentence = substr_replace( $sentence, $close_quote, $pos, strlen( $flag ) );
++					$sentence = substr_replace( $sentence, $close_quote, $pos, $flag_len );
+ 				}
+ 				// Use conventional replacement on any remaining primes and quotes.
+-				$sentence = preg_replace( $prime_pattern, $prime, $sentence );
+-				$sentence = preg_replace( $flag_after_digit, $prime, $sentence );
++				$sentence = preg_replace( array( $prime_pattern, $flag_after_digit ), $prime, $sentence );
+ 				$sentence = str_replace( $flag, $close_quote, $sentence );
+-			} elseif ( 1 == $count ) {
++			} elseif ( 1 === $count ) {
+ 				// Found only one closing quote candidate, so give it priority over primes.
+ 				$sentence = str_replace( $flag, $close_quote, $sentence );
+ 				$sentence = preg_replace( $prime_pattern, $prime, $sentence );
+@@ -347,11 +409,10 @@
+ 				$sentence = preg_replace( $prime_pattern, $prime, $sentence );
+ 			}
+ 		} else {
+-			$sentence = preg_replace( $prime_pattern, $prime, $sentence );
+-			$sentence = preg_replace( $quote_pattern, $close_quote, $sentence );
++			$sentence = preg_replace( array( $prime_pattern, $quote_pattern ), array( $prime, $close_quote ), $sentence );
+ 		}
+-		if ( '"' == $needle && false !== strpos( $sentence, '"' ) ) {
+-			$sentence = str_replace( '"', $close_quote, $sentence );
++		if ( '"' === $needle[0] && false !== strpos( $sentence, $needle ) ) {
++			$sentence = str_replace( $needle, $close_quote, $sentence );
+ 		}
+ 	}
+ 
+@@ -375,28 +436,13 @@
+ function _wptexturize_pushpop_element( $text, &$stack, $disabled_elements ) {
+ 	// Is it an opening tag or closing tag?
+ 	if ( isset( $text[1] ) && '/' !== $text[1] ) {
+-		$opening_tag = true;
+-		$name_offset = 1;
+-	} elseif ( 0 == count( $stack ) ) {
+-		// Stack is empty. Just stop.
+-		return;
+-	} else {
+-		$opening_tag = false;
+-		$name_offset = 2;
+-	}
+-
+-	// Parse out the tag name.
+-	$space = strpos( $text, ' ' );
+-	if ( false === $space ) {
+-		$space = -1;
+-	} else {
+-		$space -= $name_offset;
+-	}
+-	$tag = substr( $text, $name_offset, $space );
+-
+-	// Handle disabled tags.
+-	if ( in_array( $tag, $disabled_elements ) ) {
+-		if ( $opening_tag ) {
++		$space = strpos( $text, ' ' );
++		if ( false === $space ) {
++			$tag = substr( $text, 1, -1 );
++		} else {
++			$tag = substr( $text, 1, $space - 1 );
++		}
++		if ( in_array( $tag, $disabled_elements ) ) { // If $disabled_elements was array_flipped then could use hash lookup isset( $disabled_elements[ $tag ] ) here instead of linear lookup.
+ 			/*
+ 			 * This disables texturize until we find a closing tag of our type
+ 			 * (e.g. <pre>) even if there was invalid nesting before that
+@@ -404,9 +450,16 @@
+ 			 * Example: in the case <pre>sadsadasd</code>"baba"</pre>
+ 			 *          "baba" won't be texturize
+ 			 */
+-
+-			array_push( $stack, $tag );
+-		} elseif ( end( $stack ) == $tag ) {
++			$stack[] = $tag;
++		}
++	} elseif ( $stack ) {
++		$space = strpos( $text, ' ' );
++		if ( false === $space ) {
++			$tag = substr( $text, 2, -1 );
++		} else {
++			$tag = substr( $text, 2, $space - 2 );
++		}
++		if ( in_array( $tag, $disabled_elements ) && end( $stack ) === $tag ) { // Sim. could use isset( $disabled_elements[ $tag ] ) if above.
+ 			array_pop( $stack );
+ 		}
+ 	}
+@@ -413,6 +466,166 @@
+ }
+ 
+ /**
++ * Initialize the stripped string routines wptexturize_replace_XXX, setting the globals used.
++ * $str will be stripped of any strings that match the regular expression $search.
++ */
++function wptexturize_replace_init( &$str, $search ) {
++	global $wptexturize_strip_cnt, $wptexturize_strips, $wptexturize_adjusts;
++
++	$wptexturize_strip_cnt = 0;
++
++	if ( preg_match_all( $search, $str, $matches, PREG_OFFSET_CAPTURE ) ) {
++		$wptexturize_strips = $wptexturize_adjusts = $strs = array();
++		$diff = 0;
++		foreach ( $matches[0] as $entry ) {
++			list( $match, $offset ) = $entry;
++			$len = strlen( $match );
++			// Save details of stripped string.
++			$wptexturize_strips[] = array( $match, $offset - $diff /*, $len /* Store len if not using byte array in wptexturize_replace_final(). */ );
++			$diff += $len;
++			$strs[] = $match; // If using str_replace rather than (safer) preg_replace.
++		}
++		if ( $wptexturize_strip_cnt = count( $wptexturize_strips ) ) {
++			$str = str_replace( $strs, '', $str ); // Assuming simple matches replaceable in whole string (otherwise need to do preg_replace( $search, '', $str )).
++		}
++	}
++	return $wptexturize_strip_cnt;
++}
++
++/**
++ * Do a straight (non-regexp) string substitution, keeping tabs on the offset adjustments if have a stripped string.
++ */
++function wptexturize_replace_str( &$str, $search, $repl ) {
++	global $wptexturize_strip_cnt, $wptexturize_adjusts;
++
++	if ( $wptexturize_strip_cnt ) {
++		// Process simple string search, given replacement string $repl.
++		$searches = is_array( $search ) ? $search : array( $search );
++		$repls = is_array( $repl ) ? $repl : array( $repl );
++
++		// As replacements could interfere with later ones, treat each separately.
++		foreach ( $searches as $idx => $search_str ) {
++			if ( false !== ( $offset = strpos( $str, $search_str ) ) ) {
++				$repl_str = $repls[$idx];
++				$repl_len = strlen( $repl_str );
++				$len = strlen( $search_str );
++				$diff_len = $repl_len - $len;
++				if ( $diff_len ) {
++					$diff = 0;
++					do {
++						// Store adjustment details.
++						$wptexturize_adjusts[] = array( $offset + $diff, $repl_len, $len );
++						$diff += $diff_len;
++					} while ( false !== ( $offset = strpos( $str, $search_str, $offset + $len ) ) );
++				}
++				$str = str_replace( $search_str, $repl_str, $str );
++			}
++		}
++	} else {
++		$str = str_replace( $search, $repl, $str );
++	}
++}
++
++/**
++ * Do a regexp string substitution, keeping tabs on the offset adjustments if have a stripped string.
++ */
++function wptexturize_replace_regex( &$str, $search, $repl ) {
++	global $wptexturize_strip_cnt, $wptexturize_adjusts;
++
++	if ( $wptexturize_strip_cnt ) {
++		// Process regex, given replacement string $repl.
++		$searches = is_array( $search ) ? $search : array( $search );
++		$repls = is_array( $repl ) ? $repl : array( $repl );
++
++		// As replacements could interfere with later ones, treat each separately.
++		foreach ( $searches as $idx => $re ) {
++			if ( preg_match_all( $re, $str, $matches, PREG_OFFSET_CAPTURE ) ) {
++				$repl_str = $repls[$idx];
++				$repl_len = strlen( $repl_str );
++				$diff = 0;
++				// Allow for a single captured replacement.
++				if ( false !== ( $pos1 = strpos( $repl_str, '$1' ) ) ) {
++					foreach ( $matches[0] as $i => $entry ) {
++						list( $match, $offset ) = $entry;
++						// For a 'pre$1post' replacement, need to track pre-submatch replace and then post-submatch replace.
++						$pre_repl_len = $pos1;
++						$pre_len = $matches[1][$i][1] - $offset; // Submatch offset less full match offset.
++						if ( $pre_repl_len !== $pre_len ) {
++							// Store adjustment details.
++							$wptexturize_adjusts[] = array( $offset + $diff, $pre_repl_len, $pre_len );
++							$diff += $pre_repl_len - $pre_len;
++						}
++						$len1 = strlen( $matches[1][$i][0] ); // Length of submatch string.
++						$post_repl_len = $repl_len - ( $pre_repl_len + 2 );
++						$post_len = strlen( $match ) - ( $pre_len + $len1 );
++						if ( $post_repl_len !== $post_len ) {
++							// Store adjustment details.
++							$offset += $pre_len + $len1; // Jump over substituted pre-string & submatch.
++							$wptexturize_adjusts[] = array( $offset + $diff, $post_repl_len, $post_len );
++							$diff += $post_repl_len - $post_len;
++						}
++					}
++				} else {
++					foreach ( $matches[0] as $entry ) {
++						list( $match, $offset ) = $entry;
++						$len = strlen( $match );
++						if ( $repl_len !== $len ) {
++							// Store adjustment details.
++							$wptexturize_adjusts[] = array( $offset + $diff, $repl_len, $len );
++							$diff += $repl_len - $len;
++						}
++					}
++				}
++				$str = preg_replace( $re, $repl_str, $str );
++			}
++		}
++	} else {
++		$str = preg_replace( $search, $repl, $str );
++	}
++}
++
++/**
++ * Restore stripped strings to $str.
++ */
++function wptexturize_replace_final( &$str ) {
++	global $wptexturize_strip_cnt, $wptexturize_strips, $wptexturize_adjusts;
++
++	// Finalize - restore stripped strings.
++	if ( $wptexturize_strip_cnt ) {
++		// Calculate offset adjustments.
++		foreach ( $wptexturize_adjusts as $entry ) {
++			list( $offset, $repl_len, $len ) = $entry;
++			for ( $i = $wptexturize_strip_cnt - 1; $i >= 0 && $offset < ( $strip_offset = &$wptexturize_strips[$i][1]); $i-- ) {
++				if ( $len > 1 && $offset + 1 < $strip_offset ) {
++					$strip_offset += $repl_len - $len;
++				} else {
++					$strip_offset += $repl_len - 1;
++				}
++			}
++		}
++
++		// Restore stripped strings.
++		$str_arr = str_split( $str ); // Using byte array (seems to be a bit quicker than substr_replace()).
++		array_unshift( $str_arr, '' );
++		foreach ( $wptexturize_strips as $entry ) {
++			list( $strip, $offset ) = $entry;
++			$str_arr[$offset] .= $strip;
++		}
++		$str = implode( '', $str_arr );
++		unset( $str_arr );
++		/* If not using byte array. (Note need to store $len in wptexturize_replace_init()).
++		$diff = 0;
++		foreach ( $wptexturize_strips as $entry ) {
++			list( $strip, $offset, $len ) = $entry;
++			$str = substr_replace( $str, $strip, $offset + $diff, 0 );
++			$diff += $len;
++		}
++		/**/
++		$wptexturize_strip_cnt = 0;
++	}
++}
++
++/**
+  * Replaces double line-breaks with paragraph elements.
+  *
+  * A group of regex replaces used to identify text formatted with newlines and
+@@ -665,11 +878,14 @@
+ 			. ')*+'         // Loop possessively.
+ 			. '(?:-->)?';   // End of comment. If not found, match all input.
+ 
++		$nonsplit_regex = '\/?(?:a|abbr|b|big|br|cite|dfn|em|i|mark|q|s|samp|small|span|strong|sub|sup|u|var)(?![0-9A-Za-z])[^>]*>';
++
+ 		$html_regex =			 // Needs replaced with wp_html_split() per Shortcode API Roadmap.
+ 			  '<'                // Find start of element.
+ 			. '(?(?=!--)'        // Is this a comment?
+ 			.     $comment_regex // Find end of comment.
+ 			. '|'
++			.     '(?!' . $nonsplit_regex . ')' // Exclude inline html elements.
+ 			.     '[^>]*>?'      // Find end of element. If not found, match all input.
+ 			. ')';
+ 	}
+Index: tests/phpunit/tests/formatting/WPTexturize.php
+===================================================================
+--- tests/phpunit/tests/formatting/WPTexturize.php	(revision 38586)
++++ tests/phpunit/tests/formatting/WPTexturize.php	(working copy)
+@@ -80,16 +80,16 @@
+ 	 */
+ 	function test_quotes() {
+ 		$this->assertEquals('&#8220;Quoted String&#8221;', wptexturize('"Quoted String"'));
+-		//$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;', wptexturize('Here is "<a href="http://example.com">a test with a link</a>"'));
+-		//$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link and a period</a>&#8221;.', wptexturize('Here is "<a href="http://example.com">a test with a link and a period</a>".'));
++		$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;', wptexturize('Here is "<a href="http://example.com">a test with a link</a>"'));
++		$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link and a period</a>&#8221;.', wptexturize('Here is "<a href="http://example.com">a test with a link and a period</a>".'));
+ 		$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221; and a space.', wptexturize('Here is "<a href="http://example.com">a test with a link</a>" and a space.'));
+ 		$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a> and some text quoted&#8221;', wptexturize('Here is "<a href="http://example.com">a test with a link</a> and some text quoted"'));
+-		//$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;, and a comma.', wptexturize('Here is "<a href="http://example.com">a test with a link</a>", and a comma.'));
+-		//$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;; and a semi-colon.', wptexturize('Here is "<a href="http://example.com">a test with a link</a>"; and a semi-colon.'));
+-		//$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;- and a dash.', wptexturize('Here is "<a href="http://example.com">a test with a link</a>"- and a dash.'));
+-		//$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;&#8230; and ellipses.', wptexturize('Here is "<a href="http://example.com">a test with a link</a>"... and ellipses.'));
+-		//$this->assertEquals('Here is &#8220;a test <a href="http://example.com">with a link</a>&#8221;.', wptexturize('Here is "a test <a href="http://example.com">with a link</a>".'));
+-		//$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;and a work stuck to the end.', wptexturize('Here is "<a href="http://example.com">a test with a link</a>"and a work stuck to the end.'));
++		$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;, and a comma.', wptexturize('Here is "<a href="http://example.com">a test with a link</a>", and a comma.'));
++		$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;; and a semi-colon.', wptexturize('Here is "<a href="http://example.com">a test with a link</a>"; and a semi-colon.'));
++		$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;- and a dash.', wptexturize('Here is "<a href="http://example.com">a test with a link</a>"- and a dash.'));
++		$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;&#8230; and ellipses.', wptexturize('Here is "<a href="http://example.com">a test with a link</a>"... and ellipses.'));
++		$this->assertEquals('Here is &#8220;a test <a href="http://example.com">with a link</a>&#8221;.', wptexturize('Here is "a test <a href="http://example.com">with a link</a>".'));
++		$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;and a work stuck to the end.', wptexturize('Here is "<a href="http://example.com">a test with a link</a>"and a work stuck to the end.'));
+ 		$this->assertEquals('A test with a finishing number, &#8220;like 23&#8221;.', wptexturize('A test with a finishing number, "like 23".'));
+ 		$this->assertEquals('A test with a number, &#8220;like 62&#8221;, is nice to have.', wptexturize('A test with a number, "like 62", is nice to have.'));
+ 	}
+@@ -144,8 +144,8 @@
+ 	 */
+ 	function test_other_html() {
+ 		$this->assertEquals('&#8216;<strong>', wptexturize("'<strong>"));
+-		//$this->assertEquals('&#8216;<strong>Quoted Text</strong>&#8217;,', wptexturize("'<strong>Quoted Text</strong>',"));
+-		//$this->assertEquals('&#8220;<strong>Quoted Text</strong>&#8221;,', wptexturize('"<strong>Quoted Text</strong>",'));
++		$this->assertEquals('&#8216;<strong>Quoted Text</strong>&#8217;,', wptexturize("'<strong>Quoted Text</strong>',"));
++		$this->assertEquals('&#8220;<strong>Quoted Text</strong>&#8221;,', wptexturize('"<strong>Quoted Text</strong>",'));
+ 	}
+ 
+ 	function test_x() {
+@@ -1444,7 +1444,8 @@
+ 			),
+ 			array(
+ 				'[Let\'s get crazy<input>[caption code="<a href=\'?a[]=100\'>hello</a>"]</input>world]', // caption shortcode is invalid here because it contains [] chars.
+-				'[Let&#8217;s get crazy<input>[caption code=&#8221;<a href=\'?a[]=100\'>hello</a>&#8220;]</input>world]',
++				//'[Let&#8217;s get crazy<input>[caption code=&#8221;<a href=\'?a[]=100\'>hello</a>&#8220;]</input>world]', // Incompatibility... (was seeing "] which went to open quote)
++				'[Let&#8217;s get crazy<input>[caption code=&#8221;<a href=\'?a[]=100\'>hello</a>&#8221;]</input>world]', // Now sees [caption code="hello"] which goes to 2 closing quotes.
+ 			),
+ 			array(
+ 				'<> ... <>',
+@@ -1766,6 +1767,10 @@
+ 				"word word', she said",
+ 				"word word!closeq1!, she said",
+ 			),
++			array(
++				'\'<a href="#"><small>word</small></a> "<i>42.00</i>" <b>word</b> <big>\'42\'</big> <em>42"</em> <sup>\'2\'</sup><br>"<i>21</i>" <i><b>2</b>x</i>21 <abbr>w</abbr>ord 0.<small>5</small>x<span>8</span>4<strong> \'</strong>4<var>t2\'',
++				'!openq1!<a href="#"><small>word</small></a> !openq2!<i>42.00</i>!closeq2! <b>word</b> <big>!apos!42!closeq1!</big> <em>42!prime2!</em> <sup>!openq1!2!closeq1!</sup><br>!openq2!<i>21</i>!closeq2! <i><b>2</b>&#215;</i>21 <abbr>w</abbr>ord 0.<small>5</small>&#215;<span>8</span>4<strong> !openq1!</strong>4<var>t2!closeq1!',
++			),
+ 		);
+ 	}
+ 
+@@ -2086,4 +2091,120 @@
+ 		require_once( DIR_TESTDATA . '/formatting/whole-posts.php' );
+ 		return data_whole_posts();
+ 	}
+-}
+\ No newline at end of file
++
++	/**
++	 * Test that double quotes and apostrophes close correctly in the presence of inline html tags.
++	 *
++	 * @ticket 18549
++	 * @dataProvider data_inline_end_tags
++	 */
++	function test_inline_end_tags( $input, $output ) {
++		return $this->assertEquals( $output, wptexturize( $input ) );
++	}
++
++	function data_inline_end_tags() {
++		return array(
++			array(
++				'The word is "<a href="http://example.com/">quoted</a>".',
++				'The word is &#8220;<a href="http://example.com/">quoted</a>&#8221;.',
++			),
++			array(
++				'The word is \'<a href="http://example.com/">quoted</a>\'',
++				'The word is &#8216;<a href="http://example.com/">quoted</a>&#8217;',
++			),
++			array(
++				'The word is \'<a href="http://example.com/">quoted.</a>\'',
++				'The word is &#8216;<a href="http://example.com/">quoted.</a>&#8217;',
++			),
++			array(
++				'The word is \'<a href="http://example.com/">quoted</a>\'.',
++				'The word is &#8216;<a href="http://example.com/">quoted</a>&#8217;.',
++			),
++			array(
++				'The word is not \'<a href="http://example.com/">quot</a>\'d',
++				'The word is not &#8216;<a href="http://example.com/">quot</a>&#8217;d',
++			),
++			array(
++				'<em>John</em>\'s',
++				'<em>John</em>&#8217;s',
++			),
++			array(
++				'\'<em>John</em>\'s\'',
++				'&#8216;<em>John</em>&#8217;s&#8217;',
++			),
++			array(
++				'"<em>John</em>\'s"',
++				'&#8220;<em>John</em>&#8217;s&#8221;',
++			),
++			array(
++				'<em>"John"</em>\'s',
++				//'<em>&#8220;John&#8221;</em>&#8217;s', // Should be but...
++				'<em>&#8220;John&#8221;</em>&#8216;s', // Wrong: the ' in the stripped "John"'s seen as an opening single quote.
++			),
++			array(
++				'<em>\'John\'</em>\'s',
++				//'<em>&#8216;John&#8217;</em>&#8217;s', // Should be but...
++				'<em>&#8216;John&#8221;</em>s', // Wrong: the '' in the stripped 'John''s seen as a closing double tick quote.
++			),
++			array(
++				'<strong>Read more: </strong>"<a href="http://blah.com/test">Something (else)</a>"</p>',
++				'<strong>Read more: </strong>&#8220;<a href="http://blah.com/test">Something (else)</a>&#8221;</p>',
++			),
++
++		);
++	}
++
++	/**
++	 * Test low-level wptexturize_replace_xxx routines.
++	 * @ticket wptexturize_replace_xxx
++	 */
++	function test_wptexturize_replace() {
++		$orig_str = '<a href="#">0<abbr>1</abbr></a>2<b>2</b>345<big>5</big>6<br>77<dfn></em>8<i><samp>9</samp>A<small>B</small>CDE<span></span>F<strong>G</sub>[H<sup>]<var>I</var>';
++
++		$str = $orig_str;
++		wptexturize_replace_init( $str, '/<[^>]*>|\[H[^\]]*\]/' );
++		$this->assertEquals( '0122345567789ABCDEFGI', $str );
++
++		wptexturize_replace_final( $str );
++		$this->assertEquals( $orig_str, $str );
++
++		wptexturize_replace_init( $str, '/<[^>]*>|\[H[^\]]*\]/' );
++		$this->assertEquals( '0122345567789ABCDEFGI', $str );
++
++		wptexturize_replace_str( $str, '5', 'EF' );
++		$this->assertEquals( '012234EFEF67789ABCDEFGI', $str );
++
++		wptexturize_replace_regex( $str, '/2/', '2BB2' );
++		$this->assertEquals( '012BB22BB234EFEF67789ABCDEFGI', $str );
++
++		wptexturize_replace_regex( $str, '/(3)4/', '$1FOUR' );
++		$this->assertEquals( '012BB22BB23FOUREFEF67789ABCDEFGI', $str );
++
++		wptexturize_replace_str( $str, '8', 'B' );
++		$this->assertEquals( '012BB22BB23FOUREFEF677B9ABCDEFGI', $str );
++
++		wptexturize_replace_regex( $str, '/7/', '7EFEN' );
++		$this->assertEquals( '012BB22BB23FOUREFEF67EFEN7EFENB9ABCDEFGI', $str );
++
++		wptexturize_replace_str( $str, '6', '666' );
++		$this->assertEquals( '012BB22BB23FOUREFEF6667EFEN7EFENB9ABCDEFGI', $str );
++
++		wptexturize_replace_str( $str, '1', '12' );
++		$this->assertEquals( '0122BB22BB23FOUREFEF6667EFEN7EFENB9ABCDEFGI', $str );
++
++		wptexturize_replace_str( $str, 'BC', 'BCBC' );
++		$this->assertEquals( '0122BB22BB23FOUREFEF6667EFEN7EFENB9ABCBCDEFGI', $str );
++
++		wptexturize_replace_regex( $str, '/3(FO)U/', 'THREE$1EWE' );
++		$this->assertEquals( '0122BB22BB2THREEFOEWEREFEF6667EFEN7EFENB9ABCBCDEFGI', $str );
++
++		wptexturize_replace_regex( $str, '/(E)F/', '$1' );
++		$this->assertEquals( '0122BB22BB2THREEOEWEREE6667EEN7EENB9ABCBCDEGI', $str );
++
++		wptexturize_replace_regex( $str, '/G/', '' );
++		$this->assertEquals( '0122BB22BB2THREEOEWEREE6667EEN7EENB9ABCBCDEI', $str );
++
++		wptexturize_replace_final( $str );
++		$this->assertEquals( '<a href="#">0<abbr>12</abbr></a>2BB2<b>2BB2</b>THREEOEWERE<big>E</big>666<br>7EEN7EEN<dfn></em>B<i><samp>9</samp>A<small>BCBC</small>DE<span></span><strong></sub>[H<sup>]<var>I</var>', $str );
++	}
++}

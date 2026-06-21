@@ -1,0 +1,184 @@
+Index: tests/phpunit/tests/formatting/WPTexturize.php
+===================================================================
+--- tests/phpunit/tests/formatting/WPTexturize.php	(revision 33728)
++++ tests/phpunit/tests/formatting/WPTexturize.php	(working copy)
+@@ -80,16 +80,16 @@
+ 	 */
+ 	function test_quotes() {
+ 		$this->assertEquals('&#8220;Quoted String&#8221;', wptexturize('"Quoted String"'));
+-		//$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;', wptexturize('Here is "<a href="http://example.com">a test with a link</a>"'));
+-		//$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link and a period</a>&#8221;.', wptexturize('Here is "<a href="http://example.com">a test with a link and a period</a>".'));
++		$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;', wptexturize('Here is "<a href="http://example.com">a test with a link</a>"'));
++		$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link and a period</a>&#8221;.', wptexturize('Here is "<a href="http://example.com">a test with a link and a period</a>".'));
+ 		$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221; and a space.', wptexturize('Here is "<a href="http://example.com">a test with a link</a>" and a space.'));
+ 		$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a> and some text quoted&#8221;', wptexturize('Here is "<a href="http://example.com">a test with a link</a> and some text quoted"'));
+-		//$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;, and a comma.', wptexturize('Here is "<a href="http://example.com">a test with a link</a>", and a comma.'));
+-		//$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;; and a semi-colon.', wptexturize('Here is "<a href="http://example.com">a test with a link</a>"; and a semi-colon.'));
+-		//$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;- and a dash.', wptexturize('Here is "<a href="http://example.com">a test with a link</a>"- and a dash.'));
+-		//$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;&#8230; and ellipses.', wptexturize('Here is "<a href="http://example.com">a test with a link</a>"... and ellipses.'));
+-		//$this->assertEquals('Here is &#8220;a test <a href="http://example.com">with a link</a>&#8221;.', wptexturize('Here is "a test <a href="http://example.com">with a link</a>".'));
+-		//$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;and a work stuck to the end.', wptexturize('Here is "<a href="http://example.com">a test with a link</a>"and a work stuck to the end.'));
++		$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;, and a comma.', wptexturize('Here is "<a href="http://example.com">a test with a link</a>", and a comma.'));
++		$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;; and a semi-colon.', wptexturize('Here is "<a href="http://example.com">a test with a link</a>"; and a semi-colon.'));
++		$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;- and a dash.', wptexturize('Here is "<a href="http://example.com">a test with a link</a>"- and a dash.'));
++		$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;&#8230; and ellipses.', wptexturize('Here is "<a href="http://example.com">a test with a link</a>"... and ellipses.'));
++		$this->assertEquals('Here is &#8220;a test <a href="http://example.com">with a link</a>&#8221;.', wptexturize('Here is "a test <a href="http://example.com">with a link</a>".'));
++		$this->assertEquals('Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;and a work stuck to the end.', wptexturize('Here is "<a href="http://example.com">a test with a link</a>"and a work stuck to the end.'));
+ 		$this->assertEquals('A test with a finishing number, &#8220;like 23&#8221;.', wptexturize('A test with a finishing number, "like 23".'));
+ 		$this->assertEquals('A test with a number, &#8220;like 62&#8221;, is nice to have.', wptexturize('A test with a number, "like 62", is nice to have.'));
+ 	}
+@@ -144,8 +144,8 @@
+ 	 */
+ 	function test_other_html() {
+ 		$this->assertEquals('&#8216;<strong>', wptexturize("'<strong>"));
+-		//$this->assertEquals('&#8216;<strong>Quoted Text</strong>&#8217;,', wptexturize("'<strong>Quoted Text</strong>',"));
+-		//$this->assertEquals('&#8220;<strong>Quoted Text</strong>&#8221;,', wptexturize('"<strong>Quoted Text</strong>",'));
++		$this->assertEquals('&#8216;<strong>Quoted Text</strong>&#8217;,', wptexturize("'<strong>Quoted Text</strong>',"));
++		$this->assertEquals('&#8220;<strong>Quoted Text</strong>&#8221;,', wptexturize('"<strong>Quoted Text</strong>",'));
+ 	}
+ 
+ 	function test_x() {
+@@ -1440,7 +1440,8 @@
+ 			),
+ 			array(
+ 				'[Let\'s get crazy<input>[caption code="<a href=\'?a[]=100\'>hello</a>"]</input>world]', // caption shortcode is invalid here because it contains [] chars.
+-				'[Let&#8217;s get crazy<input>[caption code=&#8221;<a href=\'?a[]=100\'>hello</a>&#8220;]</input>world]',
++				//'[Let&#8217;s get crazy<input>[caption code=&#8221;<a href=\'?a[]=100\'>hello</a>&#8220;]</input>world]', // Incompatibility... (was seeing "] which went to open quote)
++				'[Let&#8217;s get crazy<input>[caption code=&#8221;<a href=\'?a[]=100\'>hello</a>&#8221;]</input>world]', // Now sees [caption code="hello"] which goes to 2 closing quotes.
+ 			),
+ 			array(
+ 				'<> ... <>',
+@@ -1762,6 +1763,10 @@
+ 				"word word', she said",
+ 				"word word!closeq1!, she said",
+ 			),
++			array(
++				'\'<a href="#"><small>word</small></a> "<i>42.00</i>" <b>word</b> <big>\'42\'</big> <em>42"</em> <sup>\'2\'</sup><br>"<i>21</i>" <i><b>2</b>x</i>21 <abbr>w</abbr>ord 0.<small>5</small>x<span>8</span>4<strong> \'</strong>4<var>t2\'',
++				'!openq1!<a href="#"><small>word</small></a> !openq2!<i>42.00</i>!closeq2! <b>word</b> <big>!apos!42!closeq1!</big> <em>42!prime2!</em> <sup>!openq1!2!closeq1!</sup><br>!openq2!<i>21</i>!closeq2! <i><b>2</b>&#215;</i>21 <abbr>w</abbr>ord 0.<small>5</small>&#215;<span>8</span>4<strong> !openq1!</strong>4<var>t2!closeq1!',
++			),
+ 		);
+ 	}
+ 
+@@ -2048,4 +2053,120 @@
+ 			),
+ 		);
+ 	}
+-}
+\ No newline at end of file
++
++	/**
++	 * Test that double quotes and apostrophes close correctly in the presence of inline html tags.
++	 *
++	 * @ticket 18549
++	 * @dataProvider data_inline_end_tags
++	 */
++	function test_inline_end_tags( $input, $output ) {
++		return $this->assertEquals( $output, wptexturize( $input ) );
++	}
++
++	function data_inline_end_tags() {
++		return array(
++			array(
++				'The word is "<a href="http://example.com/">quoted</a>".',
++				'The word is &#8220;<a href="http://example.com/">quoted</a>&#8221;.',
++			),
++			array(
++				'The word is \'<a href="http://example.com/">quoted</a>\'',
++				'The word is &#8216;<a href="http://example.com/">quoted</a>&#8217;',
++			),
++			array(
++				'The word is \'<a href="http://example.com/">quoted.</a>\'',
++				'The word is &#8216;<a href="http://example.com/">quoted.</a>&#8217;',
++			),
++			array(
++				'The word is \'<a href="http://example.com/">quoted</a>\'.',
++				'The word is &#8216;<a href="http://example.com/">quoted</a>&#8217;.',
++			),
++			array(
++				'The word is not \'<a href="http://example.com/">quot</a>\'d',
++				'The word is not &#8216;<a href="http://example.com/">quot</a>&#8217;d',
++			),
++			array(
++				'<em>John</em>\'s',
++				'<em>John</em>&#8217;s',
++			),
++			array(
++				'\'<em>John</em>\'s\'',
++				'&#8216;<em>John</em>&#8217;s&#8217;',
++			),
++			array(
++				'"<em>John</em>\'s"',
++				'&#8220;<em>John</em>&#8217;s&#8221;',
++			),
++			array(
++				'<em>"John"</em>\'s',
++				//'<em>&#8220;John&#8221;</em>&#8217;s', // Should be but...
++				'<em>&#8220;John&#8221;</em>&#8216;s', // Wrong: the ' in the stripped "John"'s seen as an opening single quote.
++			),
++			array(
++				'<em>\'John\'</em>\'s',
++				//'<em>&#8216;John&#8217;</em>&#8217;s', // Should be but...
++				'<em>&#8216;John&#8221;</em>s', // Wrong: the '' in the stripped 'John''s seen as a closing double tick quote.
++			),
++			array(
++				'<strong>Read more: </strong>"<a href="http://blah.com/test">Something (else)</a>"</p>',
++				'<strong>Read more: </strong>&#8220;<a href="http://blah.com/test">Something (else)</a>&#8221;</p>',
++			),
++
++		);
++	}
++
++	/**
++	 * Test low-level wptexturize_replace_xxx routines.
++	 * @ticket wptexturize_replace_xxx
++	 */
++	function test_wptexturize_replace() {
++		$orig_str = '<a href="#">0<abbr>1</abbr></a>2<b>2</b>345<big>5</big>6<br>77<dfn></em>8<i><samp>9</samp>A<small>B</small>CDE<span></span>F<strong>G</sub>[H<sup>]<var>I</var>';
++
++		$str = $orig_str;
++		wptexturize_replace_init( $str, '/<[^>]*>|\[H[^\]]*\]/' );
++		$this->assertEquals( '0122345567789ABCDEFGI', $str );
++
++		wptexturize_replace_final( $str );
++		$this->assertEquals( $orig_str, $str );
++
++		wptexturize_replace_init( $str, '/<[^>]*>|\[H[^\]]*\]/' );
++		$this->assertEquals( '0122345567789ABCDEFGI', $str );
++
++		wptexturize_replace_str( $str, '5', 'EF' );
++		$this->assertEquals( '012234EFEF67789ABCDEFGI', $str );
++
++		wptexturize_replace_regex( $str, '/2/', '2BB2' );
++		$this->assertEquals( '012BB22BB234EFEF67789ABCDEFGI', $str );
++
++		wptexturize_replace_regex( $str, '/(3)4/', '$1FOUR' );
++		$this->assertEquals( '012BB22BB23FOUREFEF67789ABCDEFGI', $str );
++
++		wptexturize_replace_str( $str, '8', 'B' );
++		$this->assertEquals( '012BB22BB23FOUREFEF677B9ABCDEFGI', $str );
++
++		wptexturize_replace_regex( $str, '/7/', '7EFEN' );
++		$this->assertEquals( '012BB22BB23FOUREFEF67EFEN7EFENB9ABCDEFGI', $str );
++
++		wptexturize_replace_str( $str, '6', '666' );
++		$this->assertEquals( '012BB22BB23FOUREFEF6667EFEN7EFENB9ABCDEFGI', $str );
++
++		wptexturize_replace_str( $str, '1', '12' );
++		$this->assertEquals( '0122BB22BB23FOUREFEF6667EFEN7EFENB9ABCDEFGI', $str );
++
++		wptexturize_replace_str( $str, 'BC', 'BCBC' );
++		$this->assertEquals( '0122BB22BB23FOUREFEF6667EFEN7EFENB9ABCBCDEFGI', $str );
++
++		wptexturize_replace_regex( $str, '/3(FO)U/', 'THREE$1EWE' );
++		$this->assertEquals( '0122BB22BB2THREEFOEWEREFEF6667EFEN7EFENB9ABCBCDEFGI', $str );
++
++		wptexturize_replace_regex( $str, '/(E)F/', '$1' );
++		$this->assertEquals( '0122BB22BB2THREEOEWEREE6667EEN7EENB9ABCBCDEGI', $str );
++
++		wptexturize_replace_regex( $str, '/G/', '' );
++		$this->assertEquals( '0122BB22BB2THREEOEWEREE6667EEN7EENB9ABCBCDEI', $str );
++
++		wptexturize_replace_final( $str );
++		$this->assertEquals( '<a href="#">0<abbr>12</abbr></a>2BB2<b>2BB2</b>THREEOEWERE<big>E</big>666<br>7EEN7EEN<dfn></em>B<i><samp>9</samp>A<small>BCBC</small>DE<span></span><strong></sub>[H<sup>]<var>I</var>', $str );
++	}
++}

@@ -21,3 +21,6 @@ tests/node_modules/
 tests/test-results/
 tests/playwright-report/
 tests/blueprint.ci.json
+
+# Local-only working draft — keep on disk, never commit.
+docs/repro/wptexturize-18549-trac-comment.md

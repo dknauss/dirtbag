@@ -1,0 +1,141 @@
+diff --git a/src/wp-includes/formatting.php b/src/wp-includes/formatting.php
+index e3681b0..57100df 100644
+--- a/src/wp-includes/formatting.php
++++ b/src/wp-includes/formatting.php
+@@ -229,6 +229,8 @@ function wptexturize( $text, $reset = false ) {
+ 
+ 	$no_texturize_tags_stack       = array();
+ 	$no_texturize_shortcodes_stack = array();
++	$last_text_ends_with_alnum     = false;
++	$apostrophe_after_inline_tag   = false;
+ 
+ 	// Look for shortcodes and HTML elements.
+ 
+@@ -246,9 +248,11 @@ function wptexturize( $text, $reset = false ) {
+ 		if ( '<' === $first ) {
+ 			if ( str_starts_with( $curl, '<!--' ) ) {
+ 				// This is an HTML comment delimiter.
++				$apostrophe_after_inline_tag = false;
+ 				continue;
+ 			} else {
+ 				// This is an HTML element delimiter.
++				$apostrophe_after_inline_tag = $last_text_ends_with_alnum && _wptexturize_is_inline_closing_tag( $curl );
+ 
+ 				// Replace each & with &#038; unless it already looks like an entity.
+ 				$curl = preg_replace( '/&(?!#(?:\d+|x[a-f0-9]+);|[a-z1-4]{1,8};)/i', '&#038;', $curl );
+@@ -257,9 +261,11 @@ function wptexturize( $text, $reset = false ) {
+ 			}
+ 		} elseif ( '' === trim( $curl ) ) {
+ 			// This is a newline between delimiters. Performance improves when we check this.
++			$apostrophe_after_inline_tag = false;
+ 			continue;
+ 
+ 		} elseif ( '[' === $first && $found_shortcodes && 1 === preg_match( '/^' . $shortcode_regex . '$/', $curl ) ) {
++			$apostrophe_after_inline_tag = false;
+ 			// This is a shortcode delimiter.
+ 
+ 			if ( ! str_starts_with( $curl, '[[' ) && ! str_ends_with( $curl, ']]' ) ) {
+@@ -274,6 +280,11 @@ function wptexturize( $text, $reset = false ) {
+ 
+ 			$curl = str_replace( $static_characters, $static_replacements, $curl );
+ 
++			if ( $apostrophe_after_inline_tag && preg_match( "/^'[\p{L}\p{N}]/u", $curl ) ) {
++				$curl = $apos . substr( $curl, 1 );
++			}
++			$apostrophe_after_inline_tag = false;
++
+ 			if ( str_contains( $curl, "'" ) ) {
+ 				$curl = preg_replace( $dynamic_characters['apos'], $dynamic_replacements['apos'], $curl );
+ 				$curl = wptexturize_primes( $curl, "'", $prime, $open_sq_flag, $closing_single_quote );
+@@ -297,12 +308,61 @@ function wptexturize( $text, $reset = false ) {
+ 
+ 			// Replace each & with &#038; unless it already looks like an entity.
+ 			$curl = preg_replace( '/&(?!#(?:\d+|x[a-f0-9]+);|[a-z1-4]{1,8};)/i', '&#038;', $curl );
++
++			$last_text_ends_with_alnum = (bool) preg_match( '/[\p{L}\p{N}]$/u', $curl );
++		} else {
++			$apostrophe_after_inline_tag = false;
+ 		}
+ 	}
+ 
+ 	return implode( '', $textarr );
+ }
+ 
++
++/**
++ * Determines whether a token is a closing tag for a common inline HTML element.
++ *
++ * @since 7.0.0
++ *
++ * @param string $text A token from wptexturize()'s split input.
++ * @return bool Whether the token is a closing inline HTML element.
++ */
++function _wptexturize_is_inline_closing_tag( $text ) {
++	if ( ! preg_match( '/^<\/([a-z][a-z0-9]*)\s*>$/i', $text, $matches ) ) {
++		return false;
++	}
++
++	$inline_tags = array(
++		'a',
++		'abbr',
++		'b',
++		'bdi',
++		'bdo',
++		'cite',
++		'data',
++		'del',
++		'dfn',
++		'em',
++		'i',
++		'ins',
++		'label',
++		'mark',
++		'q',
++		's',
++		'samp',
++		'small',
++		'span',
++		'strong',
++		'sub',
++		'sup',
++		'time',
++		'u',
++		'var',
++	);
++
++	return in_array( strtolower( $matches[1] ), $inline_tags, true );
++}
++
+ /**
+  * Implements a logic tree to determine whether or not "7'." represents seven feet,
+  * then converts the special char into either a prime char or a closing quote char.
+diff --git a/tests/phpunit/tests/formatting/wpTexturize.php b/tests/phpunit/tests/formatting/wpTexturize.php
+index fa81245..908f983 100644
+--- a/tests/phpunit/tests/formatting/wpTexturize.php
++++ b/tests/phpunit/tests/formatting/wpTexturize.php
+@@ -157,6 +157,25 @@ class Tests_Formatting_wpTexturize extends WP_UnitTestCase {
+ 		// $this->assertSame( '&#8220;<strong>Quoted Text</strong>&#8221;,', wptexturize( '"<strong>Quoted Text</strong>",' ) );
+ 	}
+ 
++
++	/**
++	 * @ticket 18549
++	 */
++	public function test_apostrophe_after_inline_formatting_tag() {
++		$this->assertSame( '<strong>He</strong>&#8217;s here.', wptexturize( "<strong>He</strong>'s here." ) );
++		$this->assertSame( '<em>It</em>&#8217;s fine.', wptexturize( "<em>It</em>'s fine." ) );
++		$this->assertSame( '<a href="http://example.org">Dan</a>&#8217;s truck', wptexturize( '<a href="http://example.org">Dan</a>\'s truck' ) );
++		$this->assertSame( '<strong>rock</strong>&#8217;n&#8217;roll', wptexturize( "<strong>rock</strong>'n'roll" ) );
++		$this->assertSame( '&#038;<strong>x</strong>&#8217;s', wptexturize( "&<strong>x</strong>'s" ) );
++	}
++
++	/**
++	 * @ticket 18549
++	 */
++	public function test_apostrophe_after_inline_formatting_tag_requires_adjacency() {
++		$this->assertSame( '<strong>He</strong> &#8216;go&#8217;', wptexturize( "<strong>He</strong> 'go'" ) );
++	}
++
+ 	public function test_x() {
+ 		$this->assertSame( '14&#215;24', wptexturize( '14x24' ) );
+ 	}
