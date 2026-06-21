@@ -93,3 +93,12 @@ Not yet verified in a real browser; looked OK on a quick manual skim.
 - **Mobile navigation overlay — dark style variations**
   - The overlay uses fixed `#ffffff` background / `#000000` text so it always renders solid. On dark variations (Terminal, Amber CRT, Blueprint) that is a light panel over a dark site.
   - Verify contrast and appearance there, and decide whether the overlay should follow each variation's colours instead of fixed black/white.
+
+## Static site / GitHub Pages
+
+- **Automate the GitHub Pages export in CI**
+  - The live demo at `dknauss.github.io/dirtbag` is currently built and deployed by hand from the Studio site — see [github-pages-static-export.md](github-pages-static-export.md).
+  - Replace the Studio dependency with a release-triggered workflow: boot the theme + seed from `playground/blueprint-stable.json` using `@wp-playground/cli`, install Simply Static, run `bin/static-export/export.php` and `bin/static-export/supplement.sh`, then publish with `actions/deploy-pages` (or push to `gh-pages`).
+  - Open questions: whether Simply Static's loopback crawl works against `wp-playground/cli`'s built-in server in CI, and whether to trigger on tag/release only or also on `main`.
+- **Replace dynamic search with a static index**
+  - Site search returns nothing on the static host (no backend). Consider a client-side index such as Pagefind, built as a post-crawl step.
