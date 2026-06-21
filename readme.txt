@@ -3,7 +3,7 @@ Contributors: dpknauss
 Requires at least: 7.0
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 0.1.13
+Stable tag: 0.1.14
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: full-site-editing, one-column, block-patterns, style-variations, translation-ready, microformats, blog
@@ -35,6 +35,9 @@ No. The theme uses web-safe font stacks and local icon assets.
 Open Appearance > Editor > Styles and choose a style variation.
 
 == Changelog ==
+
+= 0.1.14 =
+* Packaging: ship only the two theme SVGs in the icon assets. The demo logo and favicon PNGs move to the Playground demo media (the seed imports them from there), and three unused icon variants are removed. Trims the download; the demo favicon behaviour is unchanged.
 
 = 0.1.13 =
 * Site icon: ship an opaque, manila-backed favicon so the truck stays visible in browser tabs and the WordPress admin icon, where CSS filters cannot reach a transparent mark on a dark background. Decouple it from the header Site Logo (the logo no longer syncs the icon), so the header keeps the transparent, per-style-recoloured truck without a background box on coloured styles.
