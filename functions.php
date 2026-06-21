@@ -79,3 +79,44 @@ if ( ! function_exists( 'dirtbag_site_logo_fallback' ) ) {
 	}
 }
 add_filter( 'render_block', 'dirtbag_site_logo_fallback', 10, 2 );
+
+if ( ! function_exists( 'dirtbag_lightbox_trigger_label' ) ) {
+	/**
+	 * Give the core image lightbox trigger a static accessible name.
+	 *
+	 * Core renders the lightbox "enlarge" control as a bare
+	 * <button class="lightbox-trigger"> with no text and only a runtime-bound
+	 * aria-label (data-wp-bind--aria-label="state.thisImage.triggerButtonAriaLabel").
+	 * With JavaScript off — or before the Interactivity API hydrates — the
+	 * button therefore has no accessible name and fails the WCAG 4.1.2
+	 * "button-name" check. Inject a plain, translatable aria-label so the
+	 * control is named in the server-rendered HTML; core's script still
+	 * replaces it with the image-specific label once it runs.
+	 *
+	 * This lets the lightbox stay enabled without tripping the gated
+	 * accessibility suite (cf. the 0.1.5 h-card avatar, which instead disabled
+	 * the lightbox for the same reason).
+	 *
+	 * @param string $block_content Rendered block HTML.
+	 * @return string Block HTML with a named lightbox trigger.
+	 */
+	function dirtbag_lightbox_trigger_label( $block_content ) {
+		if ( false === strpos( $block_content, 'lightbox-trigger' ) || ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
+			return $block_content;
+		}
+		$processor = new WP_HTML_Tag_Processor( $block_content );
+		while ( $processor->next_tag() ) {
+			if ( 'BUTTON' === $processor->get_tag()
+				&& $processor->has_class( 'lightbox-trigger' )
+				&& null === $processor->get_attribute( 'aria-label' )
+			) {
+				$processor->set_attribute( 'aria-label', __( 'Enlarge image', 'dirtbag' ) );
+			}
+		}
+		return $processor->get_updated_html();
+	}
+}
+// Run on render_block (not render_block_core/image): the lightbox button's
+// markup is still in flux while the image block itself renders, but it is final
+// HTML once an enclosing block (post-content, group) renders, so match it there.
+add_filter( 'render_block', 'dirtbag_lightbox_trigger_label', 20 );
