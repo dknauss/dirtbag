@@ -6,6 +6,12 @@ This project follows the spirit of [Keep a Changelog](https://keepachangelog.com
 
 ## [Unreleased]
 
+## [0.1.10] - 2026-06-21
+
+### Changed
+
+- Front page: the masthead is now a wide two-column row — the `<h1>` and an italicised standfirst on the left, a curated "featured posts" link list (bottom-aligned) on the right. The trailing period is dropped from the heading.
+
 ## [0.1.9] - 2026-06-20
 
 ### Fixed
