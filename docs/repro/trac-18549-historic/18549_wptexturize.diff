@@ -1,0 +1,530 @@
+Index: src/wp-includes/formatting.php
+===================================================================
+--- src/wp-includes/formatting.php	(revision 33728)
++++ src/wp-includes/formatting.php	(working copy)
+@@ -54,9 +54,20 @@
+ 		$closing_quote = null,
+ 		$opening_single_quote = null,
+ 		$closing_single_quote = null,
+-		$open_q_flag = '<!--oq-->',
+-		$open_sq_flag = '<!--osq-->',
+-		$apos_flag = '<!--apos-->';
++		$apos_flag = null,
++		$open_sq_flag = null,
++		$open_q_flag = null,
++		$close_sq_flag = null,
++		$close_q_flag = null,
++		$prime_sq_flag = null,
++		$prime_q_flag = null,
++		$sq_flag = null,
++		$q_flag = null,
++		$flags = null,
++		$reals = null,
++		$regexs = null,
++		$static_no_texturize_shortcodes = null,
++		$static_shortcode_tags = null;
+ 
+ 	// If there's nothing to do, just stop.
+ 	if ( empty( $text ) || false === $run_texturize ) {
+@@ -63,6 +74,8 @@
+ 		return $text;
+ 	}
+ 
++	$spaces = wp_spaces_regexp();
++
+ 	// Set up static variables. Run once only.
+ 	if ( $reset || ! isset( $static_characters ) ) {
+ 		/**
+@@ -107,6 +120,30 @@
+ 		/* translators: em dash */
+ 		$em_dash = _x( '&#8212;', 'em dash' );
+ 
++		// Standardize size of flags to max of primes/quotes manipulated by wptexturize_primes().
++		// This will allow wptexturize_primes() to do its replacements without worrying about offsets changing.
++		$dummy_len = max( 5, strlen( $closing_quote ), strlen( $prime ), strlen( $double_prime ), strlen( $closing_single_quote ) );
++
++		$apos_flag = str_pad( '<i a>', $dummy_len, '>' );
++		$open_sq_flag = str_pad( '<i o>', $dummy_len, '>' );
++		$open_q_flag = str_pad( '<i O>', $dummy_len, '>' );
++		$close_sq_flag = str_pad( '<i c>', $dummy_len, '>' );
++		$close_q_flag = str_pad( '<i C>', $dummy_len, '>' );
++		$prime_sq_flag = str_pad( '<i p>', $dummy_len, '>' );
++		$prime_q_flag = str_pad( '<i P>', $dummy_len, '>' );
++		$sq_flag = str_repeat( "'", $dummy_len );
++		$q_flag = str_repeat( '"', $dummy_len );
++
++		// Flags & reals arrays - used to reinstate the real values.
++		$flags = array(
++			'sq' => array( $sq_flag, $prime_sq_flag, $open_sq_flag, $close_sq_flag, $apos_flag ),
++			'q' => array( $q_flag, $prime_q_flag, $open_q_flag, $close_q_flag ),
++		);
++		$reals = array(
++			'sq' => array( "'", $prime, $opening_single_quote, $closing_single_quote, $apos ),
++			'q' => array( '"', $double_prime, $opening_quote, $closing_quote ),
++		);
++
+ 		$default_no_texturize_tags = array('pre', 'code', 'kbd', 'style', 'script', 'tt');
+ 		$default_no_texturize_shortcodes = array('code');
+ 
+@@ -135,14 +172,13 @@
+ 		$dynamic_characters = array( 'apos' => array(), 'quote' => array(), 'dash' => array() );
+ 		$dynamic_replacements = array( 'apos' => array(), 'quote' => array(), 'dash' => array() );
+ 		$dynamic = array();
+-		$spaces = wp_spaces_regexp();
+ 
+ 		// '99' and '99" are ambiguous among other patterns; assume it's an abbreviated year at the end of a quotation.
+ 		if ( "'" !== $apos || "'" !== $closing_single_quote ) {
+-			$dynamic[ '/\'(\d\d)\'(?=\Z|[.,:;!?)}\-\]]|&gt;|' . $spaces . ')/' ] = $apos_flag . '$1' . $closing_single_quote;
++			$dynamic[ '/\'(\d\d)\'(?=\Z|[.,:;!?)}\-\]]|&gt;|' . $spaces . ')/' ] = $apos_flag . '$1' . $close_sq_flag;
+ 		}
+ 		if ( "'" !== $apos || '"' !== $closing_quote ) {
+-			$dynamic[ '/\'(\d\d)"(?=\Z|[.,:;!?)}\-\]]|&gt;|' . $spaces . ')/' ] = $apos_flag . '$1' . $closing_quote;
++			$dynamic[ '/\'(\d\d)"(?=\Z|[.,:;!?)}\-\]]|&gt;|' . $spaces . ')/' ] = $apos_flag . '$1' . $close_q_flag;
+ 		}
+ 
+ 		// '99 '99s '99's (apostrophe)  But never '9 or '99% or '999 or '99.0.
+@@ -152,7 +188,7 @@
+ 
+ 		// Quoted Numbers like '0.42'
+ 		if ( "'" !== $opening_single_quote && "'" !== $closing_single_quote ) {
+-			$dynamic[ '/(?<=\A|' . $spaces . ')\'(\d[.,\d]*)\'/' ] = $open_sq_flag . '$1' . $closing_single_quote;
++			$dynamic[ '/(?<=\A|' . $spaces . ')\'(\d[.,\d]*)\'/' ] = $open_sq_flag . '$1' . $close_sq_flag;
+ 		}
+ 
+ 		// Single quote at start, or preceded by (, {, <, [, ", -, or spaces.
+@@ -171,7 +207,7 @@
+ 
+ 		// Quoted Numbers like "42"
+ 		if ( '"' !== $opening_quote && '"' !== $closing_quote ) {
+-			$dynamic[ '/(?<=\A|' . $spaces . ')"(\d[.,\d]*)"/' ] = $open_q_flag . '$1' . $closing_quote;
++			$dynamic[ '/(?<=\A|' . $spaces . ')"(\d[.,\d]*)"/' ] = $open_q_flag . '$1' . $close_q_flag;
+ 		}
+ 
+ 		// Double quote at start, or preceded by (, {, <, [, -, or spaces, and not followed by spaces.
+@@ -191,6 +227,17 @@
+ 
+ 		$dynamic_characters['dash'] = array_keys( $dynamic );
+ 		$dynamic_replacements['dash'] = array_values( $dynamic );
++
++		$regexs['nonsplit'] = '\/?(?:a\b|abbr|b\b|big|br|dfn|em|i\b|samp|small|span|strong|sub|sup|var)[^>]*>';
++
++		// Might as well initialize the comment regex once seeing as it's invariant.
++		$regexs['comment'] =
++			  '!'           // Start of comment, after the <.
++			. '(?:'         // Unroll the loop: Consume everything until --> is found.
++			.     '-(?!->)' // Dash not followed by end of comment.
++			.     '[^\-]*+' // Consume non-dashes.
++			. ')*+'         // Loop possessively.
++			. '(?:-->)?';   // End of comment. If not found, match all input.
+ 	}
+ 
+ 	// Must do this every time in case plugins use these filters in a context sensitive manner
+@@ -214,100 +261,137 @@
+ 	$no_texturize_tags_stack = array();
+ 	$no_texturize_shortcodes_stack = array();
+ 
+-	// Look for shortcodes and HTML elements.
++	// Set up shortcodes regular expression (used to strip within each split text part), if haven't already or if things changed.
++	if ( $static_shortcode_tags === null || $shortcode_tags !== $static_shortcode_tags ) {
++		$static_shortcode_tags = $shortcode_tags;
++		$static_no_texturize_shortcodes = null; // Force reset of no texturize shortcodes as they need to be registered to be ignored.
++		$tagnames = array_keys( $shortcode_tags );
++		if ( $tagnames ) {
++			$tagregexp = join( '|', array_map( 'preg_quote', $tagnames ) );
++			$tagregexp = "(?:$tagregexp)(?![\\w-])"; // Excerpt of get_shortcode_regex().
++			$regexs['shortcode'] =
++				'|'
++				. '\['              // Find start of shortcode.
++				. '[\/\[]?'         // Shortcodes may begin with [/ or [[
++				. $tagregexp        // Only match registered shortcodes, because performance.
++				. '(?:'
++				.     '[^\[\]<>]+'  // Shortcodes do not contain other shortcodes. Quantifier critical.
++				. '|'
++				.     '<[^\[\]>]*>' // HTML elements permitted. Prevents matching ] before >.
++				. ')*+'             // Possessive critical.
++				. '\]'              // Find end of shortcode.
++				. '\]?';            // Shortcodes may end with ]]
++		} else {
++			$regexs['shortcode'] = '';
++		}
++	}
+ 
+-	$tagnames = array_keys( $shortcode_tags );
+-	$tagregexp = join( '|', array_map( 'preg_quote', $tagnames ) );
+-	$tagregexp = "(?:$tagregexp)(?![\\w-])"; // Excerpt of get_shortcode_regex().
++	// Set up no texturize shortcodes regular expression (used to split text input), if haven't already or if things changed.
++	if ( $static_no_texturize_shortcodes === null || $no_texturize_shortcodes !== $static_no_texturize_shortcodes ) {
++		$static_no_texturize_shortcodes = $no_texturize_shortcodes;
++		// No texturize shortcodes must also be registered to be ignored, so intersect with registered shortcodes array.
++		$tagnames = array_intersect( $no_texturize_shortcodes, array_keys( $static_shortcode_tags ) );
++		if ( $tagnames ) {
++			$tagregexp = join( '|', array_map( 'preg_quote', $tagnames ) );
++			$tagregexp = "(?:$tagregexp)(?![\\w-])"; // Excerpt of get_shortcode_regex().
++			$regexs['no_texturize_shortcode'] =
++				'|'
++				. '\['              // Find start of shortcode.
++				. '[\/\[]?'         // Shortcodes may begin with [/ or [[
++				. $tagregexp        // Only match no texturize shortcodes.
++				. '(?:'
++				.     '[^\[\]<>]+'  // Shortcodes do not contain other shortcodes. Quantifier critical.
++				. '|'
++				.     '<[^\[\]>]*>' // HTML elements permitted. Prevents matching ] before >.
++				. ')*+'             // Possessive critical.
++				. '\]'              // Find end of shortcode.
++				. '\]?';            // Shortcodes may end with ]]
++		} else {
++			$regexs['no_texturize_shortcode'] = '';
++		}
++	}
+ 
+-	$comment_regex =
+-		  '!'           // Start of comment, after the <.
+-		. '(?:'         // Unroll the loop: Consume everything until --> is found.
+-		.     '-(?!->)' // Dash not followed by end of comment.
+-		.     '[^\-]*+' // Consume non-dashes.
+-		. ')*+'         // Loop possessively.
+-		. '(?:-->)?';   // End of comment. If not found, match all input.
++	// Look for comments, non-inline (non-split) HTML elements and no texturize shortcodes.
+ 
+-	$shortcode_regex =
+-		  '\['              // Find start of shortcode.
+-		. '[\/\[]?'         // Shortcodes may begin with [/ or [[
+-		. $tagregexp        // Only match registered shortcodes, because performance.
+-		. '(?:'
+-		.     '[^\[\]<>]+'  // Shortcodes do not contain other shortcodes. Quantifier critical.
+-		. '|'
+-		.     '<[^\[\]>]*>' // HTML elements permitted. Prevents matching ] before >.
+-		. ')*+'             // Possessive critical.
+-		. '\]'              // Find end of shortcode.
+-		. '\]?';            // Shortcodes may end with ]]
+-
+ 	$regex =
+ 		  '/('                   // Capture the entire match.
+ 		.     '<'                // Find start of element.
+ 		.     '(?(?=!--)'        // Is this a comment?
+-		.         $comment_regex // Find end of comment.
++		.         $regexs['comment'] // Find end of comment.
+ 		.     '|'
++		.     '(?!' . $regexs['nonsplit'] . ')' // Exclude inline html elements.
+ 		.         '[^>]*>'       // Find end of element.
+ 		.     ')'
+-		. '|'
+-		.     $shortcode_regex   // Find shortcodes.
++		.     $regexs['no_texturize_shortcode']   // Find no texturize shortcodes.
+ 		. ')/s';
+ 
+-	$textarr = preg_split( $regex, $text, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY );
++	$textarr = preg_split( $regex, $text, -1, PREG_SPLIT_DELIM_CAPTURE );
+ 
+-	foreach ( $textarr as &$curl ) {
+-		// Only call _wptexturize_pushpop_element if $curl is a delimiter.
+-		$first = $curl[0];
+-		if ( '<' === $first && '<!--' === substr( $curl, 0, 4 ) ) {
+-			// This is an HTML comment delimeter.
++	foreach ( $textarr as $curl_idx => &$curl ) {
++		if ( 1 === $curl_idx % 2 ) {
++			// Delimiter.
++			$first = $curl[0];
++			if ( '<' === $first ) {
++				// If not a comment.
++				if ( '<!--' !== substr( $curl, 0, 4 ) ) {
++					// This is an HTML element delimiter.
+ 
+-			continue;
++					_wptexturize_pushpop_element( $curl, $no_texturize_tags_stack, $no_texturize_tags );
++				}
++			} elseif ( '[' === $first ) {
++				// This is a shortcode delimiter.
+ 
+-		} elseif ( '<' === $first && '>' === substr( $curl, -1 ) ) {
+-			// This is an HTML element delimiter.
++				if ( '[[' !== substr( $curl, 0, 2 ) && ']]' !== substr( $curl, -2 ) ) {
++					// Looks like a normal shortcode.
++					_wptexturize_pushpop_element( $curl, $no_texturize_shortcodes_stack, $no_texturize_shortcodes );
++				} else {
++					// Looks like an escaped shortcode.
++				}
++			}
++		} elseif ( empty( $no_texturize_shortcodes_stack ) && empty( $no_texturize_tags_stack ) && '' !== trim( $curl ) ) {
++			// This is neither a delimiter, nor is this content inside of no_texturize pairs.  Do texturize.
+ 
+-			_wptexturize_pushpop_element( $curl, $no_texturize_tags_stack, $no_texturize_tags );
+-
+-		} elseif ( '' === trim( $curl ) ) {
+-			// This is a newline between delimiters.  Performance improves when we check this.
+-
+-			continue;
+-
+-		} elseif ( '[' === $first && 1 === preg_match( '/^' . $shortcode_regex . '$/', $curl ) ) {
+-			// This is a shortcode delimiter.
+-
+-			if ( '[[' !== substr( $curl, 0, 2 ) && ']]' !== substr( $curl, -2 ) ) {
+-				// Looks like a normal shortcode.
+-				_wptexturize_pushpop_element( $curl, $no_texturize_shortcodes_stack, $no_texturize_shortcodes );
+-			} else {
+-				// Looks like an escaped shortcode.
+-				continue;
++			// Add a space to any <br>s so that when stripped will be recognized as whitespace.
++			if ( $have_br = ( false !== stripos( $curl, '<br' ) ) ) {
++				$curl = preg_replace( '/<br[^>]*>/i', '$0 ', $curl );
+ 			}
+ 
+-		} elseif ( empty( $no_texturize_shortcodes_stack ) && empty( $no_texturize_tags_stack ) ) {
+-			// This is neither a delimiter, nor is this content inside of no_texturize pairs.  Do texturize.
++			wptexturize_replace_init( $curl, '/<[^>]*>' . $regexs['shortcode'] . '/' );
+ 
+-			$curl = str_replace( $static_characters, $static_replacements, $curl );
++			wptexturize_replace_str( $curl, $static_characters, $static_replacements );
+ 
+ 			if ( false !== strpos( $curl, "'" ) ) {
+-				$curl = preg_replace( $dynamic_characters['apos'], $dynamic_replacements['apos'], $curl );
+-				$curl = wptexturize_primes( $curl, "'", $prime, $open_sq_flag, $closing_single_quote );
+-				$curl = str_replace( $apos_flag, $apos, $curl );
+-				$curl = str_replace( $open_sq_flag, $opening_single_quote, $curl );
++				wptexturize_replace_regex( $curl, $dynamic_characters['apos'], $dynamic_replacements['apos'] );
++				// Substitute single quotes with same-sized dummy so that wptexturize_primes() doesn't alter size of string.
++				wptexturize_replace_str( $curl, "'", $sq_flag );
++				$curl = wptexturize_primes( $curl, $sq_flag, $prime_sq_flag, $open_sq_flag, $close_sq_flag, $spaces );
++				// Reinstate real values.
++				wptexturize_replace_str( $curl, $flags['sq'], $reals['sq'] );
+ 			}
+ 			if ( false !== strpos( $curl, '"' ) ) {
+-				$curl = preg_replace( $dynamic_characters['quote'], $dynamic_replacements['quote'], $curl );
+-				$curl = wptexturize_primes( $curl, '"', $double_prime, $open_q_flag, $closing_quote );
+-				$curl = str_replace( $open_q_flag, $opening_quote, $curl );
++				wptexturize_replace_regex( $curl, $dynamic_characters['quote'], $dynamic_replacements['quote'] );
++				// Substitute double quotes with same-sized dummy so that wptexturize_primes() doesn't alter size of string.
++				wptexturize_replace_str( $curl, '"', $q_flag );
++				$curl = wptexturize_primes( $curl, $q_flag, $prime_q_flag, $open_q_flag, $close_q_flag, $spaces );
++				// Reinstate real values.
++				wptexturize_replace_str( $curl, $flags['q'], $reals['q'] );
+ 			}
+ 			if ( false !== strpos( $curl, '-' ) ) {
+-				$curl = preg_replace( $dynamic_characters['dash'], $dynamic_replacements['dash'], $curl );
++				wptexturize_replace_regex( $curl, $dynamic_characters['dash'], $dynamic_replacements['dash'] );
+ 			}
+ 
+ 			// 9x9 (times), but never 0x9999
+ 			if ( 1 === preg_match( '/(?<=\d)x\d/', $curl ) ) {
+ 				// Searching for a digit is 10 times more expensive than for the x, so we avoid doing this one!
+-				$curl = preg_replace( '/\b(\d(?(?<=0)[\d\.,]+|[\d\.,]*))x(\d[\d\.,]*)\b/', '$1&#215;$2', $curl );
++				wptexturize_replace_regex( $curl, '/\b(\d(?(?<=0)[\d\.,]+|[\d\.,]*))x(?=\d[\d\.,]*\b)/', '$1&#215;' ); // Changed to use look ahead as can only deal with a single sub-replacement.
+ 			}
++
++			wptexturize_replace_final( $curl );
++
++			// Remove any spaces added to <br>s at the start.
++			if ( $have_br ) {
++				$curl = preg_replace( '/(<br[^>]*>) /i', '$1', $curl );
++			}
+ 		}
+ 	}
+ 	$text = implode( '', $textarr );
+@@ -330,9 +414,9 @@
+  * @param string $close_quote The closing quote char to use for replacement.
+  * @return string The $haystack value after primes and quotes replacements.
+  */
+-function wptexturize_primes( $haystack, $needle, $prime, $open_quote, $close_quote ) {
+-	$spaces = wp_spaces_regexp();
+-	$flag = '<!--wp-prime-or-quote-->';
++function wptexturize_primes( $haystack, $needle, $prime, $open_quote, $close_quote, $spaces ) {
++	$flag = str_pad( '<i f>', strlen( $needle ), '>' ); // Making flag same size as the passed-in dummy.
++	$flag_len = strlen( $flag );
+ 	$quote_pattern = "/$needle(?=\\Z|[.,:;!?)}\\-\\]]|&gt;|" . $spaces . ")/";
+ 	$prime_pattern    = "/(?<=\\d)$needle/";
+ 	$flag_after_digit = "/(?<=\\d)$flag/";
+@@ -359,13 +443,13 @@
+ 						// This is most likely to be problematic in the context of bug #18549.
+ 						$pos = strrpos( $sentence, $flag );
+ 					}
+-					$sentence = substr_replace( $sentence, $close_quote, $pos, strlen( $flag ) );
++					$sentence = substr_replace( $sentence, $close_quote, $pos, $flag_len );
+ 				}
+ 				// Use conventional replacement on any remaining primes and quotes.
+ 				$sentence = preg_replace( $prime_pattern, $prime, $sentence );
+ 				$sentence = preg_replace( $flag_after_digit, $prime, $sentence );
+ 				$sentence = str_replace( $flag, $close_quote, $sentence );
+-			} elseif ( 1 == $count ) {
++			} elseif ( 1 === $count ) {
+ 				// Found only one closing quote candidate, so give it priority over primes.
+ 				$sentence = str_replace( $flag, $close_quote, $sentence );
+ 				$sentence = preg_replace( $prime_pattern, $prime, $sentence );
+@@ -377,8 +461,8 @@
+ 			$sentence = preg_replace( $prime_pattern, $prime, $sentence );
+ 			$sentence = preg_replace( $quote_pattern, $close_quote, $sentence );
+ 		}
+-		if ( '"' == $needle && false !== strpos( $sentence, '"' ) ) {
+-			$sentence = str_replace( '"', $close_quote, $sentence );
++		if ( '"' === $needle[0] && false !== strpos( $sentence, $needle ) ) {
++			$sentence = str_replace( $needle, $close_quote, $sentence );
+ 		}
+ 	}
+ 
+@@ -440,6 +524,167 @@
+ }
+ 
+ /**
++ * Initialize the stripped string routines wptexturize_replace_XXX, setting the globals used.
++ * $str will be stripped of any strings that match the regular expression $search.
++ */
++function wptexturize_replace_init( &$str, $search ) {
++	global $wptexturize_strip_cnt, $wptexturize_strips, $wptexturize_adjusts;
++
++	$wptexturize_strip_cnt = 0;
++
++	if ( preg_match_all( $search, $str, $matches, PREG_OFFSET_CAPTURE ) ) {
++		$wptexturize_strips = $wptexturize_adjusts = $strs = array();
++		$diff = 0;
++		foreach ( $matches[0] as list( $match, $offset ) ) {
++			$len = strlen( $match );
++			// Save details of stripped string.
++			$wptexturize_strips[] = array( $match, $offset - $diff /*, $len /* Store len if not using byte array in wptexturize_replace_final(). */ );
++			$diff += $len;
++			$strs[] = $match; // If using str_replace rather than (safer) preg_replace.
++		}
++		$wptexturize_strip_cnt = count( $wptexturize_strips );
++		$str = str_replace( $strs, '', $str ); // Assuming simple matches replaceable in whole string (otherwise need to do preg_replace( $search, '', $str )).
++	}
++	return $wptexturize_strip_cnt;
++}
++
++/**
++ * Do a straight (non-regexp) string substitution, keeping tabs on the offset adjustments if have a stripped string.
++ */
++function wptexturize_replace_str( &$str, $search, $repl ) {
++	global $wptexturize_strip_cnt, $wptexturize_adjusts;
++
++	if ( $wptexturize_strip_cnt ) {
++		// Process simple string search, given replacement string $repl.
++		$searches = is_array( $search ) ? $search : array( $search );
++		$repls = is_array( $repl ) ? $repl : array( $repl );
++
++		// As replacements could interfere with later ones, treat each separately.
++		foreach ( $searches as $idx => $search_str ) {
++			if ( false !== ( $offset = strpos( $str, $search_str ) ) ) {
++				$repl_str = $repls[$idx];
++				$repl_len = strlen( $repl_str );
++				$len = strlen( $search_str );
++				$diff_len = $repl_len - $len;
++				if ( $diff_len ) {
++					$diff = 0;
++					do {
++						// Store adjustment details.
++						$wptexturize_adjusts[] = array( $offset + $diff, $repl_len - 1 );
++						if ( $len > 1 ) { // Do it this way (rather than one adjust of $repl_len - $len) to keep adjustments "atomic", ie to keep stripped elements outside replacement.
++							$wptexturize_adjusts[] = array( $offset + $diff + $repl_len, 1 - $len );
++						}
++						$diff += $diff_len;
++					} while ( false !== ( $offset = strpos( $str, $search_str, $offset + $len ) ) );
++				}
++				$str = str_replace( $search_str, $repl_str, $str );
++			}
++		}
++	} else {
++		$str = str_replace( $search, $repl, $str );
++	}
++}
++
++/**
++ * Do a regexp string substitution, keeping tabs on the offset adjustments if have a stripped string.
++ */
++function wptexturize_replace_regex( &$str, $search, $repl ) {
++	global $wptexturize_strip_cnt, $wptexturize_adjusts;
++
++	if ( $wptexturize_strip_cnt ) {
++		// Process regex, given replacement string $repl.
++		$searches = is_array( $search ) ? $search : array( $search );
++		$repls = is_array( $repl ) ? $repl : array( $repl );
++
++		// As replacements could interfere with later ones, treat each separately.
++		foreach ( $searches as $idx => $re ) {
++			if ( preg_match_all( $re, $str, $matches, PREG_OFFSET_CAPTURE ) ) {
++				$repl_str = $repls[$idx];
++				$repl_len = strlen( $repl_str );
++				$diff = 0;
++				// Allow for a single captured replacement.
++				if ( false !== ( $pos1 = strpos( $repl_str, '$1' ) ) ) {
++					foreach ( $matches[0] as $i => list( $match, $offset ) ) {
++						// For a 'pre$1post' replacement, need to track pre-submatch replace and then post-submatch replace.
++						$pre_repl_len = $pos1;
++						$pre_len = $matches[1][$i][1] - $offset; // Submatch offset less full match offset.
++						if ( $pre_repl_len !== $pre_len ) {
++							// Store adjustment details.
++							$wptexturize_adjusts[] = array( $offset + $diff, $pre_repl_len - 1 );
++							if ( $pre_len > 1 ) { // Keep adjustments atomic.
++								$wptexturize_adjusts[] = array( $offset + $diff + $pre_repl_len, 1 - $pre_len );
++							}
++							$diff += $pre_repl_len - $pre_len;
++						}
++						$len1 = strlen( $matches[1][$i][0] ); // Length of submatch string.
++						$post_repl_len = $repl_len - ( $pre_repl_len + 2 );
++						$post_len = strlen( $match ) - ( $pre_len + $len1 );
++						if ( $post_repl_len !== $post_len ) {
++							// Store adjustment details.
++							$offset += $pre_len + $len1; // Jump over substituted pre-string & submatch.
++							$wptexturize_adjusts[] = array( $offset + $diff, $post_repl_len - 1 );
++							if ( $post_len > 1 ) { // Keep adjustments atomic.
++								$wptexturize_adjusts[] = array( $offset + $diff + $post_repl_len, 1 - $post_len );
++							}
++							$diff += $post_repl_len - $post_len;
++						}
++					}
++				} else {
++					foreach ( $matches[0] as list( $match, $offset ) ) {
++						$len = strlen( $match );
++						if ( $repl_len !== $len ) {
++							// Store adjustment details.
++							$wptexturize_adjusts[] = array( $offset + $diff, $repl_len - 1 );
++							if ( $len > 1 ) { // Keep adjustments atomic.
++								$wptexturize_adjusts[] = array( $offset + $diff + $repl_len, 1 - $len );
++							}
++							$diff += $repl_len - $len;
++						}
++					}
++				}
++				$str = preg_replace( $re, $repl_str, $str );
++			}
++		}
++	} else {
++		$str = preg_replace( $search, $repl, $str );
++	}
++}
++
++/**
++ * Restore stripped strings to $str.
++ */
++function wptexturize_replace_final( &$str ) {
++	global $wptexturize_strip_cnt, $wptexturize_strips, $wptexturize_adjusts;
++
++	// Finalize - restore stripped strings.
++	if ( $wptexturize_strip_cnt ) {
++		// Calculate offset adjustments.
++		foreach ( $wptexturize_adjusts as list( $offset, $diff_len ) ) {
++			for ( $i = $wptexturize_strip_cnt - 1; $i >= 0 && $offset < $wptexturize_strips[$i][1]; $i-- ) {
++				$wptexturize_strips[$i][1] += $diff_len;
++			}
++		}
++
++		// Restore stripped strings.
++		$str_arr = str_split( $str ); // Using byte array (seems to be a bit quicker than substr_replace()).
++		array_unshift( $str_arr, '' );
++		foreach ( $wptexturize_strips as list( $strip, $offset ) ) {
++			$str_arr[$offset] .= $strip;
++		}
++		$str = implode( '', $str_arr );
++		unset( $str_arr );
++		/* If not using byte array. (Note need to store $len in wptexturize_replace_init()).
++		$diff = 0;
++		foreach ( $wptexturize_strips as list( $strip, $offset, $len ) ) {
++			$str = substr_replace( $str, $strip, $offset + $diff, 0 );
++			$diff += $len;
++		}
++		/**/
++		$wptexturize_strip_cnt = 0;
++	}
++}
++
++/**
+  * Replaces double line-breaks with paragraph elements.
+  *
+  * A group of regex replaces used to identify text formatted with newlines and

@@ -1,0 +1,218 @@
+diff --git a/src/wp-includes/formatting.php b/src/wp-includes/formatting.php
+index e3681b0..a9288f6 100644
+--- a/src/wp-includes/formatting.php
++++ b/src/wp-includes/formatting.php
+@@ -227,8 +227,10 @@ function wptexturize( $text, $reset = false ) {
+ 	 */
+ 	$no_texturize_shortcodes = apply_filters( 'no_texturize_shortcodes', $default_no_texturize_shortcodes );
+ 
+-	$no_texturize_tags_stack       = array();
+-	$no_texturize_shortcodes_stack = array();
++	$no_texturize_tags_stack           = array();
++	$no_texturize_shortcodes_stack     = array();
++	$last_text_ends_with_quote_context = false;
++	$quote_after_inline_tag            = false;
+ 
+ 	// Look for shortcodes and HTML elements.
+ 
+@@ -246,9 +248,11 @@ function wptexturize( $text, $reset = false ) {
+ 		if ( '<' === $first ) {
+ 			if ( str_starts_with( $curl, '<!--' ) ) {
+ 				// This is an HTML comment delimiter.
++				$quote_after_inline_tag = false;
+ 				continue;
+ 			} else {
+ 				// This is an HTML element delimiter.
++				$quote_after_inline_tag = $last_text_ends_with_quote_context && _wptexturize_is_inline_closing_tag( $curl );
+ 
+ 				// Replace each & with &#038; unless it already looks like an entity.
+ 				$curl = preg_replace( '/&(?!#(?:\d+|x[a-f0-9]+);|[a-z1-4]{1,8};)/i', '&#038;', $curl );
+@@ -257,9 +261,11 @@ function wptexturize( $text, $reset = false ) {
+ 			}
+ 		} elseif ( '' === trim( $curl ) ) {
+ 			// This is a newline between delimiters. Performance improves when we check this.
++			$quote_after_inline_tag = false;
+ 			continue;
+ 
+ 		} elseif ( '[' === $first && $found_shortcodes && 1 === preg_match( '/^' . $shortcode_regex . '$/', $curl ) ) {
++			$quote_after_inline_tag = false;
+ 			// This is a shortcode delimiter.
+ 
+ 			if ( ! str_starts_with( $curl, '[[' ) && ! str_ends_with( $curl, ']]' ) ) {
+@@ -274,6 +280,15 @@ function wptexturize( $text, $reset = false ) {
+ 
+ 			$curl = str_replace( $static_characters, $static_replacements, $curl );
+ 
++			if ( $quote_after_inline_tag ) {
++				if ( preg_match( "/^'[\p{L}\p{N}\p{Po}\p{Pf}\s.,;:!?\)\}\-&]|^'$/u", $curl ) ) {
++					$curl = $apos . substr( $curl, 1 );
++				} elseif ( preg_match( '/^"[\p{L}\p{N}\p{Po}\p{Pf}\s.,;:!?\)\}\-&]|^"$/u', $curl ) ) {
++					$curl = $closing_quote . substr( $curl, 1 );
++				}
++			}
++			$quote_after_inline_tag = false;
++
+ 			if ( str_contains( $curl, "'" ) ) {
+ 				$curl = preg_replace( $dynamic_characters['apos'], $dynamic_replacements['apos'], $curl );
+ 				$curl = wptexturize_primes( $curl, "'", $prime, $open_sq_flag, $closing_single_quote );
+@@ -297,12 +312,96 @@ function wptexturize( $text, $reset = false ) {
+ 
+ 			// Replace each & with &#038; unless it already looks like an entity.
+ 			$curl = preg_replace( '/&(?!#(?:\d+|x[a-f0-9]+);|[a-z1-4]{1,8};)/i', '&#038;', $curl );
++
++			$last_text_ends_with_quote_context = _wptexturize_text_ends_with_quote_context( $curl );
++		} else {
++			$quote_after_inline_tag = false;
+ 		}
+ 	}
+ 
+ 	return implode( '', $textarr );
+ }
+ 
++
++
++/**
++ * Determines whether text ends with a character that can provide quote context.
++ *
++ * This avoids running a Unicode regular expression for every text token in
++ * wptexturize(). Most tokens end with ASCII letters, numbers, or punctuation; only
++ * multibyte text and closing quote entities need a regular expression check.
++ *
++ * @since 7.0.0
++ *
++ * @param string $text Text token from wptexturize().
++ * @return bool Whether the text ends with quote context.
++ */
++function _wptexturize_text_ends_with_quote_context( $text ) {
++	if ( '' === $text ) {
++		return false;
++	}
++
++	$last_character = substr( $text, -1 );
++
++	if ( ctype_alnum( $last_character ) || in_array( $last_character, array( '.', '!', '?', ')' ), true ) ) {
++		return true;
++	}
++
++	if ( ';' === $last_character ) {
++		return (bool) preg_match( '/&#(?:8217|8221);$/', $text );
++	}
++
++	if ( ord( $last_character ) >= 0x80 ) {
++		return (bool) preg_match( '/[\p{L}\p{N}]$/u', $text );
++	}
++
++	return false;
++}
++
++/**
++ * Determines whether a token is a closing tag for a common inline HTML element.
++ *
++ * @since 7.0.0
++ *
++ * @param string $text A token from wptexturize()'s split input.
++ * @return bool Whether the token is a closing inline HTML element.
++ */
++function _wptexturize_is_inline_closing_tag( $text ) {
++	if ( ! preg_match( '/^<\/([a-z][a-z0-9]*)\s*>$/i', $text, $matches ) ) {
++		return false;
++	}
++
++	$inline_tags = array(
++		'a',
++		'abbr',
++		'b',
++		'bdi',
++		'bdo',
++		'cite',
++		'data',
++		'del',
++		'dfn',
++		'em',
++		'i',
++		'ins',
++		'label',
++		'mark',
++		'q',
++		's',
++		'samp',
++		'small',
++		'span',
++		'strong',
++		'sub',
++		'sup',
++		'time',
++		'u',
++		'var',
++	);
++
++	return in_array( strtolower( $matches[1] ), $inline_tags, true );
++}
++
+ /**
+  * Implements a logic tree to determine whether or not "7'." represents seven feet,
+  * then converts the special char into either a prime char or a closing quote char.
+diff --git a/tests/phpunit/tests/formatting/wpTexturize.php b/tests/phpunit/tests/formatting/wpTexturize.php
+index fa81245..56cb427 100644
+--- a/tests/phpunit/tests/formatting/wpTexturize.php
++++ b/tests/phpunit/tests/formatting/wpTexturize.php
+@@ -157,6 +157,59 @@ class Tests_Formatting_wpTexturize extends WP_UnitTestCase {
+ 		// $this->assertSame( '&#8220;<strong>Quoted Text</strong>&#8221;,', wptexturize( '"<strong>Quoted Text</strong>",' ) );
+ 	}
+ 
++
++	/**
++	 * @ticket 18549
++	 */
++	public function test_historic_quotes_around_inline_html() {
++		$this->assertSame( 'The word is &#8220;<a href="http://example.com/">quoted</a>&#8221;.', wptexturize( 'The word is "<a href="http://example.com/">quoted</a>".' ) );
++		$this->assertSame( 'The word is &#8216;<a href="http://example.com/">quoted</a>&#8217;', wptexturize( 'The word is \'<a href="http://example.com/">quoted</a>\'' ) );
++		$this->assertSame( 'The word is &#8216;<a href="http://example.com/">quoted.</a>&#8217;', wptexturize( 'The word is \'<a href="http://example.com/">quoted.</a>\'' ) );
++		$this->assertSame( 'The word is &#8216;<a href="http://example.com/">quoted</a>&#8217;.', wptexturize( 'The word is \'<a href="http://example.com/">quoted</a>\'.' ) );
++		$this->assertSame( 'The word is &#8216;<a href="http://example.com/">quot</a>&#8217;d', wptexturize( 'The word is \'<a href="http://example.com/">quot</a>\'d' ) );
++	}
++
++	/**
++	 * @ticket 18549
++	 */
++	public function test_historic_texturize_around_html_cases() {
++		$this->assertSame( 'Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;', wptexturize( 'Here is "<a href="http://example.com">a test with a link</a>"' ) );
++		$this->assertSame( 'Here is &#8220;<a href="http://example.com">a test with a link and a period</a>&#8221;.', wptexturize( 'Here is "<a href="http://example.com">a test with a link and a period</a>".' ) );
++		$this->assertSame( 'Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;, and a comma.', wptexturize( 'Here is "<a href="http://example.com">a test with a link</a>", and a comma.' ) );
++		$this->assertSame( 'Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;; and a semi-colon.', wptexturize( 'Here is "<a href="http://example.com">a test with a link</a>"; and a semi-colon.' ) );
++		$this->assertSame( 'Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;- and a dash.', wptexturize( 'Here is "<a href="http://example.com">a test with a link</a>"- and a dash.' ) );
++		$this->assertSame( 'Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;&#8230; and ellipses.', wptexturize( 'Here is "<a href="http://example.com">a test with a link</a>"... and ellipses.' ) );
++		$this->assertSame( 'Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;… and a Unicode ellipsis.', wptexturize( 'Here is "<a href="http://example.com">a test with a link</a>"… and a Unicode ellipsis.' ) );
++		$this->assertSame( '&#8220;<em>引用</em>&#8221;。', wptexturize( '"<em>引用</em>"。' ) );
++		$this->assertSame( '&#8220;<em>引用</em>&#8221;，然后继续。', wptexturize( '"<em>引用</em>"，然后继续。' ) );
++		$this->assertSame( 'Here is &#8220;a test <a href="http://example.com">with a link</a>&#8221;.', wptexturize( 'Here is "a test <a href="http://example.com">with a link</a>".' ) );
++		$this->assertSame( 'Here is &#8220;<a href="http://example.com">a test with a link</a>&#8221;and a word stuck to the end.', wptexturize( 'Here is "<a href="http://example.com">a test with a link</a>"and a word stuck to the end.' ) );
++		$this->assertSame( '&#8216;<strong>Quoted Text</strong>&#8217;,', wptexturize( "'<strong>Quoted Text</strong>'," ) );
++		$this->assertSame( '&#8220;<strong>Quoted Text</strong>&#8221;,', wptexturize( '"<strong>Quoted Text</strong>",' ) );
++		$this->assertSame( '<strong>Read more: </strong>&#8220;<a>Something (else)</a>&#8221;</p>', wptexturize( '<strong>Read more: </strong>"<a>Something (else)</a>"</p>' ) );
++	}
++
++	/**
++	 * @ticket 18549
++	 */
++	public function test_historic_apostrophe_after_inline_formatting_tag() {
++		$this->assertSame( '<strong>He</strong>&#8217;s here.', wptexturize( "<strong>He</strong>'s here." ) );
++		$this->assertSame( '<em>It</em>&#8217;s fine.', wptexturize( "<em>It</em>'s fine." ) );
++		$this->assertSame( '<a href="http://example.org">Dan</a>&#8217;s truck', wptexturize( '<a href="http://example.org">Dan</a>\'s truck' ) );
++		$this->assertSame( '<strong>rock</strong>&#8217;n&#8217;roll', wptexturize( "<strong>rock</strong>'n'roll" ) );
++		$this->assertSame( '&#038;<strong>x</strong>&#8217;s', wptexturize( "&<strong>x</strong>'s" ) );
++		$this->assertSame( '<em>&#8220;John&#8221;</em>&#8217;s', wptexturize( '<em>"John"</em>\'s' ) );
++		$this->assertSame( '<em>&#8216;John&#8217;</em>&#8217;s', wptexturize( "<em>'John'</em>'s" ) );
++	}
++
++	/**
++	 * @ticket 18549
++	 */
++	public function test_historic_inline_tag_quote_requires_adjacency() {
++		$this->assertSame( '<strong>He</strong> &#8216;go&#8217;', wptexturize( "<strong>He</strong> 'go'" ) );
++		$this->assertSame( '<strong>He said</strong> &#8220;go&#8221;', wptexturize( '<strong>He said</strong> "go"' ) );
++	}
++
+ 	public function test_x() {
+ 		$this->assertSame( '14&#215;24', wptexturize( '14x24' ) );
+ 	}
