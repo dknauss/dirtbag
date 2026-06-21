@@ -53,6 +53,18 @@ function applyStyle(slug) {
   });
 }
 
+// Whether the local Studio applier is reachable. It is not in CI / Playground
+// (no `studio` CLI, and styles are applied per-instance by the blueprint there),
+// so this in-session switch test self-skips in those environments.
+function applierAvailable() {
+  try {
+    execSync(`${WP_CLI} eval "echo 1;"`, { stdio: 'ignore', timeout: 30000 });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 // Read the truck-icon filter from the live front page.
 async function readLiveFilter(page) {
   // Hard reload to bypass any browser cache so the new global styles take effect.
@@ -71,6 +83,7 @@ test.describe('style-switch sticking guard (A→B→A)', () => {
   });
 
   test(`[${STYLE_A}→${STYLE_B}→${STYLE_A}] truck-icon filter does not stick`, async ({ page }) => {
+    test.skip(!applierAvailable(), 'requires the local Studio dirtbag site + apply-style.php (not available in CI / Playground)');
     const expectedA = norm(expectedFilter(STYLE_A));
     const expectedB = norm(expectedFilter(STYLE_B));
 
