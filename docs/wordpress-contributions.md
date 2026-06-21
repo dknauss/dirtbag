@@ -42,6 +42,12 @@ historic Trac comment.
   Post Title block links are `display: inline-block`, which makes the whole title
   an atomic inline-level box. In narrow float / `shape-outside` layouts, the title
   can drop below a floated thumbnail instead of wrapping beside and under it.
+- [WordPress/gutenberg#79380](https://github.com/WordPress/gutenberg/issues/79380):
+  the image lightbox trigger button is server-rendered with no static accessible
+  name — its `aria-label` is supplied only at runtime by the Interactivity API
+  (`data-wp-bind--aria-label`, restored in #78426), so it fails `button-name` with
+  JavaScript off or before hydration. Dirtbag ships a static-`aria-label` fallback
+  (`functions.php`, 0.1.12) and proposes the same fix in core.
 - [WordPress/gutenberg#42345](https://github.com/WordPress/gutenberg/issues/42345):
   single quotes after bold text can be curled the wrong way on output. This is the
   `wptexturize()` / old core-text-filter problem described below.
