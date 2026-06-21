@@ -163,6 +163,7 @@ if seed.exists():
 image_exts = {'.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'}
 allowed_theme_images = {
     'screenshot.png',
+    'assets/icons/dirtbag-site-icon-opaque.png',
     'assets/icons/dirtbag-site-icon-white.png',
     'assets/icons/dirtbag-site-icon.png',
     'assets/icons/pickup-truck-header-white.svg',

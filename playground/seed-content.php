@@ -235,26 +235,31 @@ if ( ! function_exists( 'dirtbag_playground_seed_posts' ) ) {
 	}
 }
 
-if ( ! function_exists( 'dirtbag_playground_seed_site_icon' ) ) {
+if ( ! function_exists( 'dirtbag_playground_import_icon' ) ) {
 	/**
-	 * Use the bundled truck icon for the site icon and custom logo.
+	 * Import a bundled icon asset into the media library.
+	 *
+	 * @param string $relative_path Theme-relative path to the source image.
+	 * @param string $filename      Destination filename in the uploads dir.
+	 * @param string $title         Attachment title.
+	 * @return int|null Attachment ID, or null on failure.
 	 */
-	function dirtbag_playground_seed_site_icon() {
-		$icon_path = get_theme_file_path( 'assets/icons/dirtbag-site-icon.png' );
+	function dirtbag_playground_import_icon( $relative_path, $filename, $title ) {
+		$icon_path = get_theme_file_path( $relative_path );
 		if ( ! file_exists( $icon_path ) ) {
-			return;
+			return null;
 		}
 
-		$upload = wp_upload_bits( 'dirtbag-site-icon.png', null, file_get_contents( $icon_path ) );
+		$upload = wp_upload_bits( $filename, null, file_get_contents( $icon_path ) );
 		if ( ! empty( $upload['error'] ) ) {
-			return;
+			return null;
 		}
 
 		$filetype      = wp_check_filetype( $upload['file'], null );
 		$attachment_id = wp_insert_attachment(
 			array(
 				'post_mime_type' => $filetype['type'],
-				'post_title'     => 'Dirtbag site icon',
+				'post_title'     => $title,
 				'post_content'   => '',
 				'post_status'    => 'inherit',
 			),
@@ -262,12 +267,43 @@ if ( ! function_exists( 'dirtbag_playground_seed_site_icon' ) ) {
 		);
 
 		if ( is_wp_error( $attachment_id ) || ! $attachment_id ) {
-			return;
+			return null;
 		}
 
 		$metadata = wp_generate_attachment_metadata( $attachment_id, $upload['file'] );
 		wp_update_attachment_metadata( $attachment_id, $metadata );
-		set_theme_mod( 'custom_logo', $attachment_id );
-		update_option( 'site_icon', $attachment_id );
+
+		return $attachment_id;
+	}
+}
+
+if ( ! function_exists( 'dirtbag_playground_seed_site_icon' ) ) {
+	/**
+	 * Seed the site logo and favicon as two distinct assets.
+	 *
+	 * The header Site Logo (custom_logo) stays transparent so the per-style
+	 * `truckIconFilter` CSS can recolour it on coloured/dark variations. The
+	 * Site Icon (browser-tab favicon and WP-admin icon) instead uses an opaque
+	 * manila-backed variant, because CSS filters never reach those raster
+	 * contexts and a transparent mark would disappear on dark backgrounds.
+	 */
+	function dirtbag_playground_seed_site_icon() {
+		$logo_id = dirtbag_playground_import_icon(
+			'assets/icons/dirtbag-site-icon.png',
+			'dirtbag-site-icon.png',
+			'Dirtbag site logo'
+		);
+		if ( $logo_id ) {
+			set_theme_mod( 'custom_logo', $logo_id );
+		}
+
+		$icon_id = dirtbag_playground_import_icon(
+			'assets/icons/dirtbag-site-icon-opaque.png',
+			'dirtbag-site-icon-opaque.png',
+			'Dirtbag site icon'
+		);
+		if ( $icon_id ) {
+			update_option( 'site_icon', $icon_id );
+		}
 	}
 }
