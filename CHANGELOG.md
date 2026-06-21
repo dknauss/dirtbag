@@ -6,6 +6,12 @@ This project follows the spirit of [Keep a Changelog](https://keepachangelog.com
 
 ## [Unreleased]
 
+## [0.1.12] - 2026-06-21
+
+### Added
+
+- `functions.php` gives the core image lightbox trigger button a static, translatable `aria-label` ("Enlarge image"). Core renders that `<button class="lightbox-trigger">` with only a runtime-bound `data-wp-bind--aria-label`, so with JavaScript off — or before the Interactivity API hydrates — it has no accessible name and fails the WCAG `button-name` check. A `render_block` filter adds the name in the server HTML using the HTML API (matched at the enclosing block, where the lightbox markup is final); core's script still overrides it with the image-specific label once it runs. This lets images keep the lightbox enabled and stay accessible (cf. 0.1.5, which instead disabled the lightbox on the decorative h-card avatar).
+
 ## [0.1.11] - 2026-06-21
 
 ### Added

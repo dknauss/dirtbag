@@ -40,6 +40,10 @@ msgstr ""
 msgid "https://github.com/dknauss"
 msgstr ""
 
+#: functions.php:113
+msgid "Enlarge image"
+msgstr ""
+
 #: patterns/accessible-table.php
 msgctxt "Pattern title"
 msgid "Accessible table"
