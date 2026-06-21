@@ -172,6 +172,7 @@ allowed_theme_images = {
 }
 allowed_playground_images = {
     'playground/media/abandoned-rusty-ford-pickup.jpg',
+    'playground/media/deburring-machined-metal.jpg',
     'playground/media/whats-in-your-glove-box.jpg',
     'playground/media/secured-glovebox.jpg',
     'playground/media/blue-bird-truck-stop-sign.jpg',
