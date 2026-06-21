@@ -11,13 +11,23 @@
 <!-- wp:template-part {"slug":"header","area":"header"} /-->
 
 <!-- wp:group {"tagName":"main","anchor":"main-content"} -->
-<main id="main-content" class="wp-block-group"><!-- wp:heading {"level":1} -->
-<h1 class="wp-block-heading">Roadside Almanac.</h1>
+<main id="main-content" class="wp-block-group"><!-- wp:columns {"verticalAlignment":null,"align":"wide"} -->
+<div class="wp-block-columns alignwide"><!-- wp:column {"width":"66.66%"} -->
+<div class="wp-block-column" style="flex-basis:66.66%"><!-- wp:heading {"level":1} -->
+<h1 class="wp-block-heading">Roadside Almanac</h1>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>Rural speed, shed talk, hard chirps, and the suspicion that a simple job should stay simple.</p>
-<!-- /wp:paragraph -->
+<p><em>Rural speed, shed talk, hard chirps, and the suspicion that a simple job should stay simple.</em></p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:column -->
+
+<!-- wp:column {"verticalAlignment":"bottom","width":"33.33%"} -->
+<div class="wp-block-column is-vertically-aligned-bottom" style="flex-basis:33.33%"><!-- wp:paragraph -->
+<p>› <a href="/2026/06/15/plain-html-still-works/">Plain HTML still just works</a><br>› <a href="/2026/06/09/a-table-a-caption-and-a-cheap-folding-chair/">A Table, a Caption, and a Cheap Folding Chair</a><br>› <a href="/2026/06/10/no-build-step-just-keep-driving/">No Build Step, Just Keep Driving</a></p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:column --></div>
+<!-- /wp:columns -->
 
 <!-- wp:columns {"align":"wide","className":"front-grid"} -->
 <div class="wp-block-columns alignwide front-grid"><!-- wp:column {"width":"66.66%"} -->
