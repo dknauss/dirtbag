@@ -311,6 +311,15 @@ preserving the current full `Tests_Formatting_wpTexturize` suite.
 minimal patch remains available as a narrower fallback. Full review, attachment dig, and
 performance analysis: [`repro/wptexturize-18549-review-and-performance.md`](repro/wptexturize-18549-review-and-performance.md).
 
+**Standalone stopgap plugin.** The fix also ships as a separate, removable plugin —
+[dknauss/wp-texturize-inline-quote-fix](https://github.com/dknauss/wp-texturize-inline-quote-fix) —
+in two builds. A lightweight **post-process** plugin flips the mis-curled quote on
+rendered output (tiny, drift-free, approximate on a couple of edge cases). A
+**faithful** plugin replaces `wptexturize()` with a forked WordPress 7.0 copy carrying
+the comprehensive patch, matching PR #12249 byte-for-byte — verified on WP 7.0 with the
+#18549 fixtures corrected and a corpus of ordinary text byte-identical to core's
+`wptexturize()`. Use one or the other; both are temporary, to remove once #18549 lands.
+
 The Trac revival comment (now posted):
 
 > This is still visible in current block-editor workflows and came up again in
