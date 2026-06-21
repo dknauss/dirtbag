@@ -6,6 +6,12 @@ This project follows the spirit of [Keep a Changelog](https://keepachangelog.com
 
 ## [Unreleased]
 
+## [0.1.11] - 2026-06-21
+
+### Added
+
+- A first `functions.php`: when no Site Logo is set, the header's `core/site-logo` block falls back to the bundled `assets/icons/pickup-truck-header.svg`, sized to the block width and wrapped in core's markup so existing styles (including the dark-mode icon filter) apply. This makes the truck appear on a fresh install and in the generic WordPress.org directory preview, which never runs the demo seed that sets the custom logo. An uploaded Site Logo, or a synced Site Icon, still wins. `bin/package-check` now also lints `functions.php`.
+
 ## [0.1.10] - 2026-06-21
 
 ### Changed

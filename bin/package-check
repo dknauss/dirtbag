@@ -239,7 +239,7 @@ for p in Path('patterns').glob('*.php'):
 print('i18n text domain OK')
 PY
 
-for file in patterns/*.php playground/*.php; do
+for file in functions.php patterns/*.php playground/*.php; do
   [[ -f "$file" ]] || continue
   php -l "$file" >/dev/null
 done

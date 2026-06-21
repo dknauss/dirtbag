@@ -3,7 +3,7 @@ Contributors: dpknauss
 Requires at least: 7.0
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 0.1.10
+Stable tag: 0.1.11
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: full-site-editing, one-column, block-patterns, style-variations, translation-ready, microformats, blog
@@ -35,6 +35,9 @@ No. The theme uses web-safe font stacks and local icon assets.
 Open Appearance > Editor > Styles and choose a style variation.
 
 == Changelog ==
+
+= 0.1.11 =
+* Header: when no Site Logo is set, fall back to the bundled pickup-truck mark so the logo appears on a fresh install and in the WordPress.org directory preview — not only after the demo seed runs. An uploaded Site Logo, or a synced Site Icon, still takes precedence.
 
 = 0.1.10 =
 * Front page: rebuild the masthead as a two-column row — the heading and an italic standfirst on the left, a curated list of featured posts on the right; drop the trailing period from the heading.
