@@ -6,6 +6,16 @@ This project follows the spirit of [Keep a Changelog](https://keepachangelog.com
 
 ## [Unreleased]
 
+## [0.1.13] - 2026-06-21
+
+### Added
+
+- An opaque, manila-backed Site Icon variant (`assets/icons/dirtbag-site-icon-opaque.png`) for the browser-tab favicon and the WordPress-admin site icon. CSS filters never reach those raster contexts, so the transparent dark truck disappeared on dark tabs / dark mode; the opaque variant stays visible on any background. Documented in `docs/site-icons-and-logos.md`.
+
+### Changed
+
+- The header Site Logo no longer syncs the Site Icon (`shouldSyncIcon:false` on both header logos). The header keeps the transparent truck so the per-style `truckIconFilter` can recolour it on coloured/dark variations, while the favicon uses the opaque variant — the two are now independent. The Playground seed sets a transparent `custom_logo` and an opaque `site_icon` accordingly.
+
 ## [0.1.12] - 2026-06-21
 
 ### Added
