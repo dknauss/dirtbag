@@ -7,6 +7,7 @@ This folder holds repo-facing documentation for the Dirtbag WordPress block them
 - [Development guide](development.md) — repo layout, editing rules, and the no-build-step workflow.
 - [Testing guide](testing.md) — local checks, manual WordPress checks, browser checks, accessibility checks, and release gates.
 - [Style variations](style-variations.md) — how the global styles work and how the truck icon colours are handled.
+- [Site logos, site icons, and favicons](site-icons-and-logos.md) — the three separate brand marks, where each displays, and which ones CSS can recolour.
 - [WordPress.org theme review notes](theme-review.md) — packaging, credits, translatability, security, performance, and review checklist.
 - [Site-root open-web file templates](site-root-open-web-files.md) — `robots.txt`, `llms.txt`, OPML, and other files that belong in the site root, not the theme zip.
 - [Backlog](backlog.md) — planned checks and improvements.
