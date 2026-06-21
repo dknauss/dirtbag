@@ -289,7 +289,7 @@ if ( ! function_exists( 'dirtbag_playground_seed_site_icon' ) ) {
 	 */
 	function dirtbag_playground_seed_site_icon() {
 		$logo_id = dirtbag_playground_import_icon(
-			'assets/icons/dirtbag-site-icon.png',
+			'playground/media/dirtbag-site-icon.png',
 			'dirtbag-site-icon.png',
 			'Dirtbag site logo'
 		);
@@ -298,7 +298,7 @@ if ( ! function_exists( 'dirtbag_playground_seed_site_icon' ) ) {
 		}
 
 		$icon_id = dirtbag_playground_import_icon(
-			'assets/icons/dirtbag-site-icon-opaque.png',
+			'playground/media/dirtbag-site-icon-opaque.png',
 			'dirtbag-site-icon-opaque.png',
 			'Dirtbag site icon'
 		);

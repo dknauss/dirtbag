@@ -163,12 +163,7 @@ if seed.exists():
 image_exts = {'.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'}
 allowed_theme_images = {
     'screenshot.png',
-    'assets/icons/dirtbag-site-icon-opaque.png',
-    'assets/icons/dirtbag-site-icon-white.png',
-    'assets/icons/dirtbag-site-icon.png',
-    'assets/icons/pickup-truck-header-white.svg',
     'assets/icons/pickup-truck-header.svg',
-    'assets/icons/pickup-truck-white.svg',
     'assets/icons/pickup-truck.svg',
 }
 allowed_playground_images = {
@@ -180,6 +175,7 @@ allowed_playground_images = {
     'playground/media/blue-bird-truck-stop-sign.jpg',
     'playground/media/datsun-521-truck-1500.jpg',
     'playground/media/dirtbag-site-icon.png',
+    'playground/media/dirtbag-site-icon-opaque.png',
     'playground/media/driver-this-1975-van-watched.jpg',
     'playground/media/folding-table-and-chairs-green-2008.jpg',
     'playground/media/ford-cortina.jpg',
