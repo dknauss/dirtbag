@@ -331,11 +331,10 @@ outside the core ruleset).
 
 ### Behavioural parity (differential harnesses)
 
-Because the WordPress PHPUnit bootstrap needs a configured test database that this
-environment does not provide, correctness for the two refactors was established
-with standalone **differential harnesses**: the old and new implementations are
-defined side by side and asserted to return identical output across a battery of
-probe inputs. Each new implementation was also re-extracted from the *applied
+Correctness for the two refactors was established with standalone **differential
+harnesses** — and, for the core helper, confirmed by the full core test suite (see
+below). In a differential harness the old and new implementations are defined side
+by side and asserted to return identical output across a battery of probe inputs. Each new implementation was also re-extracted from the *applied
 patch* / *committed file* bytes and re-checked, so the harness tests the shipped
 code rather than a hand-copy.
 
@@ -363,13 +362,29 @@ and chained apostrophes.
 These are local, baseline-subtracted microbenchmarks isolating the changed code;
 see §5 and §7 for method and caveats.
 
-### Upstream test suite
+### Core test suite (`Tests_Formatting_wpTexturize`)
 
-The full `Tests_Formatting_wpTexturize` class was green —
-`OK (361 tests, 469 assertions)`, PHPCS clean — at the prior upstream verification
-against `wordpress-develop` trunk (`e269998`). Both refinements are behaviour-
-identical by the differential harnesses above, so the assertion set is unchanged;
-the suite is re-run by CI on the upstream PR (see §9) rather than locally here.
+The full class is green against the `substr`-refactored core source:
+
+```text
+OK (361 tests, 469 assertions)
+```
+
+Reproduced locally this round on a **SQLite-backed** test database — the
+`sqlite-database-integration` v2.2.9 drop-in (`src/wp-content/db.php`) plus a
+generated `wp-tests-config.php`, run under PHPUnit 9.6.34:
+
+```bash
+vendor/bin/phpunit --filter Tests_Formatting_wpTexturize \
+  tests/phpunit/tests/formatting/wpTexturize.php
+```
+
+The count matches the prior upstream MySQL run against trunk (`e269998`) exactly,
+as expected for a behaviour-identical change. (The SQLite shim emits
+`PDO::sqliteCreateFunction` deprecation notices on PHP 8.5; these are from the
+drop-in, not the code under test.) The minimal-plugin mark-regex change lives in
+the Dirtbag repo and is not exercised by this core class; its parity is covered by
+the differential harness above.
 
 ## 9. Provenance — where the changes landed
 
