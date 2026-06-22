@@ -301,19 +301,86 @@ closing tag — pathological and not word context.
 The durable lesson, consistent with the core-patch helper change above: lead a
 regex with the rarest literal available and let PCRE's scan skip the rest.
 
-## 8. Current trunk verification
+## 8. Verification — methods and results
 
-Rechecked against current `origin/trunk` in the local `wordpress-develop` checkout
-(`e269998` at the time of the check):
+Two refinements were made and verified in this round (2026-06): the core helper's
+regex guard was replaced with `substr` extraction (§5), and the minimal plugin's
+mark regex was anchored on `<\/` (§7). The gates below are what was actually run
+locally for those changes; tool versions are recorded for reproducibility.
+
+Environment: PHP 8.5.4, PCRE2 10.47, PHP_CodeSniffer 3.13.5, WordPress Coding
+Standards 3.3.0 (installed via `composer install` in the `wordpress-develop`
+checkout).
+
+### Static analysis (phpcs)
+
+Run against the WordPress-Core ruleset on the edited core file (and the touched
+test file):
 
 ```bash
-vendor/bin/phpcs --standard=phpcs.xml.dist src/wp-includes/formatting.php tests/phpunit/tests/formatting/wpTexturize.php
-vendor/bin/phpunit --filter Tests_Formatting_wpTexturize tests/phpunit/tests/formatting/wpTexturize.php
+vendor/bin/phpcs --no-cache --standard=phpcs.xml.dist \
+  src/wp-includes/formatting.php tests/phpunit/tests/formatting/wpTexturize.php
 ```
-
-Results:
 
 ```text
-PHPCS: clean
-PHPUnit: OK (361 tests, 469 assertions)
+.. 2 / 2 (100%)   → 0 violations (exit 0)
 ```
+
+The minimal plugin file was checked with `php -l` (it lives in the Dirtbag repo,
+outside the core ruleset).
+
+### Behavioural parity (differential harnesses)
+
+Because the WordPress PHPUnit bootstrap needs a configured test database that this
+environment does not provide, correctness for the two refactors was established
+with standalone **differential harnesses**: the old and new implementations are
+defined side by side and asserted to return identical output across a battery of
+probe inputs. Each new implementation was also re-extracted from the *applied
+patch* / *committed file* bytes and re-checked, so the harness tests the shipped
+code rather than a hand-copy.
+
+| Change | Harness | Inputs agreed |
+| --- | --- | --- |
+| Core helper: regex → `substr` | old regex guard vs new `substr` guard | 45/45 |
+| Core helper (applied patch + working tree) | extracted function vs old regex | 27/27 each |
+| Minimal plugin: un-anchored → anchored mark | HEAD `mark` vs working-tree `mark` | 18/18 |
+
+Probe inputs covered the behaviour-sensitive edges: trailing whitespace before
+`>` (`</strong >`), leading-space rejection after `</` (`</ strong>`), case-fold,
+malformed closers (`</a foo>`, `</strong/>`), multibyte (`</引用>`), and — for the
+plugin — space-before-tag rejection, named/numeric/hex entities (including the
+31-character `&CounterClockwiseContourIntegral;`), non-inline tags, string-start,
+and chained apostrophes.
+
+### Performance (microbenchmarks)
+
+| Measurement | Before | After | Delta |
+| --- | ---: | ---: | ---: |
+| Core helper guard (400k mixed tokens) | ~0.171 µs/call | ~0.158 µs/call | ~9% faster |
+| Minimal plugin mark, typical ~10 KB | 0.052 ms/call | 0.010 ms/call | ~5× faster |
+| Minimal plugin mark, dense ~60 KB | 0.291 ms/call | 0.069 ms/call | ~4× faster |
+
+These are local, baseline-subtracted microbenchmarks isolating the changed code;
+see §5 and §7 for method and caveats.
+
+### Upstream test suite
+
+The full `Tests_Formatting_wpTexturize` class was green —
+`OK (361 tests, 469 assertions)`, PHPCS clean — at the prior upstream verification
+against `wordpress-develop` trunk (`e269998`). Both refinements are behaviour-
+identical by the differential harnesses above, so the assertion set is unchanged;
+the suite is re-run by CI on the upstream PR (see §9) rather than locally here.
+
+## 9. Provenance — where the changes landed
+
+| Change | Repo / branch | Commit | PR |
+| --- | --- | --- | --- |
+| Helper `substr` refactor (live core source) | `WordPress/wordpress-develop` `fix/18549-inline-quote-context` | `2241ba4` | [#12249](https://github.com/WordPress/wordpress-develop/pull/12249) |
+| Helper `substr` refactor (both candidate patches + this write-up) | `dknauss/dirtbag` `fix/18549-substr-closing-tag-guard` | `33d560c` | [#83](https://github.com/dknauss/dirtbag/pull/83) |
+| Minimal plugin mark-regex anchoring (+ §7 note) | `dknauss/dirtbag` `fix/18549-substr-closing-tag-guard` | `fb820eb` | [#83](https://github.com/dknauss/dirtbag/pull/83) |
+
+The comprehensive plugin and the comprehensive/minimal patches' shared
+`_wptexturize_is_inline_closing_tag()` carry the `substr` form; the minimal plugin
+additionally carries the anchored mark regex. The comprehensive plugin's two
+`preg_replace` passes were left unchanged — they already lead with the rare `<\/`
+literal.
