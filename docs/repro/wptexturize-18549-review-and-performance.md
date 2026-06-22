@@ -226,6 +226,14 @@ The `rtrim()` preserves the original `\s*` allowance for whitespace before `>`, 
   Behaviour-identical (`Tests_Formatting_wpTexturize`: 361 tests, 469 assertions),
   ~9% faster on the guard. The possessive-quantifier alternative (`[a-z]++`, `\s*+`)
   would only matter if the regex were kept; removing it is cheaper and clearer.
+- Related ticket **#43810** (raised by a commenter): the single-quote (apostrophe)
+  case reportedly had its own ticket, and both quotes probably belong together.
+  *Pending confirmation that #43810 is the same closing-inline-tag scenario* — if so,
+  it favours consolidation onto one ticket and the comprehensive patch as the unified
+  fix: it already handles both `'` and `"` at one decision point (the shared
+  `_wptexturize_is_inline_closing_tag()` plus the single/double handling after the
+  static replacements), so a single change closes both. Offer to mark one ticket a
+  duplicate of the other; defer to maintainers on which stays canonical.
 
 ## 7. More realistic local benchmark pass
 
