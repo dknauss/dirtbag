@@ -155,6 +155,49 @@ character checks; closing quote entities use a narrow entity-tail regex; multiby
 letter/number endings fall back to the Unicode regex. This applies the measured
 ~5.5 ms → ~2.0 ms (~2.6×) optimization before posting.
 
+### Closing-tag helper: regex replaced by direct `substr` extraction
+
+A reviewer questioned whether `_wptexturize_is_inline_closing_tag()` needs a regular
+expression at all: it is only ever reached from inside the `if ( '<' === $first )`
+branch, so `^<\/` re-tests a condition the caller already established, and the tag
+name is then validated against a fixed `$inline_tags` allowlist — which makes the
+`[a-z][a-z0-9]*` character classes redundant. Two refinements were proposed: (a) drop
+the regex entirely and use `substr`; or (b) keep it but make the quantifiers
+possessive (`[a-z]++`, `\s*+`) to cut PCRE backtracking.
+
+Option (a) is the stronger one and was applied. The guard is now:
+
+```php
+if ( '</' !== substr( $text, 0, 2 ) || '>' !== substr( $text, -1 ) ) {
+	return false;
+}
+$tag = strtolower( rtrim( substr( $text, 2, -1 ), " \t\n\r\f\x0B" ) );
+return in_array( $tag, $inline_tags, true );
+```
+
+The `rtrim()` preserves the original `\s*` allowance for whitespace before `>`, and
+*not* `ltrim`-ing preserves the original rejection of a space immediately after `</`
+(the old `[a-z]` anchor). The allowlist stays the sole validator of the name.
+
+- **Behaviour preserved.** A differential harness comparing the old regex guard and
+  the new `substr` guard agreed on all 45 probe inputs, including `</strong >`
+  (trailing whitespace), `</ strong>` (leading-space rejection), `</STRONG>`
+  (case-fold), `</a foo>` / `</strong/>` (malformed closers), and multibyte
+  (`</引用>`). The function extracted from the *applied* comprehensive patch was
+  re-checked against a 27-case subset — still equivalent.
+  `vendor/bin/phpcs --standard=phpcs.xml.dist` (WPCS 3.3.0, PHP_CodeSniffer 3.13.5)
+  reports clean on both touched files after the refactor.
+- **Cost.** On a 400k-call mixed-token microbenchmark the guard dropped from ~0.171
+  µs to ~0.158 µs per call (~9%), by trading a per-token PCRE compile/execute for
+  byte-level `substr`/`rtrim`. It is a small absolute saving — the helper only runs
+  on `<`-prefixed tokens that already passed `$last_text_ends_with_quote_context` —
+  but it removes a regex from a per-token path and reads more plainly.
+- **Option (b) noted, not taken.** Possessive quantifiers would reduce backtracking
+  if the regex were kept, but removing it outright is both cheaper and clearer here.
+  The same `<\/[a-z][a-z0-9]*\s*>` construct survives in the comprehensive plugin's
+  lookahead, where it stays a single C-level `preg_replace` by design; if that one is
+  ever tightened, `[a-z]++\s*+>` is the possessive form to use.
+
 ## 6. Recommendations for the Trac comment
 
 - Lead with performance, because it is the historical objection: this approach
