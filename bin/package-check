@@ -148,6 +148,19 @@ def _check_block_nesting(label, text):
 seed = Path('playground/seed-content.json')
 if seed.exists():
     data = json.loads(seed.read_text(encoding='utf-8'))
+    seed_terms = {(term.get('taxonomy'), term.get('slug')) for term in data.get('terms', [])}
+    seed_attachments = {str(attachment_id): attachment for attachment_id, attachment in data.get('attachments', {}).items()}
+    seed_media_files = set()
+    for attachment_id, attachment in seed_attachments.items():
+        filename = attachment.get('filename')
+        if not filename:
+            raise SystemExit(f'Seed attachment {attachment_id} missing filename')
+        if filename in seed_media_files:
+            raise SystemExit(f'Duplicate seed media filename: {filename}')
+        seed_media_files.add(filename)
+        media_path = Path('playground/media') / filename
+        if not media_path.exists():
+            raise SystemExit(f'Seed attachment {attachment_id} missing media file: {media_path}')
     for post in data.get('posts', []):
         label = f"seed:{post.get('post_name')}"
         content = post.get('post_content', '')
@@ -157,6 +170,18 @@ if seed.exists():
         hits = reconcile_hits(content)
         if hits:
             raise SystemExit(f'Reconcile artifact in {label}: {hits[0]}')
+        for slug in post.get('terms', {}).get('category', []):
+            if ('category', slug) not in seed_terms:
+                raise SystemExit(f'{label}: missing seed category {slug}')
+        for slug in post.get('terms', {}).get('post_tag', []):
+            if ('post_tag', slug) not in seed_terms:
+                raise SystemExit(f'{label}: missing seed tag {slug}')
+        thumbnail_id = post.get('thumbnail_attachment_id')
+        if thumbnail_id and str(thumbnail_id) not in seed_attachments:
+            raise SystemExit(f'{label}: missing thumbnail attachment {thumbnail_id}')
+        for attachment_id in re.findall(r'__DB(?:SRC|ID)_(\d+)__', content):
+            if attachment_id not in seed_attachments:
+                raise SystemExit(f'{label}: missing token attachment {attachment_id}')
     print('Seed content integrity OK')
 
 # Image inventory: fail if wp.org package or Playground demo images drift.
@@ -167,30 +192,9 @@ allowed_theme_images = {
     'assets/icons/pickup-truck.svg',
 }
 allowed_playground_images = {
-    'playground/media/abandoned-rusty-ford-pickup.jpg',
-    'playground/media/apostrophe-after-the-tag-workbench.png',
-    'playground/media/deburring-machined-metal.jpg',
-    'playground/media/whats-in-your-glove-box.jpg',
-    'playground/media/secured-glovebox.jpg',
-    'playground/media/blue-bird-truck-stop-sign.jpg',
-    'playground/media/datsun-521-truck-1500.jpg',
-    'playground/media/dirtbag-site-icon.png',
-    'playground/media/dirtbag-site-icon-opaque.png',
-    'playground/media/driver-this-1975-van-watched.jpg',
-    'playground/media/folding-table-and-chairs-green-2008.jpg',
-    'playground/media/ford-cortina.jpg',
-    'playground/media/highway-crossing-desert-sandoval-county.jpg',
-    'playground/media/local-chapter-hall-veterans-foreign.jpg',
-    'playground/media/old-truck-great-sand-dunes-colorado.jpg',
-    'playground/media/potluck-la-catholique.jpg',
-    'playground/media/red-pickup-truck.jpg',
-    'playground/media/roadside-curio-shop-sign-1972.jpg',
-    'playground/media/sunny-side-truck-stop-cafe.jpg',
-    'playground/media/toyota-corona-mark-ii-double-pick.jpg',
-    'playground/media/float-bug-context.png',
-    'playground/media/float-bug-context-early.png',
-    'playground/media/float-bug-symptom-purple.png',
-}
+    f"playground/media/{attachment.get('filename')}"
+    for attachment in data.get('attachments', {}).values()
+} if seed.exists() else set()
 actual_theme_images = set()
 actual_playground_images = set()
 for base in (Path('assets'),):

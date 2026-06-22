@@ -120,15 +120,33 @@ Dirtbag keeps two small browser preview blueprints:
 
 Both blueprints force the theme folder to `dirtbag` so theme asset paths resolve, and both seed the site logo from the bundled truck icon. Update the stable blueprint ref when cutting a new stable tag.
 
-## Studio site, demo content, and reseeding
+## Studio site, demo content, and publishing snapshots
 
-The local Studio site is the **authoring workbench**, not a demo to be reset. Its theme folder is a symlink to this repo, so the site renders whatever branch is checked out. Content and Site-Editor edits happen here first, then get exported into theme files and into `playground/seed-content.php`.
+The local Studio site is the **authoring workbench**, not a demo to be reset. Its theme folder is a symlink to this repo, so the site renders whatever branch is checked out. Content and Site-Editor edits happen here first, then get exported into theme files and into `playground/seed-content.json` plus `playground/media/`.
 
-Directionality matters: `seed-content.php` is **derived from** the Studio site (Studio → seed file), not the other way around. Re-running the seed *into* Studio runs that backwards — it bulldozes live working content and imports a frozen, possibly older snapshot.
+Directionality matters: the Playground seed is **derived from** the Studio site (Studio → seed file), not the other way around. Re-running the seed *into* Studio runs that backwards — it bulldozes live working content and imports a frozen, possibly older snapshot.
+
+Routine editorial loop:
+
+1. Edit posts, pages, categories, tags, captions, alt text, and featured images in Studio.
+2. From the repo, preview the export:
+   ```bash
+   bin/export-studio-seed
+   ```
+3. If the summary is expected, write the snapshot:
+   ```bash
+   bin/export-studio-seed --write
+   ```
+4. Validate before committing:
+   ```bash
+   bin/package-check
+   ```
+
+The exporter preserves existing seed IDs by slug/post name where possible, copies referenced media from Studio uploads into `playground/media/`, rewrites portable in-content media placeholders, and prunes Playground media that is no longer part of the exported seed. It intentionally exports published posts and pages, authors, assigned categories/tags, selected image attachments, and the small option set needed by the preview. It does not export revisions, auto-drafts, comments, Site Editor database overrides, templates, template parts, or plugin state.
 
 Two distinct "make it match the theme" operations:
 
 - **Clear overrides only (routine, safe).** When the Studio site renders stale because Site-Editor template/template-part customizations in the database shadow the theme files, delete just those overrides so the committed files take over. Content (posts, pages, media, menus) is preserved. Back up `wp-content/database/.ht.sqlite` first; restore by copying the backup back over it. This is the normal way to make Studio reflect the committed theme.
-- **Full wipe + reseed (rare, throwaway only).** Deleting all content *and* overrides and re-running `seed-content.php` produces a pristine canonical demo (theme files + seeded content). Do this on a **throwaway** Studio site, never the main workbench, and only to validate the brand-new-user experience before a tag/release. Before reseeding anywhere for real, first **re-export current Studio content back into `seed-content.php`** so you are not restoring an older draft.
+- **Full wipe + reseed (rare, throwaway only).** Deleting all content *and* overrides and re-running `playground/seed-content.php` produces a pristine canonical demo (theme files + seeded content). Do this on a **throwaway** Studio site, never the main workbench, and only to validate the brand-new-user experience before a tag/release. Before reseeding anywhere for real, first **re-export current Studio content back into the Playground seed** so you are not restoring an older draft.
 
-The free pristine demo already exists: the Playground links run `seed-content.php` from a blank install on every load. Use those for a clean-room view instead of resetting Studio.
+The free pristine demo already exists: the Playground links run `playground/seed-content.php` from a blank install on every load. Use those for a clean-room view instead of resetting Studio. Static GitHub Pages exports should be made from a committed seed snapshot whenever possible; Studio can remain the short-term exporter, but the repo seed is the publishable source of truth.
