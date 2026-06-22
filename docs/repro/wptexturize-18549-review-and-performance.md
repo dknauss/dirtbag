@@ -155,6 +155,49 @@ character checks; closing quote entities use a narrow entity-tail regex; multiby
 letter/number endings fall back to the Unicode regex. This applies the measured
 ~5.5 ms → ~2.0 ms (~2.6×) optimization before posting.
 
+### Closing-tag helper: regex replaced by direct `substr` extraction
+
+A reviewer questioned whether `_wptexturize_is_inline_closing_tag()` needs a regular
+expression at all: it is only ever reached from inside the `if ( '<' === $first )`
+branch, so `^<\/` re-tests a condition the caller already established, and the tag
+name is then validated against a fixed `$inline_tags` allowlist — which makes the
+`[a-z][a-z0-9]*` character classes redundant. Two refinements were proposed: (a) drop
+the regex entirely and use `substr`; or (b) keep it but make the quantifiers
+possessive (`[a-z]++`, `\s*+`) to cut PCRE backtracking.
+
+Option (a) is the stronger one and was applied. The guard is now:
+
+```php
+if ( '</' !== substr( $text, 0, 2 ) || '>' !== substr( $text, -1 ) ) {
+	return false;
+}
+$tag = strtolower( rtrim( substr( $text, 2, -1 ), " \t\n\r\f\x0B" ) );
+return in_array( $tag, $inline_tags, true );
+```
+
+The `rtrim()` preserves the original `\s*` allowance for whitespace before `>`, and
+*not* `ltrim`-ing preserves the original rejection of a space immediately after `</`
+(the old `[a-z]` anchor). The allowlist stays the sole validator of the name.
+
+- **Behaviour preserved.** A differential harness comparing the old regex guard and
+  the new `substr` guard agreed on all 45 probe inputs, including `</strong >`
+  (trailing whitespace), `</ strong>` (leading-space rejection), `</STRONG>`
+  (case-fold), `</a foo>` / `</strong/>` (malformed closers), and multibyte
+  (`</引用>`). The function extracted from the *applied* comprehensive patch was
+  re-checked against a 27-case subset — still equivalent.
+  `vendor/bin/phpcs --standard=phpcs.xml.dist` (WPCS 3.3.0, PHP_CodeSniffer 3.13.5)
+  reports clean on both touched files after the refactor.
+- **Cost.** On a 400k-call mixed-token microbenchmark the guard dropped from ~0.171
+  µs to ~0.158 µs per call (~9%), by trading a per-token PCRE compile/execute for
+  byte-level `substr`/`rtrim`. It is a small absolute saving — the helper only runs
+  on `<`-prefixed tokens that already passed `$last_text_ends_with_quote_context` —
+  but it removes a regex from a per-token path and reads more plainly.
+- **Option (b) noted, not taken.** Possessive quantifiers would reduce backtracking
+  if the regex were kept, but removing it outright is both cheaper and clearer here.
+  The same `<\/[a-z][a-z0-9]*\s*>` construct survives in the comprehensive plugin's
+  lookahead, where it stays a single C-level `preg_replace` by design; if that one is
+  ever tightened, `[a-z]++\s*+>` is the possessive form to use.
+
 ## 6. Recommendations for the Trac comment
 
 - Lead with performance, because it is the historical objection: this approach
@@ -174,6 +217,15 @@ letter/number endings fall back to the Unicode regex. This applies the measured
 - Minimal vs. comprehensive are **mutually exclusive** patches (same edited lines, same
   `_wptexturize_is_inline_closing_tag()`); propose one. Comprehensive is a superset of
   minimal and addresses the original report's quote-around-link examples.
+- Respond to the "is the regex necessary?" review point (§5): it was not. The guard
+  is only reached for `<`-prefixed tokens and the inline-tag allowlist already
+  validates the name, so `_wptexturize_is_inline_closing_tag()` now extracts the
+  name with `substr()`/`rtrim()` and drops the `preg_match()` entirely — the
+  allowlist is the sole validator. `rtrim()` preserves the prior whitespace-before-`>`
+  allowance; not trimming the leading edge preserves rejection of a space after `</`.
+  Behaviour-identical (`Tests_Formatting_wpTexturize`: 361 tests, 469 assertions),
+  ~9% faster on the guard. The possessive-quantifier alternative (`[a-z]++`, `\s*+`)
+  would only matter if the regex were kept; removing it is cheaper and clearer.
 
 ## 7. More realistic local benchmark pass
 
@@ -220,19 +272,139 @@ Caveats: these are local microbenchmarks, not canonical core performance numbers
 They exclude the rest of the WordPress filter stack and database/template work. They
 are best read as comparative shape-of-cost evidence.
 
-## 8. Current trunk verification
+### Plugin regex anchoring (minimal vs comprehensive)
 
-Rechecked against current `origin/trunk` in the local `wordpress-develop` checkout
-(`e269998` at the time of the check):
+A standalone micro-benchmark of the two plugins' transform cost (their
+`preg_replace`/`str_replace` work in isolation, not the surrounding
+`wptexturize()`) surfaced a counterintuitive result and a fix. The figures below
+are net ms/call on synthetic raw/texturized bodies; they isolate regex cost only,
+so absolute numbers run lower than the full-WP figures above.
+
+| Plugin transform | Typical ~10 KB | Dense ~60 KB |
+| --- | ---: | ---: |
+| Comprehensive (two `</…`-anchored passes) | 0.015 ms | 0.109 ms |
+| Minimal, **original** un-anchored mark regex | 0.052 ms | 0.291 ms |
+| Minimal, **anchored** mark regex (applied) | 0.010 ms | 0.069 ms |
+
+The original minimal `mark` regex led with an un-anchored
+`(?:[\p{L}\p{N}]|&…;)` class, so PCRE attempted a match at essentially every
+letter and digit in the body — making its single pass ~3–4× *more* expensive than
+the comprehensive plugin's two passes, despite the narrower scope. The
+comprehensive plugin was already cheap because every pattern leads with the rare
+literal `<\/`, which PCRE's first-code-unit scan fast-forwards to.
+
+The minimal plugin's mark regex was rewritten to lead with the same `<\/` anchor:
+the preceding-context requirement became a bounded variable-length lookbehind
+(`(?<=[\p{L}\p{N}]|&#[0-9]{1,7};|&#x[0-9a-f]{1,6};|&[a-z][a-z0-9]{1,40};)`) and
+`\K` drops `</tag>` from the match so only the apostrophe is replaced. PCRE2 reads
+past the lookbehind to the literal `<` for its start optimization, so the pass now
+visits only closing-tag delimiters. Result: ~4–5× faster, and the minimal plugin
+becomes the cheapest of the plugin approaches — the expected ordering for the
+narrowest scope. Behaviour is unchanged across an 18-case differential battery
+(space-before-tag rejection, named/numeric/hex entities including the 31-character
+`&CounterClockwiseContourIntegral;`, multibyte, case-insensitive and non-inline
+tags, string-start, chained apostrophes). The bounds cover every valid entity, so
+the only divergence is on malformed/oversized entity-like runs immediately before a
+closing tag — pathological and not word context.
+
+The durable lesson, consistent with the core-patch helper change above: lead a
+regex with the rarest literal available and let PCRE's scan skip the rest.
+
+## 8. Verification — methods and results
+
+Two refinements were made and verified in this round (2026-06): the core helper's
+regex guard was replaced with `substr` extraction (§5), and the minimal plugin's
+mark regex was anchored on `<\/` (§7). The gates below are what was actually run
+locally for those changes; tool versions are recorded for reproducibility.
+
+Environment: PHP 8.5.4, PCRE2 10.47, PHP_CodeSniffer 3.13.5, WordPress Coding
+Standards 3.3.0 (installed via `composer install` in the `wordpress-develop`
+checkout).
+
+### Static analysis (phpcs)
+
+Run against the WordPress-Core ruleset on the edited core file (and the touched
+test file):
 
 ```bash
-vendor/bin/phpcs --standard=phpcs.xml.dist src/wp-includes/formatting.php tests/phpunit/tests/formatting/wpTexturize.php
-vendor/bin/phpunit --filter Tests_Formatting_wpTexturize tests/phpunit/tests/formatting/wpTexturize.php
+vendor/bin/phpcs --no-cache --standard=phpcs.xml.dist \
+  src/wp-includes/formatting.php tests/phpunit/tests/formatting/wpTexturize.php
 ```
-
-Results:
 
 ```text
-PHPCS: clean
-PHPUnit: OK (361 tests, 469 assertions)
+.. 2 / 2 (100%)   → 0 violations (exit 0)
 ```
+
+The minimal plugin file was checked with `php -l` (it lives in the Dirtbag repo,
+outside the core ruleset).
+
+### Behavioural parity (differential harnesses)
+
+Correctness for the two refactors was established with standalone **differential
+harnesses** — and, for the core helper, confirmed by the full core test suite (see
+below). In a differential harness the old and new implementations are defined side
+by side and asserted to return identical output across a battery of probe inputs. Each new implementation was also re-extracted from the *applied
+patch* / *committed file* bytes and re-checked, so the harness tests the shipped
+code rather than a hand-copy.
+
+| Change | Harness | Inputs agreed |
+| --- | --- | --- |
+| Core helper: regex → `substr` | old regex guard vs new `substr` guard | 45/45 |
+| Core helper (applied patch + working tree) | extracted function vs old regex | 27/27 each |
+| Minimal plugin: un-anchored → anchored mark | HEAD `mark` vs working-tree `mark` | 18/18 |
+
+Probe inputs covered the behaviour-sensitive edges: trailing whitespace before
+`>` (`</strong >`), leading-space rejection after `</` (`</ strong>`), case-fold,
+malformed closers (`</a foo>`, `</strong/>`), multibyte (`</引用>`), and — for the
+plugin — space-before-tag rejection, named/numeric/hex entities (including the
+31-character `&CounterClockwiseContourIntegral;`), non-inline tags, string-start,
+and chained apostrophes.
+
+### Performance (microbenchmarks)
+
+| Measurement | Before | After | Delta |
+| --- | ---: | ---: | ---: |
+| Core helper guard (400k mixed tokens) | ~0.171 µs/call | ~0.158 µs/call | ~9% faster |
+| Minimal plugin mark, typical ~10 KB | 0.052 ms/call | 0.010 ms/call | ~5× faster |
+| Minimal plugin mark, dense ~60 KB | 0.291 ms/call | 0.069 ms/call | ~4× faster |
+
+These are local, baseline-subtracted microbenchmarks isolating the changed code;
+see §5 and §7 for method and caveats.
+
+### Core test suite (`Tests_Formatting_wpTexturize`)
+
+The full class is green against the `substr`-refactored core source:
+
+```text
+OK (361 tests, 469 assertions)
+```
+
+Reproduced locally this round on a **SQLite-backed** test database — the
+`sqlite-database-integration` v2.2.9 drop-in (`src/wp-content/db.php`) plus a
+generated `wp-tests-config.php`, run under PHPUnit 9.6.34:
+
+```bash
+vendor/bin/phpunit --filter Tests_Formatting_wpTexturize \
+  tests/phpunit/tests/formatting/wpTexturize.php
+```
+
+The count matches the prior upstream MySQL run against trunk (`e269998`) exactly,
+as expected for a behaviour-identical change. (The SQLite shim emits
+`PDO::sqliteCreateFunction` deprecation notices on PHP 8.5; these are from the
+drop-in, not the code under test.) The minimal-plugin mark-regex change lives in
+the Dirtbag repo and is not exercised by this core class; its parity is covered by
+the differential harness above.
+
+## 9. Provenance — where the changes landed
+
+| Change | Repo / branch | Commit | PR |
+| --- | --- | --- | --- |
+| Helper `substr` refactor (live core source) | `WordPress/wordpress-develop` `fix/18549-inline-quote-context` | `2241ba4` | [#12249](https://github.com/WordPress/wordpress-develop/pull/12249) |
+| Helper `substr` refactor (both candidate patches + this write-up) | `dknauss/dirtbag` `fix/18549-substr-closing-tag-guard` | `33d560c` | [#83](https://github.com/dknauss/dirtbag/pull/83) |
+| Minimal plugin mark-regex anchoring (+ §7 note) | `dknauss/dirtbag` `fix/18549-substr-closing-tag-guard` | `fb820eb` | [#83](https://github.com/dknauss/dirtbag/pull/83) |
+
+The comprehensive plugin and the comprehensive/minimal patches' shared
+`_wptexturize_is_inline_closing_tag()` carry the `substr` form; the minimal plugin
+additionally carries the anchored mark regex. The comprehensive plugin's two
+`preg_replace` passes were left unchanged — they already lead with the rare `<\/`
+literal.

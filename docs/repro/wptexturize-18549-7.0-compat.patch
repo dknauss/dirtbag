@@ -47,7 +47,7 @@ index e3681b0..57100df 100644
  			if ( str_contains( $curl, "'" ) ) {
  				$curl = preg_replace( $dynamic_characters['apos'], $dynamic_replacements['apos'], $curl );
  				$curl = wptexturize_primes( $curl, "'", $prime, $open_sq_flag, $closing_single_quote );
-@@ -297,12 +308,65 @@ function wptexturize( $text, $reset = false ) {
+@@ -297,12 +308,72 @@ function wptexturize( $text, $reset = false ) {
  
  			// Replace each & with &#038; unless it already looks like an entity.
  			$curl = preg_replace( '/&(?!#(?:\d+|x[a-f0-9]+);|[a-z1-4]{1,8};)/i', '&#038;', $curl );
@@ -75,7 +75,12 @@ index e3681b0..57100df 100644
 + * @return bool Whether the token is a closing inline HTML element.
 + */
 +function _wptexturize_is_inline_closing_tag( $text ) {
-+	if ( ! preg_match( '/^<\/([a-z][a-z0-9]*)\s*>$/i', $text, $matches ) ) {
++	// The caller only reaches this for '<'-prefixed tokens, and the $inline_tags
++	// allowlist below validates the tag name, so no regular expression is needed:
++	// require the '</' prefix and '>' suffix, then extract the name directly. The
++	// rtrim() preserves the optional whitespace permitted before '>' in a closing
++	// tag, while a leading space after '</' leaves a non-matching name.
++	if ( '</' !== substr( $text, 0, 2 ) || '>' !== substr( $text, -1 ) ) {
 +		return false;
 +	}
 +
@@ -107,7 +112,9 @@ index e3681b0..57100df 100644
 +		'var',
 +	);
 +
-+	return in_array( strtolower( $matches[1] ), $inline_tags, true );
++	$tag = strtolower( rtrim( substr( $text, 2, -1 ), " \t\n\r\f\x0B" ) );
++
++	return in_array( $tag, $inline_tags, true );
 +}
 +
  /**
