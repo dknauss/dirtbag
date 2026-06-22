@@ -28,9 +28,15 @@ function dk_wptexturize_18549_mark_inline_apostrophes( $text ) {
 
 	$inline_tags = 'a|abbr|b|bdi|bdo|cite|data|del|dfn|em|i|ins|label|mark|q|s|samp|small|span|strong|sub|sup|time|u|var';
 
+	// Anchored on the rare literal '</' via a bounded lookbehind for the
+	// preceding word character or entity, so PCRE fast-forwards to closing-tag
+	// delimiters instead of attempting a match at every alphanumeric character.
+	// \K drops "</tag>" from the match so only the apostrophe is replaced. The
+	// lookbehind bounds cover every valid entity (max codepoint is 7 decimal /
+	// 6 hex digits; the longest named entity is 31 characters).
 	return preg_replace(
-		'/((?:[\p{L}\p{N}]|&(?:#[0-9]+|#x[0-9a-f]+|[a-z][a-z0-9]+);)<\/(?:' . $inline_tags . ')>)\'(?=[\p{L}\p{N}])/iu',
-		'$1<!--dk-wptexturize-18549-apos-->',
+		'/(?<=[\p{L}\p{N}]|&#[0-9]{1,7};|&#x[0-9a-f]{1,6};|&[a-z][a-z0-9]{1,40};)<\/(?:' . $inline_tags . ')>\K\'(?=[\p{L}\p{N}])/iu',
+		'<!--dk-wptexturize-18549-apos-->',
 		$text
 	);
 }

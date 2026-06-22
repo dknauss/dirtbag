@@ -263,6 +263,44 @@ Caveats: these are local microbenchmarks, not canonical core performance numbers
 They exclude the rest of the WordPress filter stack and database/template work. They
 are best read as comparative shape-of-cost evidence.
 
+### Plugin regex anchoring (minimal vs comprehensive)
+
+A standalone micro-benchmark of the two plugins' transform cost (their
+`preg_replace`/`str_replace` work in isolation, not the surrounding
+`wptexturize()`) surfaced a counterintuitive result and a fix. The figures below
+are net ms/call on synthetic raw/texturized bodies; they isolate regex cost only,
+so absolute numbers run lower than the full-WP figures above.
+
+| Plugin transform | Typical ~10 KB | Dense ~60 KB |
+| --- | ---: | ---: |
+| Comprehensive (two `</…`-anchored passes) | 0.015 ms | 0.109 ms |
+| Minimal, **original** un-anchored mark regex | 0.052 ms | 0.291 ms |
+| Minimal, **anchored** mark regex (applied) | 0.010 ms | 0.069 ms |
+
+The original minimal `mark` regex led with an un-anchored
+`(?:[\p{L}\p{N}]|&…;)` class, so PCRE attempted a match at essentially every
+letter and digit in the body — making its single pass ~3–4× *more* expensive than
+the comprehensive plugin's two passes, despite the narrower scope. The
+comprehensive plugin was already cheap because every pattern leads with the rare
+literal `<\/`, which PCRE's first-code-unit scan fast-forwards to.
+
+The minimal plugin's mark regex was rewritten to lead with the same `<\/` anchor:
+the preceding-context requirement became a bounded variable-length lookbehind
+(`(?<=[\p{L}\p{N}]|&#[0-9]{1,7};|&#x[0-9a-f]{1,6};|&[a-z][a-z0-9]{1,40};)`) and
+`\K` drops `</tag>` from the match so only the apostrophe is replaced. PCRE2 reads
+past the lookbehind to the literal `<` for its start optimization, so the pass now
+visits only closing-tag delimiters. Result: ~4–5× faster, and the minimal plugin
+becomes the cheapest of the plugin approaches — the expected ordering for the
+narrowest scope. Behaviour is unchanged across an 18-case differential battery
+(space-before-tag rejection, named/numeric/hex entities including the 31-character
+`&CounterClockwiseContourIntegral;`, multibyte, case-insensitive and non-inline
+tags, string-start, chained apostrophes). The bounds cover every valid entity, so
+the only divergence is on malformed/oversized entity-like runs immediately before a
+closing tag — pathological and not word context.
+
+The durable lesson, consistent with the core-patch helper change above: lead a
+regex with the rarest literal available and let PCRE's scan skip the rest.
+
 ## 8. Current trunk verification
 
 Rechecked against current `origin/trunk` in the local `wordpress-develop` checkout
