@@ -217,6 +217,15 @@ The `rtrim()` preserves the original `\s*` allowance for whitespace before `>`, 
 - Minimal vs. comprehensive are **mutually exclusive** patches (same edited lines, same
   `_wptexturize_is_inline_closing_tag()`); propose one. Comprehensive is a superset of
   minimal and addresses the original report's quote-around-link examples.
+- Respond to the "is the regex necessary?" review point (§5): it was not. The guard
+  is only reached for `<`-prefixed tokens and the inline-tag allowlist already
+  validates the name, so `_wptexturize_is_inline_closing_tag()` now extracts the
+  name with `substr()`/`rtrim()` and drops the `preg_match()` entirely — the
+  allowlist is the sole validator. `rtrim()` preserves the prior whitespace-before-`>`
+  allowance; not trimming the leading edge preserves rejection of a space after `</`.
+  Behaviour-identical (`Tests_Formatting_wpTexturize`: 361 tests, 469 assertions),
+  ~9% faster on the guard. The possessive-quantifier alternative (`[a-z]++`, `\s*+`)
+  would only matter if the regex were kept; removing it is cheaper and clearer.
 
 ## 7. More realistic local benchmark pass
 
