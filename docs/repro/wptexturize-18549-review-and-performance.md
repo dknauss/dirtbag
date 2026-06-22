@@ -226,14 +226,27 @@ The `rtrim()` preserves the original `\s*` allowance for whitespace before `>`, 
   Behaviour-identical (`Tests_Formatting_wpTexturize`: 361 tests, 469 assertions),
   ~9% faster on the guard. The possessive-quantifier alternative (`[a-z]++`, `\s*+`)
   would only matter if the regex were kept; removing it is cheaper and clearer.
-- Related ticket **#43810** (raised by a commenter): the single-quote (apostrophe)
-  case reportedly had its own ticket, and both quotes probably belong together.
-  *Pending confirmation that #43810 is the same closing-inline-tag scenario* — if so,
-  it favours consolidation onto one ticket and the comprehensive patch as the unified
-  fix: it already handles both `'` and `"` at one decision point (the shared
-  `_wptexturize_is_inline_closing_tag()` plus the single/double handling after the
-  static replacements), so a single change closes both. Offer to mark one ticket a
-  duplicate of the other; defer to maintainers on which stays canonical.
+- Related ticket **#43810** (apostrophe after inline tags). **Confirmed (2026-06-22,
+  via `wptexturize()` probes on the Studio WP 7.0 site and the patched-trunk checkout
+  `2241ba4`) to be the same context-loss bug.** The reported screenshot cases reduce
+  to two things plus a non-bug:
+  - **Closing-tag adjacency** (`<strong>I</strong>'m`, `<strong>He</strong>'s`) — this
+    ticket. The patch fixes it: verified baseline `‘m`/`‘s` → patched `’m`/`’s`.
+  - **Opening-tag adjacency** — bolding a contraction (`I` + bold `'ve been` →
+    `I<strong>'ve been</strong>`) is the mirror image and is **not yet fixed**: still
+    `I<strong>‘ve been</strong>` on *both* baseline and patched trunk, because the patch
+    only sets its flag on closing tags. **This is a bounded follow-up patch, separate
+    from PR #12249.** Same approach as the closing-tag fix, but it needs a guard so a
+    genuine opening quote like `<em>'Hello'</em>` is left alone — only treat the `'` as
+    an apostrophe when the text before the opening tag ends in a letter or number.
+  - **Not a bug:** in `I'v'e' 'b'e'en'`, the inner apostrophes render identically with
+    and without bold; the *only* plain-vs-bold difference is the leading apostrophe (the
+    opening-tag case above). The `'`-after-a-space opening quote (` 'b` → ` ‘b`) is
+    wptexturize's normal heuristic, the same with or without tags.
+  - Consolidation: #43810's headline case is this ticket (one fix, both `'` and `"` via
+    the shared `_wptexturize_is_inline_closing_tag()`); the opening-tag work is the
+    remaining apostrophe piece. Offer to mark one ticket a duplicate; defer to
+    maintainers on which stays canonical.
 
 ## 7. More realistic local benchmark pass
 
