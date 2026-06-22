@@ -55,7 +55,7 @@ index e3681b0..a9288f6 100644
  			if ( str_contains( $curl, "'" ) ) {
  				$curl = preg_replace( $dynamic_characters['apos'], $dynamic_replacements['apos'], $curl );
  				$curl = wptexturize_primes( $curl, "'", $prime, $open_sq_flag, $closing_single_quote );
-@@ -297,12 +312,96 @@ function wptexturize( $text, $reset = false ) {
+@@ -297,12 +312,100 @@ function wptexturize( $text, $reset = false ) {
  
  			// Replace each & with &#038; unless it already looks like an entity.
  			$curl = preg_replace( '/&(?!#(?:\d+|x[a-f0-9]+);|[a-z1-4]{1,8};)/i', '&#038;', $curl );
@@ -107,6 +107,10 @@ index e3681b0..a9288f6 100644
 +
 +/**
 + * Determines whether a token is a closing tag for a common inline HTML element.
++ *
++ * This mirrors the tag-name extraction in {@see wp_kses_split2()}, which is
++ * private and far broader, so it is intentionally not reused here. The element
++ * list is the inline complement of the block-level tags in {@see wpautop()}.
 + *
 + * @since 7.1.0
 + *
