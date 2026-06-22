@@ -1,0 +1,532 @@
+#!/usr/bin/env python3
+"""Export the Dirtbag Studio site into the Playground seed.
+
+Studio is the editorial workbench. The committed Playground seed is the
+reproducible demo/publish snapshot. This script promotes selected Studio
+content into that snapshot without relying on WP-CLI, which can be awkward with
+Studio's SQLite bootstrap.
+
+Default mode is a dry run. Pass --write to update playground/seed-content.json
+and playground/media/.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import mimetypes
+import re
+import shutil
+import sqlite3
+import sys
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_STUDIO_PATH = Path.home() / "Studio" / "dirtbag"
+SEED_PATH = ROOT / "playground" / "seed-content.json"
+MEDIA_DIR = ROOT / "playground" / "media"
+IMAGE_EXTENSIONS = {".gif", ".jpeg", ".jpg", ".png", ".svg", ".webp"}
+OPTION_NAMES = (
+    "blogname",
+    "blogdescription",
+    "show_on_front",
+    "page_on_front",
+    "page_for_posts",
+    "posts_per_page",
+)
+
+
+def rowdicts(cursor: sqlite3.Cursor, sql: str, params: tuple = ()) -> list[dict]:
+    cursor.execute(sql, params)
+    return [dict(row) for row in cursor.fetchall()]
+
+
+def scalar(cursor: sqlite3.Cursor, sql: str, params: tuple = ()) -> str:
+    cursor.execute(sql, params)
+    row = cursor.fetchone()
+    return "" if row is None else str(row[0] or "")
+
+
+def meta_map(cursor: sqlite3.Cursor, post_id: int) -> dict[str, str]:
+    rows = rowdicts(
+        cursor,
+        "SELECT meta_key, meta_value FROM wp_postmeta WHERE post_id = ?",
+        (post_id,),
+    )
+    return {str(row["meta_key"]): str(row["meta_value"] or "") for row in rows}
+
+
+def extension_for(attached_file: str, mime_type: str) -> str:
+    ext = Path(attached_file).suffix.lower()
+    if ext in IMAGE_EXTENSIONS:
+        return ext
+    guessed = mimetypes.guess_extension(mime_type or "")
+    if guessed == ".jpe":
+        guessed = ".jpg"
+    return guessed if guessed in IMAGE_EXTENSIONS else ".jpg"
+
+
+def unique_filename(preferred: str, used: set[str]) -> str:
+    path = Path(preferred)
+    stem = path.stem
+    suffix = path.suffix
+    candidate = preferred
+    i = 2
+    while candidate in used:
+        candidate = f"{stem}-{i}{suffix}"
+        i += 1
+    used.add(candidate)
+    return candidate
+
+
+def load_existing_seed() -> dict:
+    if not SEED_PATH.exists():
+        return {"users": [], "terms": [], "posts": [], "attachments": {}, "options": {}}
+    return json.loads(SEED_PATH.read_text(encoding="utf-8"))
+
+
+def unique_by(rows: list[dict], key: str) -> dict[str, dict]:
+    buckets: dict[str, list[dict]] = {}
+    for row in rows:
+        value = str(row.get(key) or "")
+        if value:
+            buckets.setdefault(value, []).append(row)
+    return {value: matches[0] for value, matches in buckets.items() if len(matches) == 1}
+
+
+def source_path_for_upload(studio_path: Path, attached_file: str) -> Path:
+    return studio_path / "wp-content" / "uploads" / attached_file
+
+
+def export_seed(studio_path: Path) -> tuple[dict, list[tuple[Path, Path]], list[str]]:
+    db_path = studio_path / "wp-content" / "database" / ".ht.sqlite"
+    if not db_path.exists():
+        raise SystemExit(f"Studio SQLite database not found: {db_path}")
+
+    existing_seed = load_existing_seed()
+    existing_attachments = [
+        {"seed_id": str(seed_id), **attachment}
+        for seed_id, attachment in existing_seed.get("attachments", {}).items()
+    ]
+    existing_posts_by_slug = {
+        post.get("post_name"): post for post in existing_seed.get("posts", []) if post.get("post_name")
+    }
+    existing_attachments_by_post_name = unique_by(existing_attachments, "post_name")
+    existing_attachments_by_title = unique_by(existing_attachments, "title")
+    existing_media_files = {
+        path.name for path in MEDIA_DIR.iterdir() if path.is_file()
+    } if MEDIA_DIR.exists() else set()
+
+    con = sqlite3.connect(db_path)
+    con.row_factory = sqlite3.Row
+    cursor = con.cursor()
+
+    posts = rowdicts(
+        cursor,
+        """
+        SELECT *
+        FROM wp_posts
+        WHERE post_type IN ('page', 'post')
+          AND post_status = 'publish'
+        ORDER BY
+          CASE post_type WHEN 'page' THEN 0 ELSE 1 END,
+          post_date,
+          ID
+        """,
+    )
+
+    attachments = rowdicts(
+        cursor,
+        """
+        SELECT *
+        FROM wp_posts
+        WHERE post_type = 'attachment'
+          AND post_mime_type LIKE 'image/%'
+        ORDER BY ID
+        """,
+    )
+    attachments_by_id = {int(row["ID"]): row for row in attachments}
+
+    post_meta = {int(post["ID"]): meta_map(cursor, int(post["ID"])) for post in posts}
+    attachment_meta = {int(att["ID"]): meta_map(cursor, int(att["ID"])) for att in attachments}
+
+    referenced_attachment_ids: set[int] = set()
+    for post in posts:
+        content = str(post["post_content"] or "")
+        referenced_attachment_ids.update(int(m) for m in re.findall(r"wp-image-(\d+)", content))
+        referenced_attachment_ids.update(int(m) for m in re.findall(r'"id"\s*:\s*(\d+)', content))
+        thumb = post_meta[int(post["ID"])].get("_thumbnail_id", "")
+        if thumb.isdigit():
+            referenced_attachment_ids.add(int(thumb))
+
+    selected_attachment_ids: set[int] = set()
+    notes: list[str] = []
+    for attachment in attachments:
+        source_id = int(attachment["ID"])
+        post_name = str(attachment["post_name"] or "")
+        title = str(attachment["post_title"] or "")
+        meta = attachment_meta[source_id]
+        attached_file = meta.get("_wp_attached_file", "")
+        ext = extension_for(attached_file, str(attachment["post_mime_type"] or ""))
+        default_filename = f"{post_name}{ext}"
+        is_existing = (
+            post_name in existing_attachments_by_post_name
+            or title in existing_attachments_by_title
+            or default_filename in existing_media_files
+            or Path(attached_file).name in existing_media_files
+        )
+        if source_id in referenced_attachment_ids or is_existing:
+            if not attached_file:
+                notes.append(f"Skipping attachment {source_id}: missing _wp_attached_file")
+                continue
+            if not source_path_for_upload(studio_path, attached_file).exists():
+                notes.append(f"Skipping attachment {source_id}: source file not found ({attached_file})")
+                continue
+            selected_attachment_ids.add(source_id)
+
+    used_seed_ids: set[str] = set()
+    used_filenames: set[str] = set()
+    attachment_id_map: dict[int, str] = {}
+    exported_attachments: dict[str, dict] = {}
+    copy_plan: list[tuple[Path, Path]] = []
+
+    for attachment in attachments:
+        source_id = int(attachment["ID"])
+        if source_id not in selected_attachment_ids:
+            continue
+
+        post_name = str(attachment["post_name"] or "")
+        title = str(attachment["post_title"] or "")
+        meta = attachment_meta[source_id]
+        attached_file = meta.get("_wp_attached_file", "")
+        ext = extension_for(attached_file, str(attachment["post_mime_type"] or ""))
+        existing = existing_attachments_by_post_name.get(post_name)
+        if existing is None:
+            existing = existing_attachments_by_title.get(title)
+
+        seed_id = str(existing.get("seed_id")) if existing else str(source_id)
+        while seed_id in used_seed_ids:
+            seed_id = str(max([int(x) for x in used_seed_ids if x.isdigit()] + [source_id]) + 1)
+        used_seed_ids.add(seed_id)
+        attachment_id_map[source_id] = seed_id
+
+        filename = existing.get("filename") if existing and existing.get("filename") else f"{post_name}{ext}"
+        filename = unique_filename(filename, used_filenames)
+        source = source_path_for_upload(studio_path, attached_file)
+        destination = MEDIA_DIR / filename
+        copy_plan.append((source, destination))
+
+        exported_attachments[seed_id] = {
+            "id": int(seed_id) if seed_id.isdigit() else seed_id,
+            "filename": filename,
+            "post_name": existing.get("post_name") if existing and existing.get("post_name") else post_name,
+            "title": title,
+            "caption": str(attachment["post_excerpt"] or ""),
+            "description": str(attachment["post_content"] or ""),
+            "mime_type": str(attachment["post_mime_type"] or ""),
+            "alt": meta.get("_wp_attachment_image_alt", ""),
+        }
+
+    siteurl = scalar(cursor, "SELECT option_value FROM wp_options WHERE option_name = 'siteurl'")
+    if not siteurl:
+        siteurl = "http://localhost:8887"
+
+    def portable_content(content: str) -> str:
+        out = content
+        for source_id, seed_id in sorted(attachment_id_map.items(), key=lambda pair: len(str(pair[0])), reverse=True):
+            attachment = attachments_by_id[source_id]
+            meta = attachment_meta[source_id]
+            attached_file = meta.get("_wp_attached_file", "")
+            basename = Path(attached_file).name
+            upload_url = f"{siteurl.rstrip('/')}/wp-content/uploads/{attached_file}"
+            guid = str(attachment["guid"] or "")
+            replacements = {
+                upload_url: f"__DBSRC_{seed_id}__",
+                guid: f"__DBSRC_{seed_id}__",
+                f"/wp-content/uploads/{attached_file}": f"__DBSRC_{seed_id}__",
+            }
+            for needle, replacement in replacements.items():
+                if needle:
+                    out = out.replace(needle, replacement)
+            out = re.sub(rf"\bwp-image-{source_id}\b", f"wp-image-__DBID_{seed_id}__", out)
+            out = re.sub(rf'("id"\s*:\s*){source_id}\b', rf"\1__DBID_{seed_id}__", out)
+        # Studio-authored internal links are absolute. The seed must stay
+        # portable for Playground and static exports, so store them as
+        # root-relative paths. Strip editor data-id attributes because they point
+        # at Studio DB IDs, not stable seed/import IDs.
+        studio_base = re.escape(siteurl.rstrip("/"))
+        out = re.sub(
+            rf'((?:href|src)=["\']){studio_base}(/[^"\']*)?(["\'])',
+            lambda match: f"{match.group(1)}{match.group(2) or '/'}{match.group(3)}",
+            out,
+        )
+        out = out.replace(siteurl.rstrip("/") + "/", "/")
+        out = out.replace(siteurl.rstrip("/"), "/")
+        out = re.sub(r'\s+data-id=["\']\d+["\']', "", out)
+        return out
+
+    exported_posts: list[dict] = []
+    used_post_ids: set[int] = set()
+    studio_to_seed_post_ids: dict[int, int] = {}
+    for post in posts:
+        source_id = int(post["ID"])
+        existing = existing_posts_by_slug.get(str(post["post_name"] or ""))
+        seed_id = int(existing["ID"]) if existing and str(existing.get("ID", "")).isdigit() else source_id
+        while seed_id in used_post_ids:
+            seed_id += 1
+        used_post_ids.add(seed_id)
+        studio_to_seed_post_ids[source_id] = seed_id
+
+    for post in posts:
+        source_id = int(post["ID"])
+        meta = post_meta[source_id]
+        thumb = meta.get("_thumbnail_id", "")
+        thumbnail_attachment_id = None
+        if thumb.isdigit() and int(thumb) in attachment_id_map:
+            mapped = attachment_id_map[int(thumb)]
+            thumbnail_attachment_id = int(mapped) if mapped.isdigit() else None
+
+        term_rows = rowdicts(
+            cursor,
+            """
+            SELECT t.slug, tt.taxonomy
+            FROM wp_term_relationships tr
+            JOIN wp_term_taxonomy tt ON tr.term_taxonomy_id = tt.term_taxonomy_id
+            JOIN wp_terms t ON tt.term_id = t.term_id
+            WHERE tr.object_id = ?
+              AND tt.taxonomy IN ('category', 'post_tag')
+            ORDER BY tt.taxonomy, t.slug
+            """,
+            (source_id,),
+        )
+        terms = {"category": [], "post_tag": []}
+        for row in term_rows:
+            terms[str(row["taxonomy"])].append(str(row["slug"]))
+        terms = {key: value for key, value in terms.items() if value}
+
+        exported_post = {
+            "ID": studio_to_seed_post_ids[source_id],
+            "post_author": int(post["post_author"] or 1),
+            "author_login": scalar(cursor, "SELECT user_login FROM wp_users WHERE ID = ?", (int(post["post_author"] or 1),)),
+            "post_date": str(post["post_date"] or ""),
+            "post_date_gmt": str(post["post_date_gmt"] or ""),
+            "post_content": portable_content(str(post["post_content"] or "")),
+            "post_title": str(post["post_title"] or ""),
+            "post_excerpt": str(post["post_excerpt"] or ""),
+            "post_status": str(post["post_status"] or "publish"),
+            "post_name": str(post["post_name"] or ""),
+            "post_modified": str(post["post_modified"] or ""),
+            "post_modified_gmt": str(post["post_modified_gmt"] or ""),
+            "post_parent": 0,
+            "menu_order": int(post["menu_order"] or 0),
+            "post_type": str(post["post_type"] or "post"),
+            "thumbnail_attachment_id": thumbnail_attachment_id,
+            "terms": terms,
+        }
+        if meta.get("_wp_page_template"):
+            exported_post["template"] = meta["_wp_page_template"]
+        exported_posts.append(exported_post)
+
+    author_logins = sorted({post["author_login"] for post in exported_posts if post["author_login"]})
+    placeholders = ",".join("?" for _ in author_logins) or "''"
+    users = rowdicts(
+        cursor,
+        f"""
+        SELECT ID, user_login, user_nicename, display_name, user_email, user_url
+        FROM wp_users
+        WHERE user_login IN ({placeholders})
+        ORDER BY ID
+        """,
+        tuple(author_logins),
+    )
+    exported_users = []
+    for user in users:
+        user_meta_rows = rowdicts(
+            cursor,
+            "SELECT meta_key, meta_value FROM wp_usermeta WHERE user_id = ?",
+            (int(user["ID"]),),
+        )
+        user_meta = {str(row["meta_key"]): str(row["meta_value"] or "") for row in user_meta_rows}
+        exported_user = {
+            "ID": int(user["ID"]),
+            "user_login": str(user["user_login"] or ""),
+            "user_nicename": str(user["user_nicename"] or ""),
+            "display_name": str(user["display_name"] or ""),
+            "user_email": str(user["user_email"] or ""),
+            "user_url": str(user["user_url"] or ""),
+        }
+        for key in ("first_name", "last_name", "nickname", "description"):
+            if user_meta.get(key):
+                exported_user[key] = user_meta[key]
+        exported_users.append(exported_user)
+
+    term_slugs = {
+        (taxonomy, slug)
+        for post in exported_posts
+        for taxonomy, slugs in post.get("terms", {}).items()
+        for slug in slugs
+    }
+    exported_terms = []
+    for taxonomy, slug in sorted(term_slugs, key=lambda item: (item[0], item[1])):
+        rows = rowdicts(
+            cursor,
+            """
+            SELECT t.term_id, t.name, t.slug, tt.taxonomy, tt.description
+            FROM wp_terms t
+            JOIN wp_term_taxonomy tt ON t.term_id = tt.term_id
+            WHERE t.slug = ? AND tt.taxonomy = ?
+            """,
+            (slug, taxonomy),
+        )
+        if not rows:
+            continue
+        row = rows[0]
+        exported_terms.append(
+            {
+                "term_id": int(row["term_id"]),
+                "name": str(row["name"] or ""),
+                "slug": str(row["slug"] or ""),
+                "taxonomy": str(row["taxonomy"] or ""),
+                "description": str(row["description"] or ""),
+            }
+        )
+
+    options = {
+        row["option_name"]: str(row["option_value"] or "")
+        for row in rowdicts(
+            cursor,
+            f"SELECT option_name, option_value FROM wp_options WHERE option_name IN ({','.join('?' for _ in OPTION_NAMES)})",
+            OPTION_NAMES,
+        )
+    }
+    options = {name: options.get(name, "") for name in OPTION_NAMES}
+
+    con.close()
+
+    return (
+        {
+            "users": exported_users,
+            "terms": exported_terms,
+            "posts": exported_posts,
+            "attachments": exported_attachments,
+            "options": options,
+        },
+        copy_plan,
+        notes,
+    )
+
+
+def validate_seed(seed: dict) -> list[str]:
+    errors: list[str] = []
+    users = {user.get("user_login") for user in seed.get("users", [])}
+    terms = {(term.get("taxonomy"), term.get("slug")) for term in seed.get("terms", [])}
+    attachments = {str(seed_id) for seed_id in seed.get("attachments", {})}
+    post_ids: set[int] = set()
+    filenames: set[str] = set()
+
+    for seed_id, attachment in seed.get("attachments", {}).items():
+        filename = attachment.get("filename")
+        if not filename:
+            errors.append(f"attachment {seed_id} missing filename")
+        elif filename in filenames:
+            errors.append(f"duplicate media filename {filename}")
+        else:
+            filenames.add(filename)
+    for post in seed.get("posts", []):
+        post_id = int(post.get("ID", 0))
+        if post_id in post_ids:
+            errors.append(f"duplicate post ID {post_id}")
+        post_ids.add(post_id)
+        if post.get("author_login") not in users:
+            errors.append(f"{post.get('post_name')}: missing author {post.get('author_login')}")
+        thumb = post.get("thumbnail_attachment_id")
+        if thumb and str(thumb) not in attachments:
+            errors.append(f"{post.get('post_name')}: missing thumbnail attachment {thumb}")
+        for slug in post.get("terms", {}).get("category", []):
+            if ("category", slug) not in terms:
+                errors.append(f"{post.get('post_name')}: missing category {slug}")
+        for slug in post.get("terms", {}).get("post_tag", []):
+            if ("post_tag", slug) not in terms:
+                errors.append(f"{post.get('post_name')}: missing tag {slug}")
+        for token in re.findall(r"__DB(?:SRC|ID)_(\d+)__", post.get("post_content", "")):
+            if token not in attachments:
+                errors.append(f"{post.get('post_name')}: missing token attachment {token}")
+    return errors
+
+
+def summarize(current: dict, exported: dict, copy_plan: list[tuple[Path, Path]]) -> dict:
+    current_post_slugs = {post.get("post_name") for post in current.get("posts", [])}
+    exported_post_slugs = {post.get("post_name") for post in exported.get("posts", [])}
+    current_attachment_names = {
+        attachment.get("post_name") for attachment in current.get("attachments", {}).values()
+    }
+    exported_attachment_names = {
+        attachment.get("post_name") for attachment in exported.get("attachments", {}).values()
+    }
+    changed_posts = sorted(
+        post.get("post_name")
+        for post in exported.get("posts", [])
+        if post.get("post_name") in current_post_slugs
+        and post != next((p for p in current.get("posts", []) if p.get("post_name") == post.get("post_name")), None)
+    )
+    return {
+        "posts": len(exported.get("posts", [])),
+        "attachments": len(exported.get("attachments", {})),
+        "terms": len(exported.get("terms", [])),
+        "users": len(exported.get("users", [])),
+        "added_posts": sorted(exported_post_slugs - current_post_slugs),
+        "removed_posts": sorted(current_post_slugs - exported_post_slugs),
+        "changed_posts": changed_posts,
+        "added_attachments": sorted(exported_attachment_names - current_attachment_names),
+        "removed_attachments": sorted(current_attachment_names - exported_attachment_names),
+        "media_files_selected": len(copy_plan),
+    }
+
+
+def write_export(seed: dict, copy_plan: list[tuple[Path, Path]], refresh_media: bool = False) -> None:
+    MEDIA_DIR.mkdir(parents=True, exist_ok=True)
+    expected_media = {attachment["filename"] for attachment in seed.get("attachments", {}).values()}
+    for source, destination in copy_plan:
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        if not destination.exists() or refresh_media:
+            shutil.copy2(source, destination)
+    for path in MEDIA_DIR.iterdir():
+        if path.is_file() and path.suffix.lower() in IMAGE_EXTENSIONS and path.name not in expected_media:
+            path.unlink()
+    SEED_PATH.write_text(json.dumps(seed, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Export Dirtbag Studio content into Playground seed files.")
+    parser.add_argument("--studio-path", type=Path, default=DEFAULT_STUDIO_PATH)
+    parser.add_argument("--write", action="store_true", help="write seed-content.json and playground/media")
+    parser.add_argument(
+        "--refresh-media",
+        action="store_true",
+        help="overwrite existing playground/media files from Studio uploads instead of only copying missing files",
+    )
+    args = parser.parse_args()
+
+    current = load_existing_seed()
+    exported, copy_plan, notes = export_seed(args.studio_path)
+    errors = validate_seed(exported)
+    if errors:
+        for error in errors:
+            print(error, file=sys.stderr)
+        return 1
+
+    if args.write:
+        write_export(exported, copy_plan, refresh_media=args.refresh_media)
+        mode = "wrote"
+    else:
+        mode = "dry-run"
+
+    print(json.dumps({"mode": mode, **summarize(current, exported, copy_plan), "notes": notes}, indent=2))
+    if not args.write:
+        print("Dry run only. Re-run with --write to update playground/seed-content.json and playground/media/.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
