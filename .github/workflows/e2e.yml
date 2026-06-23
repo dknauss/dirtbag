@@ -8,9 +8,22 @@ name: E2E
 # CLI flags and the axe baseline (real a11y findings) may need a tweak.
 
 on:
+  # Skip the Playground browser suite for docs-only changes: prose, planning
+  # notes, and patch artifacts can't affect what the theme renders, and the
+  # Playground CLI is flaky enough that running it on docs adds noise, not
+  # signal. A change touching any non-doc path still triggers the full suite.
+  # (These checks are not required, so skipping never blocks a merge.)
   push:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '.planning/**'
+      - '**/*.md'
   pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - '.planning/**'
+      - '**/*.md'
 
 permissions:
   contents: read
