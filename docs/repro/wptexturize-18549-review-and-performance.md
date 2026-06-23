@@ -472,9 +472,98 @@ the differential harness above.
 | Helper `substr` refactor (live core source) | `WordPress/wordpress-develop` `fix/18549-inline-quote-context` | `2241ba4` | [#12249](https://github.com/WordPress/wordpress-develop/pull/12249) |
 | Helper `substr` refactor (both candidate patches + this write-up) | `dknauss/dirtbag` `fix/18549-substr-closing-tag-guard` | `33d560c` | [#83](https://github.com/dknauss/dirtbag/pull/83) |
 | Minimal plugin mark-regex anchoring (+ §7 note) | `dknauss/dirtbag` `fix/18549-substr-closing-tag-guard` | `fb820eb` | [#83](https://github.com/dknauss/dirtbag/pull/83) |
+| i18n tests (French elision + multibyte word context) | `WordPress/wordpress-develop` `fix/18549-inline-quote-context` | `0efc177` | [#12249](https://github.com/WordPress/wordpress-develop/pull/12249) |
 
 The comprehensive plugin and the comprehensive/minimal patches' shared
 `_wptexturize_is_inline_closing_tag()` carry the `substr` form; the minimal plugin
 additionally carries the anchored mark regex. The comprehensive plugin's two
 `preg_replace` passes were left unchanged — they already lead with the rare `<\/`
 literal.
+
+## 10. Internationalization, typography, and primes
+
+Two concerns get conflated and only one is this ticket's:
+
+- **Which glyph** to emit (`'` vs `'` vs „ vs « …) — cultural/locale. WordPress already
+  delegates this: `wptexturize()` reads its curly characters from `_x()` strings
+  (`$apos`, `$opening_quote`, `$closing_quote`, …), so translators swap glyphs per
+  locale.
+- **Which decision** to make (is this `'` an apostrophe/closing or an opening?) —
+  context. This is where #18549/#43810 live.
+
+### The character landscape
+
+| Glyph | Unicode | Role | Relevance |
+| --- | --- | --- | --- |
+| `'` | U+0027 | straight apostrophe (typewriter) | **input** `wptexturize()` converts |
+| `"` | U+0022 | straight double | **input** it converts |
+| `'` `'` | U+2018 / U+2019 | left single quote / right single quote **and apostrophe** | output |
+| `"` `"` | U+201C / U+201D | left / right double quote | output |
+| `′` `″` `‴` `⁗` | U+2032/3/4, U+2057 | **primes** (feet/inches, minutes/seconds, math) | **not quotes** — separate path |
+| `` ` `` `´` | U+0060 / U+00B4 | grave / acute accent | not quotes; `wptexturize()` leaves them |
+| `〃` | U+3003 | CJK ditto mark ("same as above") | unrelated |
+
+Two facts dominate:
+
+1. **U+2019 is both the closing single quote and the apostrophe** — there is no separate
+   apostrophe codepoint in normal use (Unicode recommends U+2019 for both). So apostrophe
+   vs. closing-quote cannot be told apart by glyph, only by context. That ambiguity *is*
+   #18549/#43810.
+2. **Primes are a different axis** (see below); grave/acute/ditto are red herrings the
+   filter never curls.
+
+### Locale conventions WordPress honours
+
+| Locale | Primary quotes | Note |
+| --- | --- | --- |
+| English | "…" / '…' | apostrophe = U+2019 |
+| German | „…" / ‚…' | the **closing** double (U+201C) is the glyph English uses for **opening** — hardcoding breaks this |
+| French | «… …» (narrow no-break spaces) | apostrophe = U+2019; heavy **elision** (l', d', j') |
+| Spanish / Polish | «…» / „…" | |
+| CJK (ja/zh) | 「…」 『…』 | corner brackets; contraction-apostrophes basically N/A |
+
+### The patch is i18n-correct; the comprehensive plugin is not
+
+- **Patch.** It writes `$apos` / `$closing_quote` (the locale variables), not literal
+  `&#8217;`, and its context guards use Unicode classes (`\p{L}\p{N}\p{Po}\p{Pf}` under
+  `/u`), so accented and non-Latin letters count as word context. Verified on the patched
+  build (English `_x()` defaults): French elision exposed by bolding a leading letter —
+  `<strong>l</strong>'homme` → `<strong>l</strong>&#8217;homme`, `<em>l</em>'eau` →
+  `…&#8217;eau` — and multibyte word context — `<strong>café</strong>'s` →
+  `…&#8217;s`, `<em>naïve</em>'s` → `…&#8217;s`. Pinned as
+  `test_historic_apostrophe_after_inline_tag_i18n` (PR #12249, `0efc177`).
+- **Comprehensive plugin.** Its regex hardcodes English entities
+  (`&#8220;`/`&#8216;` → `&#8221;`/`&#8217;`). Under a German or French locale
+  `wptexturize()` emits different glyphs and the plugin's pattern simply will not match.
+  **The plugin only works for English-locale output** — a real limitation, and another
+  argument for the in-core patch over the plugin. (The minimal plugin's marker is glyph
+  independent on input but still substitutes a literal `&#8217;`, so it too assumes the
+  English apostrophe.)
+- The "adjacency forces closing/apostrophe" rule is a **heuristic**. It is right for
+  English contractions and Romance elision; it could be wrong where a closing tag
+  legitimately precedes an *opening* quote with no space. That is the same deliberate
+  trade-off already documented for English (§6) — locale-dependent, not universal.
+
+### Primes — how `7'` (feet) is told from `'7'` (quoted "7")
+
+`wptexturize()` has a dedicated `wptexturize_primes()` whose docblock states its job:
+decide whether `7'.` is seven feet, then emit a prime or a closing quote. The
+disambiguation is **stateful — it keys off whether a single quote is already open.** A
+digit-then-`'` becomes a prime only when it is *not* serving to close an open quotation.
+**The leading `'` is the tell.** Verified on the patched build:
+
+| Input | Output | Why |
+| --- | --- | --- |
+| `7'` | `7′` (prime/feet) | digit + `'`, no open quote → prime |
+| `It is 7' long.` | `7′` | same |
+| `9"` | `9″` (double prime/inches) | digit + `"`, no open quote |
+| `'7'` | `'7'` (quoted 7) | leading `'` opens a quote → the trailing `'` **closes** it, not a prime |
+| `The character '7' is odd.` | `'7'` | same |
+| `5'6"` | `5'6″` (**wart**) | the feet `'` is eaten by the apostrophe rule (`digit'digit`) before the prime pass, so it becomes a closing apostrophe, not `′`; only the inches `"` primes |
+
+So the answer to "how can you tell?": the **opening quote** is the signal — `'7'` has one
+(the closer can't be feet); bare `7'` does not (read as feet). It is still a heuristic, with
+real limits (the `5'6"` wart, and any lone `7'` the author meant as a stray closing quote).
+**Our fix does not touch primes** — it requires a tag boundary, and the prime cases are
+numeric without one (`<sup>7</sup>'` would be the rare intersection, left to the existing
+prime logic). Grave/acute/ditto are out of scope by the same reasoning.
