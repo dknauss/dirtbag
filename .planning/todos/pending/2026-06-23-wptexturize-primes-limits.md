@@ -22,4 +22,16 @@ See review doc §10 for the verified table.
 - Decide scope: in-scope for #18549/#43810, or a separate Trac ticket (this is orthogonal to the inline-tag context bug).
 - Add tests: `5'6"`, `7'6"`, `9"`, `'7'`, `the '7'`, `It is 7' long.`
 
-References: `docs/repro/wptexturize-18549-review-and-performance.md` §10 (primes). Related: [[wptexturize-18549-contribution]].
+## Exploration (2026-06-23) — verified prototype
+
+Root cause confirmed: the "apostrophe in a word" dynamic rule (`formatting.php` ~line 181)
+matches `digit'digit` and flags it as an apostrophe **before** `wptexturize_primes()` runs.
+A naive reorder (prime pass before the apostrophe rule) fixes feet-inches but **regresses
+`'7'` → `&#8216;7&#8242;`**. The working fix is surgical — add
+`$dynamic['/(?<=\d)\'(?=\d)/'] = $prime;` before the in-word rule — which fixes the whole
+family (`5'6"`, `7'6"`, `5'6` → `5&#8242;6…`) with **no `'7'` regression** and no apostrophe
+fallout. Verified on the patched build — see review doc **§12.2** for the results table.
+Remaining: full-suite run; likely its **own Trac ticket** (it changes long-standing output
+and is orthogonal to the #18549 inline-tag bug).
+
+References: `docs/repro/wptexturize-18549-review-and-performance.md` §10 (primes), §12.2 (verified prototype). Related: [[wptexturize-18549-contribution]].
