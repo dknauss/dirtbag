@@ -567,3 +567,53 @@ real limits (the `5'6"` wart, and any lone `7'` the author meant as a stray clos
 **Our fix does not touch primes** — it requires a tag boundary, and the prime cases are
 numeric without one (`<sup>7</sup>'` would be the rare intersection, left to the existing
 prime logic). Grave/acute/ditto are out of scope by the same reasoning.
+
+The two prime limits above are filed for a separate core exploration —
+`.planning/todos/pending/2026-06-23-wptexturize-primes-limits.md`.
+
+## 11. Plugin defects beyond i18n (and why we are not fixing them)
+
+The two compat plugins (`docs/repro/wptexturize-18549-compat-plugin.php`, the minimal
+mark/unmark; and `…-historic-compat-plugin.php`, the comprehensive post-processor) are
+prototypes/fallbacks — the real fix is the in-core patch. What we learned is defective:
+
+| # | Plugin | Defect | Status |
+| --- | --- | --- | --- |
+| 1 | Minimal | Un-anchored mark regex led with `[\p{L}\p{N}]` → PCRE tried every alnum char; ~3–4× slower than the comprehensive plugin while doing less | **Fixed** (`fb820eb`, anchored on `</` + `\K`) |
+| 2 | Both | Opening-tag case unhandled — `I<strong>'ve</strong>` → `'ve` (both only match `</tag>'`) | Shared with the patch; **fix in core** (todo) |
+| 3 | Minimal | Mark/unmark **removes** the apostrophe and depends on a marker comment surviving to a later filter — fragile | **Verified defective** (below) |
+| 4 | Minimal | `unmark` substitutes a literal `&#8217;` → forces U+2019 regardless of locale | Minor (U+2019 is the near-universal apostrophe) |
+| – | Comprehensive | Hardcodes English entities (`&#8220;`/`&#8216;`) → fails under non-English locales | See §10 |
+
+### #3 verified: the mark/unmark failure mode is *worse than the bug*
+
+The minimal plugin marks at priority 9 (replacing `'` with `<!--dk-wptexturize-18549-apos-->`)
+and unmarks at priority 11 (marker → `&#8217;`), with `wptexturize()` at 10 in between. The
+character's existence therefore depends on the marker surviving intact to priority 11. Run
+against unpatched trunk `wptexturize()` (`tests` replicate the plugin's exact functions):
+
+| Scenario | Output | Verdict |
+| --- | --- | --- |
+| no plugin (the bug) | `<strong>He</strong>&#8216;s` | wrong glyph, **still readable** |
+| (A) default chain | `<strong>He</strong>&#8217;s` | **works** — marker survives `wptexturize`, restored |
+| (B) + HTML-comment stripper between 9 and 11 | `<strong>He</strong>s` | **apostrophe silently dropped** (data loss) |
+| (C) truncation across the marker | `<strong>He</strong><!--dk-wp` | **broken marker leaks** into output |
+
+(B) is not hypothetical: HTML minifiers and caches (Autoptimize, WP Rocket "minify HTML",
+"remove HTML comments" plugins) strip `<!-- … -->` exactly the way scenario (B) does, and they
+commonly hook `the_content` around priority 10 — inside the mark→unmark window. The plugin thus
+trades a **cosmetic** mis-curl for a risk of **missing characters or visible corruption**. The
+comprehensive plugin has no such failure mode: it only rewrites an existing entity, never
+removes a character it must put back.
+
+### Worth fixing? No — the defects are the argument *for* the patch
+
+- **Opening-tag (#2):** worth fixing, but **in `wptexturize()`**, not the prototypes — filed as
+  `.planning/todos/pending/2026-06-23-wptexturize-opening-tag-core-solution.md`.
+- **Mark/unmark fragility (#3):** not fixable without abandoning the pattern (i.e. becoming a
+  post-processor like the comprehensive plugin). Lesson: if a stopgap plugin must ship, **retire
+  the minimal one** and keep the comprehensive post-process shape (single rewrite, no character
+  removal).
+- **i18n (#4) and the comprehensive locale issue:** their value is as **evidence** that an
+  in-core fix is categorically better than any plugin — locale-correct, robust, source-level,
+  no extra render passes — not as a maintenance backlog.
