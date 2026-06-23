@@ -248,6 +248,35 @@ The `rtrim()` preserves the original `\s*` allowance for whitespace before `>`, 
     remaining apostrophe piece. Offer to mark one ticket a duplicate; defer to
     maintainers on which stays canonical.
 
+### Why these bugs look different in the block editor vs. the front end
+
+A recurring source of confusion on #43810 (and worth pre-empting in any reply): the
+mis-curled quote often *doesn't appear in the editor* even though it's plainly there
+on the front end. That is not a second bug — it is the render path.
+
+`wptexturize()` is a **server-side, output-time** filter on `the_content` (and
+`the_title` / `the_excerpt` / `comment_text` / etc.). It runs when WordPress renders
+the page for a visitor and **never modifies stored content** — `post_content` keeps
+the literal straight `'`/`"`, and the transform is reapplied fresh on every render.
+
+| Surface | Render path | Result |
+| --- | --- | --- |
+| Editor canvas (static blocks: paragraph, heading, list) | client-side JS, from block markup | raw `'` — bug **hidden** |
+| Front end | PHP `the_content` → `wptexturize()` | curled quotes — bug **shows** |
+| Editor *Preview* (new tab) | front-end template (PHP) | bug **shows** (matches front end) |
+| Dynamic / server-rendered blocks (editor preview) | REST `ServerSideRender` → PHP | bug **can show in-editor** |
+
+So static blocks render client-side without `wptexturize()` (bug hidden until the
+front end), while Preview and dynamic blocks render server-side with it (bug visible).
+The REST `content.rendered` field is filtered (bug present); `content.raw` — what the
+editor loads for editing — is not (bug absent).
+
+The irony specific to this bug: the editor is what *creates the tag boundary* that
+triggers it — selecting text and pressing **Bold** wraps it in `<strong>…</strong>`,
+which is what gets stored — but it renders that boundary rawly. The bug needs both the
+boundary *and* `wptexturize()`; only the front end (and Preview) supplies both, which
+is why it surfaces there and not on the editing canvas.
+
 ## 7. More realistic local benchmark pass
 
 A second benchmark pass by updates the initial performance analysis with
