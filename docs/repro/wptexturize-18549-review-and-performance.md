@@ -250,6 +250,26 @@ The `rtrim()` preserves the original `\s*` allowance for whitespace before `>`, 
 
 ### Why these bugs look different in the block editor vs. the front end
 
+**Quick diagnostic.** Two questions settle almost every "weird curly quote" report:
+
+```
+1. WHERE do you see it?
+   • Only in the editor, fine on the front end → not this bug
+       (the editor doesn't curl quotes; nothing is actually wrong)
+   • On the front end / Preview, but looked fine in the editor → it's wptexturize → go to 2
+
+2. Is the quote right up against a tag edge?
+   (e.g. just after </strong> or just inside <strong> — usually from bolding)
+   • YES → this bug (context lost across the tag boundary):
+       – after a CLOSING tag  (</strong>'s)  → fixed by #18549 / PR #12249
+       – after an OPENING tag (<strong>'ve)  → the opening-tag follow-up
+   • NO  → normal curling of an ambiguous quote (e.g. apostrophe after a space) → not this bug
+```
+
+*Editor vs. front end* tells you whether `wptexturize()` is even involved; *next to a
+tag edge or not* tells you whether it's this bug. The rest of this section is the "why"
+behind those two rules.
+
 A recurring source of confusion on #43810 (and worth pre-empting in any reply): the
 mis-curled quote often *doesn't appear in the editor* even though it's plainly there
 on the front end. That is not a second bug — it is the render path.
