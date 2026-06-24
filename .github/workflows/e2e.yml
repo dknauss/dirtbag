@@ -51,20 +51,32 @@ jobs:
 
       - name: Boot WordPress Playground (theme + seeded content)
         run: |
-          npx @wp-playground/cli@latest server --port 9400 --blueprint=tests/blueprint.ci.json &
-          # Wait until the homepage actually renders seeded featured-image
-          # content (the wp-post-image class), not just returns 200. A bare 200
-          # can precede the seed import, leaving the front page imageless and
-          # flaking the JS-off "images remain plain images" check.
-          seeded=
-          for i in $(seq 1 60); do
-            if curl -sf http://127.0.0.1:9400/ | grep -q wp-post-image; then seeded=1; break; fi
-            sleep 2
+          # Pinned, not @latest: the Playground CLI has an intermittent EBADF /
+          # connection-refused crash that almost always strikes at boot. Pin a
+          # known build and retry the boot — a clean boot then runs reliably.
+          boot() {
+            npx @wp-playground/cli@3.1.41 server --port 9400 --blueprint=tests/blueprint.ci.json &
+            echo $! > /tmp/pg.pid
+            # Ready only when the homepage renders the seeded featured image (a
+            # bare 200 can precede the seed import). Bail early if the server died.
+            for i in $(seq 1 60); do
+              if curl -sf http://127.0.0.1:9400/ | grep -q wp-post-image; then return 0; fi
+              kill -0 "$(cat /tmp/pg.pid)" 2>/dev/null || return 1
+              sleep 2
+            done
+            return 1
+          }
+          for attempt in 1 2 3; do
+            echo "::group::Playground boot attempt $attempt"
+            if boot; then echo "seeded after attempt $attempt"; echo "::endgroup::"; exit 0; fi
+            echo "boot attempt $attempt failed (EBADF/timeout); retrying" >&2
+            echo "::endgroup::"
+            kill "$(cat /tmp/pg.pid)" 2>/dev/null || true
+            pkill -f "@wp-playground/cli" 2>/dev/null || true
+            sleep 3
           done
-          if [ -z "$seeded" ]; then
-            echo "::error::Seeded content (wp-post-image) never appeared after 120s; aborting so the suite does not run against an unseeded site."
-            exit 1
-          fi
+          echo "::error::Playground failed to boot (wp-post-image) after 3 attempts; aborting so the suite does not run against an unseeded site."
+          exit 1
 
       - name: Run Playwright (smoke + accessibility)
         working-directory: tests
@@ -112,20 +124,32 @@ jobs:
 
       - name: Boot WordPress Playground (theme + seed + style)
         run: |
-          npx @wp-playground/cli@latest server --port 9400 --blueprint=tests/blueprint.ci.json &
-          # Wait until the homepage actually renders seeded featured-image
-          # content (the wp-post-image class), not just returns 200. A bare 200
-          # can precede the seed import, leaving the front page imageless and
-          # flaking the JS-off "images remain plain images" check.
-          seeded=
-          for i in $(seq 1 60); do
-            if curl -sf http://127.0.0.1:9400/ | grep -q wp-post-image; then seeded=1; break; fi
-            sleep 2
+          # Pinned, not @latest: the Playground CLI has an intermittent EBADF /
+          # connection-refused crash that almost always strikes at boot. Pin a
+          # known build and retry the boot — a clean boot then runs reliably.
+          boot() {
+            npx @wp-playground/cli@3.1.41 server --port 9400 --blueprint=tests/blueprint.ci.json &
+            echo $! > /tmp/pg.pid
+            # Ready only when the homepage renders the seeded featured image (a
+            # bare 200 can precede the seed import). Bail early if the server died.
+            for i in $(seq 1 60); do
+              if curl -sf http://127.0.0.1:9400/ | grep -q wp-post-image; then return 0; fi
+              kill -0 "$(cat /tmp/pg.pid)" 2>/dev/null || return 1
+              sleep 2
+            done
+            return 1
+          }
+          for attempt in 1 2 3; do
+            echo "::group::Playground boot attempt $attempt"
+            if boot; then echo "seeded after attempt $attempt"; echo "::endgroup::"; exit 0; fi
+            echo "boot attempt $attempt failed (EBADF/timeout); retrying" >&2
+            echo "::endgroup::"
+            kill "$(cat /tmp/pg.pid)" 2>/dev/null || true
+            pkill -f "@wp-playground/cli" 2>/dev/null || true
+            sleep 3
           done
-          if [ -z "$seeded" ]; then
-            echo "::error::Seeded content (wp-post-image) never appeared after 120s; aborting so the suite does not run against an unseeded site."
-            exit 1
-          fi
+          echo "::error::Playground failed to boot (wp-post-image) after 3 attempts; aborting so the suite does not run against an unseeded site."
+          exit 1
 
       - name: Run per-style axe sweep
         working-directory: tests
