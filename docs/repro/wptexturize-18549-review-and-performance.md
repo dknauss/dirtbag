@@ -617,3 +617,70 @@ removes a character it must put back.
 - **i18n (#4) and the comprehensive locale issue:** their value is as **evidence** that an
   in-core fix is categorically better than any plugin — locale-correct, robust, source-level,
   no extra render passes — not as a maintenance backlog.
+
+## 12. Explorations — opening-tag and prime fixes (verified, not yet proposed)
+
+Both filed todos (`.planning/todos/pending/`) were prototyped against the patched
+trunk on 2026-06-23 with the stub harness. Each fix is **verified working**; neither
+is proposed upstream yet (each needs a full `Tests_Formatting_wpTexturize` run, and the
+prime one is a behaviour change that likely wants its own ticket).
+
+### 12.1 Opening-tag gap (#43810) — a clean symmetric extension
+
+The landed closing-tag fix already gates on `$last_text_ends_with_quote_context` — *true
+when the text **before** the tag ends in a letter/number*. That is exactly the guard the
+opening-tag case needs, so the fix is just to broaden the helper: have
+`_wptexturize_is_inline_closing_tag()` match an **opening** inline tag too (extract the
+name from `<name …>` — the leading run before the first space / `/` / `>`). The existing
+guard then fires for `I<strong>'ve</strong>` with no new logic.
+
+| Input | Prototype | |
+| --- | --- | --- |
+| `I<strong>'ve been</strong>` | `I<strong>&#8217;ve been</strong>` | ✓ fixed |
+| `the<em>'90s</em>` | `the<em>&#8217;90s</em>` | ✓ fixed (elision) |
+| `Dan<a href="/x">'s</a>` | `Dan<a href="/x">&#8217;s</a>` | ✓ attrs handled |
+| `word <em>'Hello'</em>` | `word <em>&#8216;Hello&#8217;</em>` | ✓ guard holds (space) |
+| `<em>'Hello'</em> world` | `<em>&#8216;Hello&#8217;</em>` | ✓ guard holds (no context) |
+| `<strong>He</strong>'s` | `<strong>He</strong>&#8217;s` | ✓ closing still works |
+
+Caveats: name extraction must be **regex-free** in a real patch (per the reviewer note
+that removed the original closing-tag regex); `"` rides along via the same branch; the
+no-space trade-off (`word<em>'Hello'</em>` → forces an apostrophe) is identical to the
+closing-tag trade-off already documented in §6. Run the full suite before proposing.
+
+### 12.2 `wptexturize_primes()` feet/inches wart — a surgical fix
+
+Root cause: the "apostrophe in a word" dynamic rule (`formatting.php` ~line 181,
+`(?<!spaces)'(?!…)`) matches `digit'digit` and flags it as an apostrophe **before**
+`wptexturize_primes()` (whose prime pattern is `(?<=\d)'`) ever runs. So `5'6"` →
+`5&#8217;6&#8243;` (feet eaten), while `5' 6"` (space) and `6'` (no trailing digit)
+prime correctly.
+
+A naive reorder (run the `'` prime pass before the apostrophe rule) fixes feet-inches
+**but regresses `'7'` → `&#8216;7&#8242;`** — the prime pass claims the trailing `7'`
+before the leading open-quote can mark it a *closing* quote. The working fix is surgical:
+add a dynamic rule that claims a digit-flanked apostrophe as a prime *before* the in-word
+rule, keeping the apos→primes order intact:
+
+```php
+// Feet and inches: an apostrophe between two digits is a prime (5'6"), not an
+// apostrophe. Claimed here so the in-word apostrophe rule below doesn't eat it.
+if ( "'" !== $prime ) {
+    $dynamic['/(?<=\d)\'(?=\d)/'] = $prime;
+}
+```
+
+A digit-flanked `'` is always a measurement (never an apostrophe in English), and it
+carries no open-quote ambiguity, so this fixes the whole family without touching `'7'`:
+
+| Input | baseline | reorder | surgical |
+| --- | --- | --- | --- |
+| `5'6"` | `5&#8217;6&#8243;` ✗ | `5&#8242;6&#8243;` ✓ | `5&#8242;6&#8243;` ✓ |
+| `7'6"` | `7&#8217;6&#8243;` ✗ | ✓ | `7&#8242;6&#8243;` ✓ |
+| `5'6` | `5&#8217;6` ✗ | ✓ | `5&#8242;6` ✓ |
+| `'7'` (quoted) | `&#8216;7&#8217;` ✓ | `&#8216;7&#8242;` ✗ | `&#8216;7&#8217;` ✓ |
+| `He's` / `rock'n'roll` / `'90s` | ✓ | ✓ | ✓ |
+
+Caveats: this changes long-standing core output (existing tests may encode the current
+`5'6"` behaviour), so it wants a full-suite run and probably its **own Trac ticket** —
+it's orthogonal to the #18549 inline-tag context bug.

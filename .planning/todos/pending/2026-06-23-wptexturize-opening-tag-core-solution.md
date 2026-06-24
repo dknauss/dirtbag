@@ -19,4 +19,13 @@ Fix it at the source in `wptexturize()`'s quote-context logic, **not** in the pl
 - Cover both `'` and `"`, and the prime intersection (`<sup>7</sup>'`).
 - Add historic-compat tests: `I<strong>'ve been</strong>`, `un<em>'</em>`-style fragments, both-quote variants.
 
-References: `docs/repro/wptexturize-18549-review-and-performance.md` §6 (opening-tag follow-up) and §11 (plugin defects). Related: [[wptexturize-18549-contribution]].
+## Exploration (2026-06-23) — verified prototype
+
+Broadening `_wptexturize_is_inline_closing_tag()` to also match an **opening** inline tag
+reuses the existing `$last_text_ends_with_quote_context` guard and fixes
+`I<strong>'ve</strong>` → `&#8217;ve` with no new logic; the guards (opening quote with a
+space before the tag, or at the start) all hold. Verified on the patched build — see review
+doc **§12.1** for the results table. Remaining before a PR: regex-free name extraction (per
+the reviewer note) and a full `Tests_Formatting_wpTexturize` run.
+
+References: `docs/repro/wptexturize-18549-review-and-performance.md` §6 (opening-tag follow-up), §11 (plugin defects), §12.1 (verified prototype). Related: [[wptexturize-18549-contribution]].
