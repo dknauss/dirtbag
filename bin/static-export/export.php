@@ -122,6 +122,11 @@ foreach ( $task_list as $task_name ) {
 		if ( ++$guard > 100000 ) {
 			WP_CLI::error( "Task $task_name exceeded its iteration guard." );
 		}
+		// Heartbeat: emit output every iteration so the Studio WP-CLI bridge
+		// (which aborts after ~120s of silence) stays alive on long tasks.
+		if ( true !== $is_done ) {
+			WP_CLI::log( sprintf( '  %s … %d', $task_name, $guard ) );
+		}
 	} while ( true !== $is_done );
 
 	WP_CLI::log( sprintf( 'Done: %s (%d iterations)', $task_name, $guard ) );
