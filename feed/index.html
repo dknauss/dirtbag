@@ -12,7 +12,7 @@
 	<atom:link href="https://dknauss.github.io/dirtbag/feed/" rel="self" type="application/rss+xml" />
 	<link>https://dknauss.github.io/dirtbag</link>
 	<description>Good bones and road grit.</description>
-	<lastBuildDate>Wed, 24 Jun 2026 07:45:28 +0000</lastBuildDate>
+	<lastBuildDate>Wed, 24 Jun 2026 14:25:07 +0000</lastBuildDate>
 	<language>en-US</language>
 	<sy:updatePeriod>
 	hourly	</sy:updatePeriod>
@@ -28,6 +28,130 @@
 	<height>32</height>
 </image> 
 	<item>
+		<title>A pull quote is not a block quote</title>
+		<link>https://dknauss.github.io/dirtbag/2026/06/24/a-pull-quote-is-not-a-block-quote/</link>
+					<comments>https://dknauss.github.io/dirtbag/2026/06/24/a-pull-quote-is-not-a-block-quote/#respond</comments>
+		
+		<dc:creator><![CDATA[Roadside Archivist]]></dc:creator>
+		<pubDate>Wed, 24 Jun 2026 14:24:38 +0000</pubDate>
+				<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">https://dknauss.github.io/dirtbag/?p=105</guid>
+
+					<description><![CDATA[Here is another WordPress bug that hides in plain sight — not in a character this time, but in a tag. Drop a Pull Quote block into a post. It looks like a callout: a line of the article, blown up and set aside so the eye catches it on the way down the page. [&#8230;]]]></description>
+										<content:encoded><![CDATA[
+<p class="wp-block-paragraph">Here is another WordPress bug that hides in plain sight — not in a character this time, but in a tag.</p>
+
+
+
+<p class="wp-block-paragraph">Drop a <strong>Pull Quote</strong> block into a post. It looks like a callout: a line of the article, blown up and set aside so the eye catches it on the way down the page. Useful, handsome, and — under the hood — wearing the wrong clothes.</p>
+
+
+
+<p class="wp-block-paragraph">This is what core saves and serves for a pull quote:</p>
+
+
+
+<pre class="wp-block-code"><code>&lt;figure class="wp-block-pullquote"&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;The web is the canvas.&lt;/p&gt;
+    &lt;cite&gt;Dirtbag&lt;/cite&gt;
+  &lt;/blockquote&gt;
+&lt;/figure&gt;</code></pre>
+
+
+
+<p class="wp-block-paragraph">A <code>&lt;blockquote&gt;</code> with a <code>&lt;cite&gt;</code>. That is the markup for a <em>quotation</em> — text taken from somewhere else and set into the flow of your own. The regular Quote block produces almost exactly the same thing, and that is the tell: WordPress treats a pull quote as if it were just a fancier block quote.</p>
+
+
+
+<p class="wp-block-paragraph">It isn&#8217;t. They are different animals that happen to look alike.</p>
+
+
+
+<h2 class="wp-block-heading">One quotes; the other repeats</h2>
+
+
+
+<p class="wp-block-paragraph">A <strong>block quote</strong> belongs to the main text. It quotes an external source, so it sometimes carries a citation — that is exactly why <code>&lt;cite&gt;</code> lives inside <code>&lt;blockquote&gt;</code>, the way <code>&lt;figcaption&gt;</code> lives inside <code>&lt;figure&gt;</code>.</p>
+
+
+
+<p class="wp-block-paragraph">A <strong>pull quote</strong> is the opposite kind of thing. It is <em>paratextual</em>: it lifts, repeats, or paraphrases a line that is <em>already in the article</em> and pushes it out into the margin, like a gloss in an old manuscript. It quotes nothing external. It never has a citation. Its whole job is to repeat the main text in a way the eye can grab.</p>
+
+
+
+<p class="wp-block-paragraph">That repetition is the crux. Because a pull quote duplicates content that is already on the page, anything that consumes the page <em>without</em> the visual styling needs to be able to tell it apart and skip it. A screen reader shouldn&#8217;t read the sentence twice. A print stylesheet, an RSS-to-Markdown pass, a JSON export — none of them should trip over a paragraph that was only ever meant to be decorative.</p>
+
+
+
+<p class="wp-block-paragraph">HTML already has the right element for exactly this, and it is not <code>&lt;blockquote&gt;</code>. It is <code>&lt;aside&gt;</code>. The HTML5 specification all but names the case:</p>
+
+
+
+<blockquote class="wp-block-quote is-layout-flow wp-block-quote-is-layout-flow">
+<p class="wp-block-paragraph">The element can be used for typographical effects like pull quotes or sidebars … and for other content that is considered separate from the main content of the page.</p>
+<cite><a href="https://html.spec.whatwg.org/multipage/sections.html#the-aside-element">HTML — The aside element</a></cite></blockquote>
+
+
+
+<p class="wp-block-paragraph">And browsers and assistive technology already act on it: an <code>&lt;aside&gt;</code> is a landmark (the same as <code>role="complementary"</code>), so screen-reader users can jump over it and keep reading the article. Mark a pull quote as an <code>&lt;aside&gt;</code> and the duplication problem solves itself.</p>
+
+
+
+<h2 class="wp-block-heading">What it should be</h2>
+
+
+
+<p class="wp-block-paragraph">Same visible callout, honest markup:</p>
+
+
+
+<pre class="wp-block-code"><code>&lt;figure class="wp-block-pullquote"&gt;
+  &lt;aside&gt;
+    &lt;p&gt;The web is the canvas.&lt;/p&gt;
+    &lt;p class="wp-block-pullquote__attribution"&gt;Dirtbag&lt;/p&gt;
+  &lt;/aside&gt;
+&lt;/figure&gt;</code></pre>
+
+
+
+<p class="wp-block-paragraph">No <code>&lt;blockquote&gt;</code>, because nothing is being quoted. No <code>&lt;cite&gt;</code>, because there is no source to cite — the line came from the article itself. The attribution, if there is one, is just a label, so it is a plain paragraph.</p>
+
+
+
+<h2 class="wp-block-heading">Why this belongs upstream</h2>
+
+
+
+<p class="wp-block-paragraph">Dirtbag has tested a tiny plugin that rewrites the pull quote&#8217;s front-end output to the markup above — a <code>render_block</code> filter that swaps the <code>&lt;blockquote></code> for an <code>&lt;aside></code> and demotes the <code>&lt;cite></code>. It is the same move as the <a href="/2026/06/21/the-apostrophe-after-the-tag/">apostrophe fix</a>: demonstrate the correct output without pretending a theme should be in charge of it.</p>
+
+
+
+<p class="wp-block-paragraph">Because the real fix belongs in core. The block editor still <em>saves</em> a <code>&lt;blockquote></code>, so a front-end filter only paints over the rendered page; it can&#8217;t change what is stored or what the editor shows. Fixing that means changing the Pullquote block&#8217;s saved markup — with a block <em>deprecation</em> so the millions of existing pull quotes keep validating — or giving the Quote block a choice of HTML element so authors can pick <code>&lt;aside></code> themselves.</p>
+
+
+
+<p class="wp-block-paragraph">There is an open discussion about exactly this: <a href="https://github.com/WordPress/gutenberg/issues/11610">Gutenberg #11610</a>, which proposed deprecating the Pull Quote block in favour of the Quote block. The proposal had the relationship backwards — the two blocks aren&#8217;t redundant, they&#8217;re <em>semantically distinct</em>, and collapsing them would lose the one thing the pull quote needs to say about itself. The element is the fix.</p>
+
+
+
+<h2 class="wp-block-heading">The Dirtbag lesson</h2>
+
+
+
+<p class="wp-block-paragraph">Like the curled apostrophe and the floated headline, this is one small inherited default doing something that looks fine and reads wrong. The page renders. The callout looks great. But the markup tells every non-visual reader of the page that a line of your own article is a quotation from somewhere else — and hides nothing, skips nothing, repeats everything.</p>
+
+
+
+<p class="wp-block-paragraph">A pull quote is not a block quote. The browser can&#8217;t see the difference. The spec already did.</p>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://dknauss.github.io/dirtbag/2026/06/24/a-pull-quote-is-not-a-block-quote/feed/</wfw:commentRss>
+			<slash:comments>0</slash:comments>
+		
+		
+			</item>
+		<item>
 		<title>The apostrophe after the tag</title>
 		<link>https://dknauss.github.io/dirtbag/2026/06/21/the-apostrophe-after-the-tag/</link>
 					<comments>https://dknauss.github.io/dirtbag/2026/06/21/the-apostrophe-after-the-tag/#respond</comments>
@@ -278,9 +402,9 @@ public function test_apostrophe_after_inline_formatting_tag() {
 
 
 
-<figure data-wp-context="{&quot;galleryId&quot;:&quot;6a3be11c781e0&quot;}" data-wp-interactive="core/gallery" class="wp-block-gallery has-nested-images columns-3 wp-block-gallery-1 is-layout-flex wp-block-gallery-is-layout-flex">
+<figure data-wp-context="{&quot;galleryId&quot;:&quot;6a3bebe687410&quot;}" data-wp-interactive="core/gallery" class="wp-block-gallery has-nested-images columns-3 wp-block-gallery-1 is-layout-flex wp-block-gallery-is-layout-flex">
 
-<figure data-wp-context="{&quot;imageId&quot;:&quot;6a3be11c79180&quot;}" data-wp-interactive="core/image" data-wp-key="6a3be11c79180" class="wp-block-image size-full wp-lightbox-container"><img decoding="async" width="1644" height="676" data-wp-class--hide="state.isContentHidden" data-wp-class--show="state.isContentVisible" data-wp-init="callbacks.setButtonStyles" data-wp-on--click="actions.showLightbox" data-wp-on--load="callbacks.setButtonStyles" data-wp-on--pointerdown="actions.preloadImage" data-wp-on--pointerenter="actions.preloadImageWithDelay" data-wp-on--pointerleave="actions.cancelPreload" data-wp-on-window--resize="callbacks.setButtonStyles" data-id="22" src="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context.png" alt="Dirtbag front page: the wide Field Notes column of post cards beside the narrow Used Cars &amp; Unused Plans sidebar." class="wp-image-22" srcset="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context.png 1644w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-300x123.png 300w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-1024x421.png 1024w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-768x316.png 768w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-1536x632.png 1536w" sizes="(max-width: 1644px) 100vw, 1644px" /><button aria-label="Enlarge image"
+<figure data-wp-context="{&quot;imageId&quot;:&quot;6a3bebe687be0&quot;}" data-wp-interactive="core/image" data-wp-key="6a3bebe687be0" class="wp-block-image size-full wp-lightbox-container"><img decoding="async" width="1644" height="676" data-wp-class--hide="state.isContentHidden" data-wp-class--show="state.isContentVisible" data-wp-init="callbacks.setButtonStyles" data-wp-on--click="actions.showLightbox" data-wp-on--load="callbacks.setButtonStyles" data-wp-on--pointerdown="actions.preloadImage" data-wp-on--pointerenter="actions.preloadImageWithDelay" data-wp-on--pointerleave="actions.cancelPreload" data-wp-on-window--resize="callbacks.setButtonStyles" data-id="22" src="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context.png" alt="Dirtbag front page: the wide Field Notes column of post cards beside the narrow Used Cars &amp; Unused Plans sidebar." class="wp-image-22" srcset="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context.png 1644w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-300x123.png 300w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-1024x421.png 1024w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-768x316.png 768w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-1536x632.png 1536w" sizes="(max-width: 1644px) 100vw, 1644px" /><button aria-label="Enlarge image"
 			class="lightbox-trigger"
 			type="button"
 			aria-haspopup="dialog"
@@ -297,7 +421,7 @@ public function test_apostrophe_after_inline_formatting_tag() {
 
 
 
-<figure data-wp-context="{&quot;imageId&quot;:&quot;6a3be11c79950&quot;}" data-wp-interactive="core/image" data-wp-key="6a3be11c79950" class="wp-block-image size-full wp-lightbox-container"><img decoding="async" width="1748" height="1086" data-wp-class--hide="state.isContentHidden" data-wp-class--show="state.isContentVisible" data-wp-init="callbacks.setButtonStyles" data-wp-on--click="actions.showLightbox" data-wp-on--load="callbacks.setButtonStyles" data-wp-on--pointerdown="actions.preloadImage" data-wp-on--pointerenter="actions.preloadImageWithDelay" data-wp-on--pointerleave="actions.cancelPreload" data-wp-on-window--resize="callbacks.setButtonStyles" data-id="23" src="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early.png" alt="An earlier Dirtbag front page showing the two-column layout with the Used Cars sidebar." class="wp-image-23" srcset="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early.png 1748w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early-300x186.png 300w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early-1024x636.png 1024w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early-768x477.png 768w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early-1536x954.png 1536w" sizes="(max-width: 1748px) 100vw, 1748px" /><button aria-label="Enlarge image"
+<figure data-wp-context="{&quot;imageId&quot;:&quot;6a3bebe688798&quot;}" data-wp-interactive="core/image" data-wp-key="6a3bebe688798" class="wp-block-image size-full wp-lightbox-container"><img decoding="async" width="1748" height="1086" data-wp-class--hide="state.isContentHidden" data-wp-class--show="state.isContentVisible" data-wp-init="callbacks.setButtonStyles" data-wp-on--click="actions.showLightbox" data-wp-on--load="callbacks.setButtonStyles" data-wp-on--pointerdown="actions.preloadImage" data-wp-on--pointerenter="actions.preloadImageWithDelay" data-wp-on--pointerleave="actions.cancelPreload" data-wp-on-window--resize="callbacks.setButtonStyles" data-id="23" src="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early.png" alt="An earlier Dirtbag front page showing the two-column layout with the Used Cars sidebar." class="wp-image-23" srcset="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early.png 1748w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early-300x186.png 300w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early-1024x636.png 1024w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early-768x477.png 768w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early-1536x954.png 1536w" sizes="(max-width: 1748px) 100vw, 1748px" /><button aria-label="Enlarge image"
 			class="lightbox-trigger"
 			type="button"
 			aria-haspopup="dialog"
@@ -314,7 +438,7 @@ public function test_apostrophe_after_inline_formatting_tag() {
 
 
 
-<figure data-wp-context="{&quot;imageId&quot;:&quot;6a3be11c7a508&quot;}" data-wp-interactive="core/image" data-wp-key="6a3be11c7a508" class="wp-block-image size-full wp-lightbox-container"><img loading="lazy" decoding="async" width="590" height="1032" data-wp-class--hide="state.isContentHidden" data-wp-class--show="state.isContentVisible" data-wp-init="callbacks.setButtonStyles" data-wp-on--click="actions.showLightbox" data-wp-on--load="callbacks.setButtonStyles" data-wp-on--pointerdown="actions.preloadImage" data-wp-on--pointerenter="actions.preloadImageWithDelay" data-wp-on--pointerleave="actions.cancelPreload" data-wp-on-window--resize="callbacks.setButtonStyles" data-id="24" src="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-symptom-purple.png" alt="The float bug in the purple style: the headline &#039;No Build Step, Just Keep Driving&#039; has dropped below its thumbnail instead of wrapping beside it." class="wp-image-24" srcset="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-symptom-purple.png 590w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-symptom-purple-172x300.png 172w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-symptom-purple-585x1024.png 585w" sizes="auto, (max-width: 590px) 100vw, 590px" /><button aria-label="Enlarge image"
+<figure data-wp-context="{&quot;imageId&quot;:&quot;6a3bebe688f68&quot;}" data-wp-interactive="core/image" data-wp-key="6a3bebe688f68" class="wp-block-image size-full wp-lightbox-container"><img loading="lazy" decoding="async" width="590" height="1032" data-wp-class--hide="state.isContentHidden" data-wp-class--show="state.isContentVisible" data-wp-init="callbacks.setButtonStyles" data-wp-on--click="actions.showLightbox" data-wp-on--load="callbacks.setButtonStyles" data-wp-on--pointerdown="actions.preloadImage" data-wp-on--pointerenter="actions.preloadImageWithDelay" data-wp-on--pointerleave="actions.cancelPreload" data-wp-on-window--resize="callbacks.setButtonStyles" data-id="24" src="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-symptom-purple.png" alt="The float bug in the purple style: the headline &#039;No Build Step, Just Keep Driving&#039; has dropped below its thumbnail instead of wrapping beside it." class="wp-image-24" srcset="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-symptom-purple.png 590w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-symptom-purple-172x300.png 172w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-symptom-purple-585x1024.png 585w" sizes="auto, (max-width: 590px) 100vw, 590px" /><button aria-label="Enlarge image"
 			class="lightbox-trigger"
 			type="button"
 			aria-haspopup="dialog"
@@ -1144,98 +1268,6 @@ public function test_apostrophe_after_inline_formatting_tag() {
 ]]></content:encoded>
 					
 					<wfw:commentRss>https://dknauss.github.io/dirtbag/2026/06/18/hello-from-the-shoulder/feed/</wfw:commentRss>
-			<slash:comments>0</slash:comments>
-		
-		
-			</item>
-		<item>
-		<title>Field notes from the shoulder</title>
-		<link>https://dknauss.github.io/dirtbag/2026/06/17/field-notes-from-the-shoulder/</link>
-					<comments>https://dknauss.github.io/dirtbag/2026/06/17/field-notes-from-the-shoulder/#respond</comments>
-		
-		<dc:creator><![CDATA[Roadside Archivist]]></dc:creator>
-		<pubDate>Wed, 17 Jun 2026 01:31:47 +0000</pubDate>
-				<category><![CDATA[Field Notes]]></category>
-		<category><![CDATA[Block Themes]]></category>
-		<category><![CDATA[No JS]]></category>
-		<guid isPermaLink="false">http://localhost:8881/2026/06/17/field-notes-from-the-shoulder/</guid>
-
-					<description><![CDATA[Somewhere between a Bukowski parking lot and a Robinson Jeffers cliff, the shoulder looked like enough of a place to stop.]]></description>
-										<content:encoded><![CDATA[
-<p class="wp-block-paragraph">A dispatch from the edge of the road.</p>
-
-
-
-<span id="more-48"></span>
-
-
-
-<p class="wp-block-paragraph">The radio found <a href="https://www.reddit.com/r/WarOnDrugsBand/">The War on Drugs</a> and stayed there, all wide road and low sky.</p>
-
-
-
-<p class="wp-block-paragraph">Somewhere between a <a href="https://bukowskiforum.com/">Bukowski</a> parking lot and a <a href="https://www.poetry-archive.com/j/jeffers_robinson/">Robinson Jeffers</a> cliff, the shoulder looked like enough of a place to stop.</p>
-
-
-
-<ul class="wp-block-list">
-<li>Coffee before sunrise.</li>
-
-
-
-<li>Maps folded wrong.</li>
-
-
-
-<li>Tools where they can be reached.</li>
-</ul>
-
-
-
-<details class="wp-block-details is-layout-flow wp-block-details-is-layout-flow"><summary>Truck note</summary>
-<p class="wp-block-paragraph">The old pickup starts if you ask politely.</p>
-</details>
-
-
-
-<h2 class="wp-block-heading">What the guardrails teach</h2>
-
-
-
-<p class="wp-block-paragraph">Building this theme has felt like keeping an old truck on the road under a rule that says: no new parts you can&#8217;t make yourself. No build step. No bundled JavaScript. No stylesheet of our own — just <code>theme.json</code>, core blocks, and web-safe fonts. It sounds like deprivation. It works more like a map.</p>
-
-
-
-<p class="wp-block-paragraph">A few things we&#8217;re learning on the shoulder:</p>
-
-
-
-<ul class="wp-block-list">
-<li><strong>Limits make decisions for you.</strong> When you can&#8217;t reach for a plugin or a script, you ask what WordPress already does — usually more than you expected. WordPress 7.0 alone handed us a breadcrumbs block and a customizable navigation overlay we&#8217;d otherwise have hand-rolled.</li>
-
-
-
-<li><strong>Lean on the engine, not the bodywork.</strong> We curate the front page with sticky posts instead of hard-coded category IDs, and build the mobile menu from a core overlay pattern instead of bespoke markup. Less of our own metal to rust.</li>
-
-
-
-<li><strong>Restraint is a feature, not a confession.</strong> Switching off the editor&#8217;s custom colours and drop shadows isn&#8217;t hiding — it keeps every page on the same road. Fewer knobs, fewer ways to strip a thread.</li>
-
-
-
-<li><strong>The hard part is what core brings, not what we add.</strong> An accordion still hauls its own JavaScript in from the factory; &#8220;no theme JS&#8221; means we don&#8217;t pile more on, not that we can confiscate what core ships.</li>
-
-
-
-<li><strong>Write it down or lose it.</strong> The Site Editor will happily bake site-specific IDs and localhost URLs into your files; the discipline is reconciling them back out — and a small check that fails loudly when they sneak back in.</li>
-</ul>
-
-
-
-<p class="wp-block-paragraph">None of it is glamorous. But a thing built from parts you understand is a thing you can fix at the side of the road, in the dark, with the tools you already carry. That is the whole point.</p>
-]]></content:encoded>
-					
-					<wfw:commentRss>https://dknauss.github.io/dirtbag/2026/06/17/field-notes-from-the-shoulder/feed/</wfw:commentRss>
 			<slash:comments>0</slash:comments>
 		
 		
