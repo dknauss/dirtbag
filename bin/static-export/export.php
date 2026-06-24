@@ -107,6 +107,12 @@ foreach ( $task_list as $task_name ) {
 		WP_CLI::error( "Task class missing: $class" );
 	}
 
+	// Simply Static 3.7+ declares Fetch_Urls_Task::$archive_start_time as a
+	// non-nullable string and assigns it from this option in the constructor;
+	// an earlier task can blank it, so re-assert a value before each task is
+	// constructed to avoid a TypeError on null.
+	$opts->set( 'archive_start_time', $opts->get( 'archive_start_time' ) ?: Util::formatted_datetime() )->save();
+
 	$guard = 0;
 	do {
 		$is_done = ( new $class() )->perform();
@@ -115,6 +121,11 @@ foreach ( $task_list as $task_name ) {
 		}
 		if ( ++$guard > 100000 ) {
 			WP_CLI::error( "Task $task_name exceeded its iteration guard." );
+		}
+		// Heartbeat: emit output every iteration so the Studio WP-CLI bridge
+		// (which aborts after ~120s of silence) stays alive on long tasks.
+		if ( true !== $is_done ) {
+			WP_CLI::log( sprintf( '  %s … %d', $task_name, $guard ) );
 		}
 	} while ( true !== $is_done );
 

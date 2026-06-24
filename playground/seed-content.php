@@ -202,6 +202,10 @@ if ( ! function_exists( 'dirtbag_playground_seed_posts' ) ) {
 				'menu_order'        => (int) $post['menu_order'],
 				'post_type'         => $post['post_type'],
 			);
+			// wp_insert_post()/wp_update_post() expect slashed input and unslash
+			// internally; slash here so literal backslashes in content (e.g. a
+			// Windows path inside a code block) survive the round trip.
+			$postarr = wp_slash( $postarr );
 			if ( $existing ) {
 				$postarr['ID'] = $existing->ID;
 				$new_id        = wp_update_post( $postarr, true );
@@ -215,6 +219,12 @@ if ( ! function_exists( 'dirtbag_playground_seed_posts' ) ) {
 
 			if ( ! empty( $post['template'] ) ) {
 				update_post_meta( $new_id, '_wp_page_template', $post['template'] );
+			}
+
+			if ( ! empty( $post['footnotes'] ) ) {
+				// The footnotes meta is a JSON string; slash it so update_post_meta()'s
+				// internal unslash leaves the escaped quotes intact.
+				update_post_meta( $new_id, 'footnotes', wp_slash( $post['footnotes'] ) );
 			}
 
 			if ( 'post' === $post['post_type'] ) {

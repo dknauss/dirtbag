@@ -65,7 +65,9 @@ echo "== Pages markers =="
 touch "$OUT/.nojekyll"
 
 origin_host="${ORIGIN#*://}"
-remaining="$(grep -rl "$origin_host" "$OUT" 2>/dev/null | wc -l | tr -d ' ')"
+# grep exits 1 when it finds nothing — the success case here — which would abort
+# the script under `set -e`/pipefail before the check below. Swallow that exit.
+remaining="$(grep -rl "$origin_host" "$OUT" 2>/dev/null | wc -l | tr -d ' ')" || true
 echo "Files still referencing the origin host: $remaining (expected 0)"
 [ "$remaining" = "0" ] || { echo "WARNING: origin URLs remain — inspect before deploying." >&2; exit 1; }
 

@@ -326,6 +326,11 @@ def export_seed(studio_path: Path) -> tuple[dict, list[tuple[Path, Path]], list[
         }
         if meta.get("_wp_page_template"):
             exported_post["template"] = meta["_wp_page_template"]
+        if meta.get("footnotes"):
+            # Footnote text lives in the `footnotes` post meta, not post_content;
+            # without it the <!-- wp:footnotes /--> block renders an empty list on
+            # import. Run it through the same URL/image rewriting as content.
+            exported_post["footnotes"] = portable_content(meta["footnotes"])
         exported_posts.append(exported_post)
 
     author_logins = sorted({post["author_login"] for post in exported_posts if post["author_login"]})
