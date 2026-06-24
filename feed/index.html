@@ -12,7 +12,7 @@
 	<atom:link href="https://dknauss.github.io/dirtbag/feed/" rel="self" type="application/rss+xml" />
 	<link>https://dknauss.github.io/dirtbag</link>
 	<description>Good bones and road grit.</description>
-	<lastBuildDate>Sun, 21 Jun 2026 08:37:31 +0000</lastBuildDate>
+	<lastBuildDate>Wed, 24 Jun 2026 07:45:28 +0000</lastBuildDate>
 	<language>en-US</language>
 	<sy:updatePeriod>
 	hourly	</sy:updatePeriod>
@@ -21,7 +21,7 @@
 	<generator>https://wordpress.org/?v=7.0</generator>
 
 <image>
-	<url>https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/dirtbag-site-icon-opaque-150x150.png</url>
+	<url>https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/dirtbag-site-icon-opaque-2-150x150.png</url>
 	<title>Dirtbag</title>
 	<link>https://dknauss.github.io/dirtbag</link>
 	<width>32</width>
@@ -38,7 +38,7 @@
 		<category><![CDATA[Debugging]]></category>
 		<category><![CDATA[Typography]]></category>
 		<category><![CDATA[WordPress]]></category>
-		<guid isPermaLink="false">https://dknauss.github.io/dirtbag/?p=588</guid>
+		<guid isPermaLink="false">http://localhost:8881/2026/06/21/the-apostrophe-after-the-tag/</guid>
 
 					<description><![CDATA[A straight apostrophe after bold text can come out curled the wrong way in WordPress. The bug is old, tiny, and exactly the sort of thing Dirtbag notices.]]></description>
 										<content:encoded><![CDATA[
@@ -54,7 +54,7 @@
 
 
 
-<p class="wp-block-paragraph">You can also type it in the visual editor with the keyboard shortcuts and inline block tools — and it will look OK in the editor, with a purely vertical apostrophe that&#8217;s not curled one way or the other. </p>
+<p class="wp-block-paragraph">You can also type it in the visual editor with the keyboard shortcuts and inline block tools. It will look OK in the editor, with a purely vertical apostrophe that&#8217;s not curled one way or the other.</p>
 
 
 
@@ -78,7 +78,7 @@
 
 
 
-<figure class="wp-block-image alignright size-large is-resized"><img fetchpriority="high" decoding="async" width="1024" height="576" src="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/apostrophe-after-the-tag-workbench-1024x576.png" alt="Garage workbench with HTML markup and a curled metal apostrophe-shaped shaving beside an out-of-focus laptop." class="wp-image-597" style="aspect-ratio:4/3;object-fit:contain;width:400px" srcset="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/apostrophe-after-the-tag-workbench-1024x576.png 1024w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/apostrophe-after-the-tag-workbench-300x169.png 300w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/apostrophe-after-the-tag-workbench-768x432.png 768w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/apostrophe-after-the-tag-workbench-1536x864.png 1536w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/apostrophe-after-the-tag-workbench.png 1672w" sizes="(max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">Generated editorial photo for “The apostrophe after the tag.”</figcaption></figure>
+<figure class="wp-block-image alignright size-large is-resized"><img fetchpriority="high" decoding="async" width="1024" height="576" src="/wp-content/uploads/2026/06/apostrophe-after-the-tag-workbench-1024x576.png" alt="Garage workbench with HTML markup and a curled metal apostrophe-shaped shaving beside an out-of-focus laptop." class="wp-image-26" style="aspect-ratio:4/3;object-fit:contain;width:400px" srcset="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/apostrophe-after-the-tag-workbench-1024x576.png 1024w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/apostrophe-after-the-tag-workbench-300x169.png 300w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/apostrophe-after-the-tag-workbench-768x432.png 768w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/apostrophe-after-the-tag-workbench-1536x864.png 1536w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/apostrophe-after-the-tag-workbench.png 1672w" sizes="(max-width: 1024px) 100vw, 1024px" /><figcaption class="wp-element-caption">Generated editorial photo for “The apostrophe after the tag.”</figcaption></figure>
 
 
 
@@ -86,11 +86,15 @@
 
 
 
-<p class="wp-block-paragraph">This is not the block editor inventing punctuation. It is older than that. The culprit is <code>wptexturize()</code>, WordPress&#8217;s long-running output filter that turns straight quotes, dashes, ellipses, and a few other plain-text marks into nicer typography on the rendered page.</p>
+<p class="wp-block-paragraph">This is not the block editor inventing punctuation. It is older than that. The culprit is <code>wptexturize()</code>, WordPress&#8217;s long-running output filter that turns straight quotes, dashes, ellipses, and a few other plain-text marks into nicer typography on the rendered page.<sup data-fn="d7e34d62-a042-4043-8d02-04b6e29d1f5e" class="fn"><a href="#d7e34d62-a042-4043-8d02-04b6e29d1f5e" id="d7e34d62-a042-4043-8d02-04b6e29d1f5e-link">1</a></sup></p>
 
 
 
 <p class="wp-block-paragraph">Most of the time, that is what people expect from WordPress. You type plain punctuation. WordPress dresses it up. The trouble starts when the word is split by HTML.</p>
+
+
+
+<p class="has-gray-80-background-color has-background wp-block-paragraph"><strong>Historical Aside:</strong> Texturize is WordPress co-founder Matt Mullenweg&#8217;s baby. Matt has <a href="https://ma.tt/2018/01/r-i-p-dean/">blogged</a> about how he was inspired by Dean Allen’s obsession with web typography at his Textism blog and in the <a href="https://poststatus.com/remembering-dean-allen/">Textpattern</a> CMS. Matt built Texturize for WordPress so it could have Textpattern-like typographic polish out of the box.<br><br>Back when pasting from Word into a web interface was a disaster, Dean created Textile in 2002 and built it into his Textpattern CMS the following year. Textile was a Markdown precursor. At the time, Markdown&#8217;s creator, John Gruber had written <a href="https://daringfireball.net/projects/smartypants/">SmartyPants</a> to cope with curly quotes, em/en-dashes, and ellipses by automatically transforming them into the proper HTML character entities. That&#8217;s closer to what Texturize does.<br><br>SmartyPants began life as a Movable Type plugin; Alex King&#8217;s <a href="https://alexking.org/projects/js-quicktags">JS-Quicktags</a>, meanwhile, became an important part of WordPress core. Together, JS-Quicktags and Texturize made it possible to write semantically correct code and typographically (mostly) correct text in a non-clunky way on the web — in WordPress. </p>
 
 
 
@@ -126,16 +130,11 @@
 
 
 
-<p class="wp-block-paragraph">Dan wrote about this years ago in <a href="https://www.liquidweb.com/blog/apostrophes-and-quotation-marks/">Apostrophes and Quotation Marks</a>. That post has the useful minimal shape:</p>
+<p class="wp-block-paragraph">Dan wrote about this years ago in <a href="https://www.liquidweb.com/blog/apostrophes-and-quotation-marks/">Apostrophes and Quotation Marks</a> after stumbling over it in Gutenberg. He opened an issue about it in the Gutenberg repo (<a href="https://github.com/WordPress/gutenberg/issues/42345">Gutenberg #42345</a>), not realizing the block editor is not the culprit. </p>
 
 
 
-<pre class="wp-block-code"><code>&lt;strong&gt;Test&lt;/strong&gt;'s
-&lt;em&gt;Test&lt;/em&gt;'s</code></pre>
-
-
-
-<p class="wp-block-paragraph">One snippet in the article appears to have a small typo — <code>&lt;strong&gt;Test&lt;strong&gt;'s</code> is missing the slash in the closing <code>&lt;/strong&gt;</code> tag — but the point is right. A closing inline tag followed immediately by a straight apostrophe is enough to confuse the old text filter.</p>
+<p class="wp-block-paragraph">A closing inline tag followed immediately by a straight apostrophe confuses the old Texturize text filter in WordPress core. There has been <a href="https://core.trac.wordpress.org/ticket/18549">an open Trac ticket</a> about it since 2011.</p>
 
 
 
@@ -143,15 +142,15 @@
 
 
 
-<p class="wp-block-paragraph">It is not only contractions. Any straight quote that lands right after a closing inline tag can take the wrong curl. These are the shapes people have actually filed since the original 2011 report — single and double closing quotes, possessives, quoted names, and quotes that bump into a block tag, an ellipsis, or non-English punctuation. The first column is what you write; the last two are typed by hand so they hold still:</p>
+<p class="wp-block-paragraph">It is not only contractions that fall apart. Any straight quote that lands right after a closing inline tag can take the wrong curl — single and double closing quotes, possessives, quoted names, and quotes that bump into a block tag, an ellipsis, or non-English punctuation. </p>
 
 
 
-<figure class="wp-block-table"><table><thead><tr><th>The shape</th><th>You write</th><th>Renders now</th><th>Should be</th></tr></thead><tbody><tr><td>Possessive after a tag</td><td><code>&lt;strong&gt;He&lt;/strong&gt;'s</code></td><td>He‘s</td><td>He’s</td></tr><tr><td>Contraction split by a tag</td><td><code>rock&lt;/strong&gt;'n'roll</code></td><td>rock‘n’roll</td><td>rock’n’roll</td></tr><tr><td>Closing single quote after a link</td><td><code>'&lt;a&gt;quoted&lt;/a&gt;'.</code></td><td>‘quoted‘.</td><td>‘quoted’.</td></tr><tr><td>Closing double quote after a link</td><td><code>"&lt;a&gt;quoted&lt;/a&gt;".</code></td><td>“quoted“.</td><td>“quoted”.</td></tr><tr><td>Possessive after a quoted name</td><td><code>&lt;em&gt;"John"&lt;/em&gt;'s</code></td><td>“John”‘s</td><td>“John”’s</td></tr><tr><td>Closing quote before a block tag</td><td><code>"&lt;a&gt;else&lt;/a&gt;"&lt;/p&gt;</code></td><td>“else“</td><td>“else”</td></tr><tr><td>Closing quote before an ellipsis</td><td><code>"&lt;a&gt;link&lt;/a&gt;"…</code></td><td>“link“…</td><td>“link”…</td></tr><tr><td>Closing quote before CJK punctuation</td><td><code>"&lt;em&gt;引用&lt;/em&gt;"。</code></td><td>“引用“。</td><td>“引用”。</td></tr></tbody></table></figure>
+<figure class="wp-block-table"><table><thead><tr><th>Description</th><th>Source ASCII and HTML </th><th>Texturized</th><th>Should be</th></tr></thead><tbody><tr><td>Possessive after a tag</td><td><code>&lt;strong&gt;He&lt;/strong&gt;'s</code></td><td>He‘s</td><td>He’s</td></tr><tr><td>Contraction split by a tag</td><td><code>rock&lt;/strong&gt;'n'roll</code></td><td>rock‘n’roll</td><td>rock’n’roll</td></tr><tr><td>Closing single quote after a link</td><td><code>'&lt;a&gt;quoted&lt;/a&gt;'.</code></td><td>‘quoted‘.</td><td>‘quoted’.</td></tr><tr><td>Closing double quote after a link</td><td><code>"&lt;a&gt;quoted&lt;/a&gt;".</code></td><td>“quoted“.</td><td>“quoted”.</td></tr><tr><td>Possessive after a quoted name</td><td><code>&lt;em&gt;"John"&lt;/em&gt;'s</code></td><td>“John”‘s</td><td>“John”’s</td></tr><tr><td>Closing quote before a block tag</td><td><code>"&lt;a&gt;else&lt;/a&gt;"&lt;/p&gt;</code></td><td>“else“</td><td>“else”</td></tr><tr><td>Closing quote before an ellipsis</td><td><code>"&lt;a>link&lt;/a>"...</code></td><td>“link“…</td><td>“link”…</td></tr><tr><td>Closing quote before CJK punctuation</td><td><code>"&lt;em&gt;引用&lt;/em&gt;"。</code></td><td>“引用“。</td><td>“引用”。</td></tr></tbody></table></figure>
 
 
 
-<p class="wp-block-paragraph">A few cousins are genuinely harder and stay out of scope: an opening quote right after CJK text, and elisions where the apostrophe sits before or inside the tag — <code>&lt;strong&gt;l&lt;/strong&gt;'homme</code>, <code>&lt;strong&gt;O&lt;/strong&gt;'Neill</code>, <code>d&lt;em&gt;'&lt;/em&gt;accord</code>. Those are a different boundary problem, noted on the ticket but not fixed by the same rule.</p>
+<p class="wp-block-paragraph">Closing-tag elisions ride along with the same rule: <code>&lt;strong>l&lt;/strong>'homme</code> and <code>&lt;strong>O&lt;/strong>'Neill</code> now curl to a proper apostrophe — they are possessive-shaped, a closing tag then an apostrophe then a letter. The genuine cousins stay out of scope, because the apostrophe is not after a closing tag: an opening quote right after CJK text; an apostrophe that sits <em>inside</em> the tag, <code>d&lt;em>'&lt;/em>accord</code>; and the mirror case where an opening tag splits a contraction, <code>I&lt;strong>'ve&lt;/strong></code>. Those are a different boundary problem (noted on another Trac ticket, <a href="https://core.trac.wordpress.org/ticket/43810">#43810</a>) but not fixed by the same rule.</p>
 
 
 
@@ -159,7 +158,7 @@
 
 
 
-<p class="wp-block-paragraph">Dirtbag could try to be clever here. It could disable <code>wptexturize()</code> entirely:</p>
+<p class="wp-block-paragraph">Dirtbag could try to be clever here. We could disable <code>wptexturize()</code> entirely:</p>
 
 
 
@@ -167,7 +166,7 @@
 
 
 
-<p class="wp-block-paragraph">That would be too much. It would change more than apostrophes: quotes, dashes, ellipses, primes, and old WordPress behavior people may rely on. A theme should not make that decision for a site.</p>
+<p class="wp-block-paragraph">That would be too much for a theme and even a plugin. It would change more than apostrophes: quotes, dashes, ellipses, primes, and old WordPress behaviour people may rely on. A theme should not make that decision for a site.</p>
 
 
 
@@ -175,15 +174,11 @@
 
 
 
-<p class="wp-block-paragraph">The right place is WordPress core. There is already an old ticket for the broader bug: <a href="https://core.trac.wordpress.org/ticket/18549">Core Trac #18549</a>, &#8220;wp_texturize incorrectly curls closing quotes after inline HTML end tags.&#8221; The ticket has a long history, patches, duplicate reports, and the correct diagnosis: <code>wptexturize()</code> loses quote context around inline HTML.</p>
+<p class="wp-block-paragraph">The right place is WordPress core. As I mentioned earlier, there is already an old ticket for the broader bug: <a href="https://core.trac.wordpress.org/ticket/18549">Core Trac #18549</a>, &#8220;wp_texturize incorrectly curls closing quotes after inline HTML end tags.&#8221; The ticket has a long history, patches, duplicate reports, and the correct diagnosis: <code>wptexturize()</code> loses quote context around inline HTML.</p>
 
 
 
-<p class="wp-block-paragraph">The modern block-editor version of the report showed up again as <a href="https://github.com/WordPress/gutenberg/issues/42345">Gutenberg #42345</a>. It was closed there for the right reason. Gutenberg cannot fix an output filter that lives in core.</p>
-
-
-
-<p class="wp-block-paragraph">So now we&#8217;ve finally caught up with that old issue, and the LLMs are good enough to sort out such a thorny logic puzzle.</p>
+<p class="wp-block-paragraph">So now we&#8217;ve finally caught up with that old issue, and the LLMs are good enough to sort out such a thorny logic puzzle. The fix is now proposed upstream as a <a href="https://github.com/WordPress/wordpress-develop/pull/12249">pull request against <code>wordpress-develop</code></a>, adding the closing-tag context guard and the tests below.</p>
 
 
 
@@ -226,7 +221,7 @@ public function test_apostrophe_after_inline_formatting_tag() {
 
 
 
-<p class="wp-block-paragraph">That distinction matters. When a closing inline tag is immediately followed by an apostrophe and a letter or number, and the visible text before the tag ended with a letter or number, it is probably a contraction or possessive. When there is a space after the tag, normal opening-quote behavior should still be possible.</p>
+<p class="wp-block-paragraph">That distinction matters. When a closing inline tag is immediately followed by an apostrophe and a letter or number, and the visible text before the tag ended with a letter or number, it is probably a contraction or possessive. When there is a space after the tag, normal opening-quote behaviour should still be possible.</p>
 
 
 
@@ -234,7 +229,7 @@ public function test_apostrophe_after_inline_formatting_tag() {
 
 
 
-<p class="wp-block-paragraph">This is the same kind of bug as the floated-title problem: one default, one tiny inherited behavior, one layout or text result that looks supernatural until the small rule is visible.</p>
+<p class="wp-block-paragraph">This is the same kind of bug as <a href="/2026/06/20/we-blamed-the-browser/" data-type="post">our floated-title problem</a>: one default, one tiny inherited behaviour, one layout or text result that looks supernatural until the small rule is visible.</p>
 
 
 
@@ -247,6 +242,9 @@ public function test_apostrophe_after_inline_formatting_tag() {
 
 
 <p class="wp-block-paragraph">Small wrong things are still wrong.</p>
+
+
+<ol class="wp-block-footnotes"><li id="d7e34d62-a042-4043-8d02-04b6e29d1f5e">The true culprits behind the persistent difficulty of getting human-typed writing into semantically valid and typographically correct, modern character encoding are the limitations and dominance of the English-language keyboard, and the historic priority given to compression and simplification from telegraph to teletype. <br><br>Unless <a href="https://en.wikipedia.org/wiki/Linotype_machine">Linotype</a> machines count — specifically built for typographic versatility — there have been no English keyboards with left and right angled single and double quotation marks, ellipses, em dashes. 5-bit USTTY and its precursors in the early 1900s (all based on <a href="https://www.ece.unb.ca/tervo/ee4253/baudot.shtml">Baudot</a>&#8211;<a href="https://en.wikipedia.org/wiki/Baudot_code#Murray_code">Murray</a>), and 7-bit ASCII (1963) solidified typewriter typography for the digital age. <a href="#d7e34d62-a042-4043-8d02-04b6e29d1f5e-link" aria-label="Jump to footnote reference 1"><img src="https://s.w.org/images/core/emoji/17.0.2/72x72/21a9.png" alt="↩" class="wp-smiley" style="height: 1em; max-height: 1em;" />︎</a></li></ol>
 ]]></content:encoded>
 					
 					<wfw:commentRss>https://dknauss.github.io/dirtbag/2026/06/21/the-apostrophe-after-the-tag/feed/</wfw:commentRss>
@@ -264,7 +262,7 @@ public function test_apostrophe_after_inline_formatting_tag() {
 				<category><![CDATA[Garage]]></category>
 		<category><![CDATA[CSS]]></category>
 		<category><![CDATA[Debugging]]></category>
-		<guid isPermaLink="false">https://dknauss.github.io/dirtbag/2026/06/20/we-blamed-the-browser/</guid>
+		<guid isPermaLink="false">http://localhost:8881/2026/06/20/we-blamed-the-browser/</guid>
 
 					<description><![CDATA[A magazine layout kept breaking in one browser and nowhere else. We accused the cache, an extension, lazy images, the screen, and finally Chrome itself. The culprit was one line of CSS — ours, sort of — and it took a stripped-down test page to catch it.]]></description>
 										<content:encoded><![CDATA[
@@ -280,9 +278,9 @@ public function test_apostrophe_after_inline_formatting_tag() {
 
 
 
-<figure data-wp-context="{&quot;galleryId&quot;:&quot;6a38688dbfa68&quot;}" data-wp-interactive="core/gallery" class="wp-block-gallery has-nested-images columns-3 wp-block-gallery-1 is-layout-flex wp-block-gallery-is-layout-flex">
+<figure data-wp-context="{&quot;galleryId&quot;:&quot;6a3be11c781e0&quot;}" data-wp-interactive="core/gallery" class="wp-block-gallery has-nested-images columns-3 wp-block-gallery-1 is-layout-flex wp-block-gallery-is-layout-flex">
 
-<figure data-wp-context="{&quot;imageId&quot;:&quot;6a38688dc0620&quot;}" data-wp-interactive="core/image" data-wp-key="6a38688dc0620" class="wp-block-image size-full wp-lightbox-container"><img decoding="async" width="1644" height="676" data-wp-class--hide="state.isContentHidden" data-wp-class--show="state.isContentVisible" data-wp-init="callbacks.setButtonStyles" data-wp-on--click="actions.showLightbox" data-wp-on--load="callbacks.setButtonStyles" data-wp-on--pointerdown="actions.preloadImage" data-wp-on--pointerenter="actions.preloadImageWithDelay" data-wp-on--pointerleave="actions.cancelPreload" data-wp-on-window--resize="callbacks.setButtonStyles" data-id="576" src="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context.png" alt="Dirtbag front page: the wide Field Notes column of post cards beside the narrow Used Cars &amp; Unused Plans sidebar." class="wp-image-576" srcset="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context.png 1644w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-300x123.png 300w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-1024x421.png 1024w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-768x316.png 768w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-1536x632.png 1536w" sizes="(max-width: 1644px) 100vw, 1644px" /><button aria-label="Enlarge image"
+<figure data-wp-context="{&quot;imageId&quot;:&quot;6a3be11c79180&quot;}" data-wp-interactive="core/image" data-wp-key="6a3be11c79180" class="wp-block-image size-full wp-lightbox-container"><img decoding="async" width="1644" height="676" data-wp-class--hide="state.isContentHidden" data-wp-class--show="state.isContentVisible" data-wp-init="callbacks.setButtonStyles" data-wp-on--click="actions.showLightbox" data-wp-on--load="callbacks.setButtonStyles" data-wp-on--pointerdown="actions.preloadImage" data-wp-on--pointerenter="actions.preloadImageWithDelay" data-wp-on--pointerleave="actions.cancelPreload" data-wp-on-window--resize="callbacks.setButtonStyles" data-id="22" src="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context.png" alt="Dirtbag front page: the wide Field Notes column of post cards beside the narrow Used Cars &amp; Unused Plans sidebar." class="wp-image-22" srcset="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context.png 1644w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-300x123.png 300w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-1024x421.png 1024w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-768x316.png 768w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-1536x632.png 1536w" sizes="(max-width: 1644px) 100vw, 1644px" /><button aria-label="Enlarge image"
 			class="lightbox-trigger"
 			type="button"
 			aria-haspopup="dialog"
@@ -299,7 +297,7 @@ public function test_apostrophe_after_inline_formatting_tag() {
 
 
 
-<figure data-wp-context="{&quot;imageId&quot;:&quot;6a38688dc0df0&quot;}" data-wp-interactive="core/image" data-wp-key="6a38688dc0df0" class="wp-block-image size-full wp-lightbox-container"><img decoding="async" width="1748" height="1086" data-wp-class--hide="state.isContentHidden" data-wp-class--show="state.isContentVisible" data-wp-init="callbacks.setButtonStyles" data-wp-on--click="actions.showLightbox" data-wp-on--load="callbacks.setButtonStyles" data-wp-on--pointerdown="actions.preloadImage" data-wp-on--pointerenter="actions.preloadImageWithDelay" data-wp-on--pointerleave="actions.cancelPreload" data-wp-on-window--resize="callbacks.setButtonStyles" data-id="577" src="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early.png" alt="An earlier Dirtbag front page showing the two-column layout with the Used Cars sidebar." class="wp-image-577" srcset="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early.png 1748w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early-300x186.png 300w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early-1024x636.png 1024w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early-768x477.png 768w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early-1536x954.png 1536w" sizes="(max-width: 1748px) 100vw, 1748px" /><button aria-label="Enlarge image"
+<figure data-wp-context="{&quot;imageId&quot;:&quot;6a3be11c79950&quot;}" data-wp-interactive="core/image" data-wp-key="6a3be11c79950" class="wp-block-image size-full wp-lightbox-container"><img decoding="async" width="1748" height="1086" data-wp-class--hide="state.isContentHidden" data-wp-class--show="state.isContentVisible" data-wp-init="callbacks.setButtonStyles" data-wp-on--click="actions.showLightbox" data-wp-on--load="callbacks.setButtonStyles" data-wp-on--pointerdown="actions.preloadImage" data-wp-on--pointerenter="actions.preloadImageWithDelay" data-wp-on--pointerleave="actions.cancelPreload" data-wp-on-window--resize="callbacks.setButtonStyles" data-id="23" src="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early.png" alt="An earlier Dirtbag front page showing the two-column layout with the Used Cars sidebar." class="wp-image-23" srcset="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early.png 1748w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early-300x186.png 300w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early-1024x636.png 1024w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early-768x477.png 768w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early-1536x954.png 1536w" sizes="(max-width: 1748px) 100vw, 1748px" /><button aria-label="Enlarge image"
 			class="lightbox-trigger"
 			type="button"
 			aria-haspopup="dialog"
@@ -316,7 +314,7 @@ public function test_apostrophe_after_inline_formatting_tag() {
 
 
 
-<figure data-wp-context="{&quot;imageId&quot;:&quot;6a38688dc15c0&quot;}" data-wp-interactive="core/image" data-wp-key="6a38688dc15c0" class="wp-block-image size-full wp-lightbox-container"><img loading="lazy" decoding="async" width="590" height="1032" data-wp-class--hide="state.isContentHidden" data-wp-class--show="state.isContentVisible" data-wp-init="callbacks.setButtonStyles" data-wp-on--click="actions.showLightbox" data-wp-on--load="callbacks.setButtonStyles" data-wp-on--pointerdown="actions.preloadImage" data-wp-on--pointerenter="actions.preloadImageWithDelay" data-wp-on--pointerleave="actions.cancelPreload" data-wp-on-window--resize="callbacks.setButtonStyles" data-id="579" src="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-symptom-purple.png" alt="The float bug in the purple style: the headline &#039;No Build Step, Just Keep Driving&#039; has dropped below its thumbnail instead of wrapping beside it." class="wp-image-579" srcset="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-symptom-purple.png 590w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-symptom-purple-172x300.png 172w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-symptom-purple-585x1024.png 585w" sizes="auto, (max-width: 590px) 100vw, 590px" /><button aria-label="Enlarge image"
+<figure data-wp-context="{&quot;imageId&quot;:&quot;6a3be11c7a508&quot;}" data-wp-interactive="core/image" data-wp-key="6a3be11c7a508" class="wp-block-image size-full wp-lightbox-container"><img loading="lazy" decoding="async" width="590" height="1032" data-wp-class--hide="state.isContentHidden" data-wp-class--show="state.isContentVisible" data-wp-init="callbacks.setButtonStyles" data-wp-on--click="actions.showLightbox" data-wp-on--load="callbacks.setButtonStyles" data-wp-on--pointerdown="actions.preloadImage" data-wp-on--pointerenter="actions.preloadImageWithDelay" data-wp-on--pointerleave="actions.cancelPreload" data-wp-on-window--resize="callbacks.setButtonStyles" data-id="24" src="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-symptom-purple.png" alt="The float bug in the purple style: the headline &#039;No Build Step, Just Keep Driving&#039; has dropped below its thumbnail instead of wrapping beside it." class="wp-image-24" srcset="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-symptom-purple.png 590w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-symptom-purple-172x300.png 172w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-symptom-purple-585x1024.png 585w" sizes="auto, (max-width: 590px) 100vw, 590px" /><button aria-label="Enlarge image"
 			class="lightbox-trigger"
 			type="button"
 			aria-haspopup="dialog"
@@ -468,7 +466,7 @@ public function test_apostrophe_after_inline_formatting_tag() {
 		<category><![CDATA[CSS]]></category>
 		<category><![CDATA[Debugging]]></category>
 		<category><![CDATA[Typography]]></category>
-		<guid isPermaLink="false">https://dknauss.github.io/dirtbag/?p=549</guid>
+		<guid isPermaLink="false">http://localhost:8881/2026/06/20/the-price-of-a-pun/</guid>
 
 					<description><![CDATA[An apostrophe kept wandering onto its own line. Fixing it cost a split string, a flexbox quirk, and two exclamation points. Worth it? Barely — and only because the joke earned the ride.]]></description>
 										<content:encoded><![CDATA[
@@ -598,7 +596,7 @@ public function test_apostrophe_after_inline_formatting_tag() {
 				<category><![CDATA[Garage]]></category>
 		<category><![CDATA[Block Themes]]></category>
 		<category><![CDATA[CSS]]></category>
-		<guid isPermaLink="false">https://dknauss.github.io/dirtbag/2026/06/19/the-build-sheet/</guid>
+		<guid isPermaLink="false">http://localhost:8881/2026/06/19/the-build-sheet/</guid>
 
 					<description><![CDATA[Dirtbag's whole design lives in one 8 KB file. It is small for the same reason the truck has crank windows: most of the options were left off on purpose.]]></description>
 										<content:encoded><![CDATA[
@@ -712,7 +710,7 @@ public function test_apostrophe_after_inline_formatting_tag() {
 				<category><![CDATA[Field Notes]]></category>
 		<category><![CDATA[Block Themes]]></category>
 		<category><![CDATA[No JS]]></category>
-		<guid isPermaLink="false">https://dknauss.github.io/dirtbag/?p=369</guid>
+		<guid isPermaLink="false">http://localhost:8881/2026/06/18/what-the-shoulder-taught-us/</guid>
 
 					<description><![CDATA[A small theme still teaches big lessons: slogans leak, core has weight, exports lie, and the page has to survive the ditch.]]></description>
 										<content:encoded><![CDATA[
@@ -850,7 +848,7 @@ public function test_apostrophe_after_inline_formatting_tag() {
 				<category><![CDATA[Field Notes]]></category>
 		<category><![CDATA[HTML]]></category>
 		<category><![CDATA[No JS]]></category>
-		<guid isPermaLink="false">https://dknauss.github.io/dirtbag/?p=368</guid>
+		<guid isPermaLink="false">http://localhost:8881/2026/06/18/oem-parts-not-aftermarket-chrome/</guid>
 
 					<description><![CDATA[Dirtbag is not allergic to the machine WordPress already ships. It is allergic to bolting on a second machine because we got bored.]]></description>
 										<content:encoded><![CDATA[
@@ -972,7 +970,7 @@ public function test_apostrophe_after_inline_formatting_tag() {
 				<category><![CDATA[Field Notes]]></category>
 		<category><![CDATA[Block Themes]]></category>
 		<category><![CDATA[Templates]]></category>
-		<guid isPermaLink="false">https://dknauss.github.io/dirtbag/?p=359</guid>
+		<guid isPermaLink="false">http://localhost:8881/2026/06/18/the-glovebox-map/</guid>
 
 					<description><![CDATA[The rest of Dirtbag&#8217;s map: the custom 404, search, archives, and the page templates you can assign.]]></description>
 										<content:encoded><![CDATA[
@@ -980,7 +978,7 @@ public function test_apostrophe_after_inline_formatting_tag() {
 
 
 
-<span id="more-359"></span>
+<span id="more-51"></span>
 
 
 
@@ -1059,7 +1057,7 @@ public function test_apostrophe_after_inline_formatting_tag() {
 		<category><![CDATA[Blogroll]]></category>
 		<category><![CDATA[Feeds]]></category>
 		<category><![CDATA[IndieWeb]]></category>
-		<guid isPermaLink="false">https://dknauss.github.io/dirtbag/?p=69</guid>
+		<guid isPermaLink="false">http://localhost:8881/2026/06/18/the-feed-is-the-campfire/</guid>
 
 					<description><![CDATA[Feeds are still the best quiet way to follow a site.]]></description>
 										<content:encoded><![CDATA[
@@ -1086,7 +1084,7 @@ public function test_apostrophe_after_inline_formatting_tag() {
 		<item>
 		<title>Idling near the gravel pit</title>
 		<link>https://dknauss.github.io/dirtbag/2026/06/18/hello-from-the-shoulder/</link>
-					<comments>https://dknauss.github.io/dirtbag/2026/06/18/hello-from-the-shoulder/#comments</comments>
+					<comments>https://dknauss.github.io/dirtbag/2026/06/18/hello-from-the-shoulder/#respond</comments>
 		
 		<dc:creator><![CDATA[Roadside Archivist]]></dc:creator>
 		<pubDate>Thu, 18 Jun 2026 00:44:46 +0000</pubDate>
@@ -1094,7 +1092,7 @@ public function test_apostrophe_after_inline_formatting_tag() {
 		<category><![CDATA[Feeds]]></category>
 		<category><![CDATA[IndieWeb]]></category>
 		<category><![CDATA[No JS]]></category>
-		<guid isPermaLink="false">https://dknauss.github.io/dirtbag/?p=1</guid>
+		<guid isPermaLink="false">http://localhost:8881/2026/06/18/hello-from-the-shoulder/</guid>
 
 					<description><![CDATA[Rural speed, shed talk, hard chirps, and the suspicion that a simple job should stay simple.]]></description>
 										<content:encoded><![CDATA[
@@ -1146,7 +1144,7 @@ public function test_apostrophe_after_inline_formatting_tag() {
 ]]></content:encoded>
 					
 					<wfw:commentRss>https://dknauss.github.io/dirtbag/2026/06/18/hello-from-the-shoulder/feed/</wfw:commentRss>
-			<slash:comments>1</slash:comments>
+			<slash:comments>0</slash:comments>
 		
 		
 			</item>
@@ -1160,7 +1158,7 @@ public function test_apostrophe_after_inline_formatting_tag() {
 				<category><![CDATA[Field Notes]]></category>
 		<category><![CDATA[Block Themes]]></category>
 		<category><![CDATA[No JS]]></category>
-		<guid isPermaLink="false">https://dknauss.github.io/dirtbag/?p=28</guid>
+		<guid isPermaLink="false">http://localhost:8881/2026/06/17/field-notes-from-the-shoulder/</guid>
 
 					<description><![CDATA[Somewhere between a Bukowski parking lot and a Robinson Jeffers cliff, the shoulder looked like enough of a place to stop.]]></description>
 										<content:encoded><![CDATA[
@@ -1168,7 +1166,7 @@ public function test_apostrophe_after_inline_formatting_tag() {
 
 
 
-<span id="more-28"></span>
+<span id="more-48"></span>
 
 
 
