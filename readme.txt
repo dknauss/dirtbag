@@ -3,7 +3,7 @@ Contributors: dpknauss
 Requires at least: 7.0
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 0.1.14
+Stable tag: 0.1.15
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: full-site-editing, one-column, block-patterns, style-variations, translation-ready, microformats, blog
@@ -35,6 +35,11 @@ No. The theme uses web-safe font stacks and local icon assets.
 Open Appearance > Editor > Styles and choose a style variation.
 
 == Changelog ==
+
+= 0.1.15 =
+* Theme review (themes.trac #277839): replace the real external links in the Blogroll with XFN pattern with example.com placeholders and generic relationship labels, so the theme ships no hard-coded third-party URLs.
+* Theme review: make every user-facing string in patterns/front-page.php translation-ready (esc_html_e / esc_attr_e), and replace the hard-coded demo post links in the masthead with a dynamic Latest Posts block so the front page works on a fresh install. Regenerate languages/dirtbag.pot.
+* Theme review: add an explicit licence type and licence URL to every entry in the Resources list, clarify that the photographs are Playground demo media (excluded from the theme package) while the only bundled third-party asset is the pickup-truck SVG, and drop the Butterick's Practical Typography line (a design influence, not a bundled or licensed asset).
 
 = 0.1.14 =
 * Packaging: ship only the two theme SVGs in the icon assets. The demo logo and favicon PNGs move to the Playground demo media (the seed imports them from there), and three unused icon variants are removed. Trims the download; the demo favicon behaviour is unchanged.
@@ -114,30 +119,39 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU General Public License for more details.
 
-Bundled third-party resources retain their own licences, listed below.
+Third-party resources retain their own licences, listed below with licence type,
+licence URL, and source URL. The only third-party asset in the distributed theme
+package is the pickup-truck SVG (and the icon variants generated from it). The
+photographs are Playground demo media, bundled only with the demo seed under
+/playground, which is excluded from the theme package (.gitattributes
+export-ignore) and is not shipped with the theme.
 
 == Resources ==
 
-* Pickup Truck SVG Vector, SVG Repo, CC0, https://www.svgrepo.com/svg/452616/pickup-truck
-* Dirtbag pickup truck icon variants are adapted from the SVG Repo pickup truck icon with small CC0-compatible grit marks added by the theme author.
-* Dirtbag site icon PNG variants are generated from the local pickup truck SVG variants.
-* Potluck, La.Catholique, CC BY 2.0, https://www.flickr.com/photos/38559542@N02/8167936623
-* Abandoned rusty Ford pickup truck, Jonathan Desrosiers, CC0 1.0, https://wordpress.org/photos/photo/3526751dbe/
-* Blue Bird Truck Stop sign, libraryofcongress, CC0 1.0, https://www.rawpixel.com/image/3797049/photo-image-blue-vintage-bird
-* Old Truck near Great Sand Dunes Colorado, Log Home Finishing, CC0 1.0, https://www.flickr.com/photos/23399885@N06/40197635543
-* Sunny Side Truck Stop Cafe, libraryofcongress, CC0 1.0, https://www.rawpixel.com/image/3800505/photo-image-logo-vintage-neon
-* Red pickup truck, creator not listed, CC0 1.0, https://www.rawpixel.com/image/6035980/red-pickup-truck-free-public-domain-cc0-photo
-* Folding table and chairs, green 2008, robert therrian, CC0 1.0, https://commons.wikimedia.org/w/index.php?curid=163543396
-* Driver This 1975 Van Watched, U.S. National Archives, CC0 1.0, https://www.rawpixel.com/image/8765476/photo-image-vintage-retro
-* Datsun 521 Truck 1500, 先従隗始, CC0 1.0, https://commons.wikimedia.org/w/index.php?curid=172568009
-* Ford Cortina, Txemai Argazki, CC0 1.0, https://www.flickr.com/photos/59170444@N05/52478677429
-* Toyota RT66P Corona Mark II Double Pick, 先従隗始, CC0 1.0, https://commons.wikimedia.org/w/index.php?curid=172568010
-* Sign roadside curio shop, 05/1972, U.S. National Archives, CC0 1.0, https://www.rawpixel.com/image/8802552/photo-image-mountain-nature-landscape
-* Highway crossing desert Sandoval County, libraryofcongress, CC0 1.0, https://www.rawpixel.com/image/12151006/image-cloud-plant-art
-* local chapter hall Veterans Foreign, Carol M Highsmith, CC0 1.0, https://www.rawpixel.com/image/8079773/photo-image-cloud-sky-american-flag
-* What's in your glove box?, karmatosed (Tammie Lister), CC0 1.0, https://www.flickr.com/photos/73631307@N00/2096516382
-* Secured Glovebox, cogdogblog (Alan Levine), CC0 1.0, https://www.flickr.com/photos/37996646802@N01/33213363108
-* Typography scale informed by Butterick's Practical Typography, https://practicaltypography.com/
+In the theme package:
+
+* Pickup Truck SVG Vector, SVG Repo, CC0 1.0, licence: https://creativecommons.org/publicdomain/zero/1.0/, source: https://www.svgrepo.com/svg/452616/pickup-truck
+* Dirtbag pickup truck icon variants are adapted from the SVG Repo pickup truck icon with small CC0-compatible grit marks added by the theme author; released under CC0 1.0, https://creativecommons.org/publicdomain/zero/1.0/.
+* Dirtbag site icon PNG variants are generated from the local pickup truck SVG variants; released under CC0 1.0, https://creativecommons.org/publicdomain/zero/1.0/.
+
+Playground demo media (not shipped in the theme package):
+
+* Potluck, La.Catholique, CC BY 2.0, licence: https://creativecommons.org/licenses/by/2.0/, source: https://www.flickr.com/photos/38559542@N02/8167936623
+* Abandoned rusty Ford pickup truck, Jonathan Desrosiers, CC0 1.0, licence: https://creativecommons.org/publicdomain/zero/1.0/, source: https://wordpress.org/photos/photo/3526751dbe/
+* Blue Bird Truck Stop sign, libraryofcongress, CC0 1.0, licence: https://creativecommons.org/publicdomain/zero/1.0/, source: https://www.rawpixel.com/image/3797049/photo-image-blue-vintage-bird
+* Old Truck near Great Sand Dunes Colorado, Log Home Finishing, CC0 1.0, licence: https://creativecommons.org/publicdomain/zero/1.0/, source: https://www.flickr.com/photos/23399885@N06/40197635543
+* Sunny Side Truck Stop Cafe, libraryofcongress, CC0 1.0, licence: https://creativecommons.org/publicdomain/zero/1.0/, source: https://www.rawpixel.com/image/3800505/photo-image-logo-vintage-neon
+* Red pickup truck, creator not listed, CC0 1.0, licence: https://creativecommons.org/publicdomain/zero/1.0/, source: https://www.rawpixel.com/image/6035980/red-pickup-truck-free-public-domain-cc0-photo
+* Folding table and chairs, green 2008, robert therrian, CC0 1.0, licence: https://creativecommons.org/publicdomain/zero/1.0/, source: https://commons.wikimedia.org/w/index.php?curid=163543396
+* Driver This 1975 Van Watched, U.S. National Archives, CC0 1.0, licence: https://creativecommons.org/publicdomain/zero/1.0/, source: https://www.rawpixel.com/image/8765476/photo-image-vintage-retro
+* Datsun 521 Truck 1500, 先従隗始, CC0 1.0, licence: https://creativecommons.org/publicdomain/zero/1.0/, source: https://commons.wikimedia.org/w/index.php?curid=172568009
+* Ford Cortina, Txemai Argazki, CC0 1.0, licence: https://creativecommons.org/publicdomain/zero/1.0/, source: https://www.flickr.com/photos/59170444@N05/52478677429
+* Toyota RT66P Corona Mark II Double Pick, 先従隗始, CC0 1.0, licence: https://creativecommons.org/publicdomain/zero/1.0/, source: https://commons.wikimedia.org/w/index.php?curid=172568010
+* Sign roadside curio shop, 05/1972, U.S. National Archives, CC0 1.0, licence: https://creativecommons.org/publicdomain/zero/1.0/, source: https://www.rawpixel.com/image/8802552/photo-image-mountain-nature-landscape
+* Highway crossing desert Sandoval County, libraryofcongress, CC0 1.0, licence: https://creativecommons.org/publicdomain/zero/1.0/, source: https://www.rawpixel.com/image/12151006/image-cloud-plant-art
+* local chapter hall Veterans Foreign, Carol M Highsmith, CC0 1.0, licence: https://creativecommons.org/publicdomain/zero/1.0/, source: https://www.rawpixel.com/image/8079773/photo-image-cloud-sky-american-flag
+* What's in your glove box?, karmatosed (Tammie Lister), CC0 1.0, licence: https://creativecommons.org/publicdomain/zero/1.0/, source: https://www.flickr.com/photos/73631307@N00/2096516382
+* Secured Glovebox, cogdogblog (Alan Levine), CC0 1.0, licence: https://creativecommons.org/publicdomain/zero/1.0/, source: https://www.flickr.com/photos/37996646802@N01/33213363108
 
 All bundled theme code and original theme design are distributed under GPLv2 or later.
 
