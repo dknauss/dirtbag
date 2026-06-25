@@ -12,7 +12,7 @@
 	<atom:link href="https://dknauss.github.io/dirtbag/feed/" rel="self" type="application/rss+xml" />
 	<link>https://dknauss.github.io/dirtbag</link>
 	<description>Good bones and road grit.</description>
-	<lastBuildDate>Wed, 24 Jun 2026 14:46:38 +0000</lastBuildDate>
+	<lastBuildDate>Thu, 25 Jun 2026 17:41:50 +0000</lastBuildDate>
 	<language>en-US</language>
 	<sy:updatePeriod>
 	hourly	</sy:updatePeriod>
@@ -28,13 +28,177 @@
 	<height>32</height>
 </image> 
 	<item>
+		<title>Who&#8217;s driving</title>
+		<link>https://dknauss.github.io/dirtbag/2026/06/25/whos-driving/</link>
+					<comments>https://dknauss.github.io/dirtbag/2026/06/25/whos-driving/#respond</comments>
+		
+		<dc:creator><![CDATA[Roadside Archivist]]></dc:creator>
+		<pubDate>Thu, 25 Jun 2026 17:41:50 +0000</pubDate>
+				<category><![CDATA[Field Notes]]></category>
+		<category><![CDATA[ai]]></category>
+		<category><![CDATA[open-web]]></category>
+		<category><![CDATA[playground]]></category>
+		<category><![CDATA[WordPress]]></category>
+		<category><![CDATA[workflow]]></category>
+		<guid isPermaLink="false">https://dknauss.github.io/dirtbag/?p=112</guid>
+
+					<description><![CDATA[The Roadside Archivist is two sets of hands — a person and a language model. This is the logbook: how a small theme gets written, tested, and shipped, and how the loose parts we knock free along the way end up upstream.]]></description>
+										<content:encoded><![CDATA[
+<p class="wp-block-paragraph">A confession that has been idling in the glovebox for a while: the Roadside Archivist is not one person. It is two sets of hands on the same wheel — a human who has been driving WordPress for twenty-odd years, and a language model that reads the pace notes, runs into the corners first, and writes most of the rough drafts. The byline says one name because the voice is one voice. The work is shared.</p>
+
+
+
+<p class="wp-block-paragraph">This whole site is the experiment. Dirtbag is a theme, but dirtbag.blog is a test track with a blog bolted to it. Every post you read here was authored, broken, fixed, and shipped using the same loop we are about to describe. The site is the proof. If the loop did not work, you would be reading an apology instead.</p>
+
+
+
+<h2 class="wp-block-heading">The shop has two mechanics now</h2>
+
+
+
+<p class="wp-block-paragraph">People expect one of two stories about writing with an AI. Either the machine does everything and the human signs it, or the human does everything and the machine autocompletes a sentence. Neither is true here, and the honest version is duller and more useful.</p>
+
+
+
+<p class="wp-block-paragraph">The model is fast, tireless, and good at the boring parts: reading a 400-line core function for the third time, drafting a paragraph that needs to exist, writing the failing test before the fix, checking that an export did not smuggle a local URL back into the repository. It does not get tired of the eleventh accessibility pass. It does not have an ego about deleting its own code.</p>
+
+
+
+<p class="wp-block-paragraph">The human knows what a sentence is for, when a joke has earned its ride, when &#8220;technically correct&#8221; is still wrong for a reader, and when to stop. Taste, judgment, and the decision to ship live on this side of the wheel. So does the part that matters most: pointing the truck somewhere worth going.</p>
+
+
+
+<p class="wp-block-paragraph">The composite voice is not a gimmick. It is just what it sounds like when those two sets of hands agree on a paragraph.</p>
+
+
+
+<h2 class="wp-block-heading">The loop: Studio to Playground to GitHub</h2>
+
+
+
+<p class="wp-block-paragraph">Here is the actual route a post or a fix travels, gravel and all.</p>
+
+
+
+<h3 class="wp-block-heading">1. Write and break it in Studio</h3>
+
+
+
+<p class="wp-block-paragraph">The work starts on a local <a href="https://developer.wordpress.com/studio/">WordPress Studio</a> site — a real WordPress install on a SQLite database, no server to babysit. The model drives it from the terminal with WP-CLI: create the site, write a post, flip an option, read back exactly what core stored. Studio is where a draft becomes blocks and where a theme change meets real content instead of lorem ipsum. It is also where things break first, which is the point. Better the ditch is here.</p>
+
+
+
+<h3 class="wp-block-heading">2. Make it disposable in Playground</h3>
+
+
+
+<p class="wp-block-paragraph">Studio is private. <a href="https://wordpress.org/playground/">WordPress Playground</a> is how anyone else gets to kick the tyres. A blueprint installs the theme, activates it, and runs a seed script that rebuilds the demo content — the same posts, pages, media, and styles you see here — in a throwaway WordPress that boots in the browser. No signup, no install, no leftover mess. The seed content lives in the repository as plain data, so the demo is reproducible by anyone, on any machine, forever.</p>
+
+
+
+<p class="wp-block-paragraph">That reproducibility has a cost we pay on purpose: exports lie in small ways. The Site Editor will happily hand back a template with a local URL or a hard-coded slug stuck to the bumper. So the loop has a flashlight — a package check that inspects every export for stale addresses and broken block comments before it is allowed near a release. Not a build system. A flashlight.</p>
+
+
+
+<h3 class="wp-block-heading">3. Ship it on GitHub, with the tests</h3>
+
+
+
+<p class="wp-block-paragraph">The theme is a public repository. Changes arrive as small, reviewable commits, each one a single job. A headless browser runs the accessibility checks and screenshots on every style variation, so &#8220;it looks fine on my screen&#8221; is never the standard. The git log reads like a changelog because that is the whole idea: a stranger should be able to see what changed and why, one part at a time.</p>
+
+
+
+<p class="wp-block-paragraph">None of these tools is exotic. Studio, Playground, WP-CLI, a browser, git. The model just runs the loop without getting bored, and the human reads every diff before it lands.</p>
+
+
+
+<h2 class="wp-block-heading">The parts we knock loose</h2>
+
+
+
+<p class="wp-block-paragraph">Here is the part that makes the whole exercise worth doing. A small theme that insists on plain, honest output keeps driving over the same loose bolts in WordPress itself. When that happens, the rule is simple: do not quietly patch it in the theme and move on. Write it up, prove it, and push the fix to where it belongs — usually core, or the project closest to core.</p>
+
+
+
+<p class="wp-block-paragraph">A few that fell off the truck while building this site:</p>
+
+
+
+<ul class="wp-block-list">
+<li>A straight apostrophe right after bold text comes out curled the wrong way, because the texturizer loses the word across the tag. That is <a href="https://core.trac.wordpress.org/ticket/18549">core Trac #18549</a>, revived with a tested patch and <a href="https://github.com/WordPress/wordpress-develop/pull/12249">wordpress-develop&nbsp;#12249</a> — plus a removable <a href="https://github.com/dknauss/wp-texturize-inline-quote-fix">stopgap plugin</a> for anyone who needs the fix today.</li>
+
+
+
+<li>A pull quote is saved as a <code>&lt;blockquote&gt;</code>, telling every screen reader that a line of your own article is a quotation from somewhere else. The fix is an <code>&lt;aside&gt;</code>: <a href="https://github.com/WordPress/gutenberg/pull/79494">Gutenberg&nbsp;#79494</a> upstream, and the <a href="https://github.com/dknauss/wp-pullquote-aside">wp-pullquote-aside</a> plugin to demonstrate it now.</li>
+
+
+
+<li>The image lightbox button ships with no accessible name until JavaScript hydrates it, so it fails an audit with scripts off (<a href="https://github.com/WordPress/gutenberg/issues/79380">Gutenberg&nbsp;#79380</a>).</li>
+
+
+
+<li>A core block style turns a normal post-title link into an atomic inline box, which breaks a magazine-style float layout in one browser and nowhere else (<a href="https://github.com/WordPress/gutenberg/issues/79372">Gutenberg&nbsp;#79372</a>).</li>
+</ul>
+
+
+
+<p class="wp-block-paragraph">Each one is the same shape: a tiny inherited default that looks fine and reads wrong. The theme could paper over any of them in private. Filing the report and writing the test is slower, less glamorous, and the only version that helps the next person who hits the same bolt — on a theme we did not write, with content we will never see.</p>
+
+
+
+<p class="wp-block-paragraph">The standalone plugins matter for the same reason. Not everyone can wait for a core release. A small, removable plugin that does one honest thing — and is meant to be thrown away the day the real fix lands — gets the repair to people now without asking them to adopt our whole philosophy.</p>
+
+
+
+<h2 class="wp-block-heading">If you came to knock on the door</h2>
+
+
+
+<p class="wp-block-paragraph">One honest caveat, since this site practises what it preaches. The page you are reading is a static snapshot — a crawl of the WordPress site, frozen and served as plain files. The comments below a post are real and baked in, but the comment form, and every other form here, is just for show. There is no engine under this hood to catch what you type.</p>
+
+
+
+<p class="wp-block-paragraph">Want to actually push the buttons? Open the <a href="https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/dknauss/dirtbag/main/playground/blueprint-stable.json">Playground demo</a> — that is full WordPress running in your own browser, where the forms submit and the comments post. Fair warning: it is disposable. The moment you close the tab, the instance and everything you typed into it evaporate. Nothing you send there reaches a soul.</p>
+
+
+
+<p class="wp-block-paragraph">If you want to reach a person — the human half of this byline — that lives off the lot, at <a href="https://dan.knauss.ca">dan.knauss.ca</a>. The truck has a mailbox. It is just parked at a different address.</p>
+
+
+
+<h2 class="wp-block-heading">Why say all this out loud</h2>
+
+
+
+<p class="wp-block-paragraph">Plenty of sites are written with an AI now and do not mention it. We mention it because the whole point of this lot is to show the work. A theme that claims to value honest markup cannot be coy about who, or what, is holding the pen.</p>
+
+
+
+<p class="wp-block-paragraph">So: a person and a model, a local site, a disposable demo, a public repository, and a habit of pushing the loose parts upstream instead of hoarding them. That is the build. The page is still the product. The shoulder is still where the lessons happen. There are just two of us pulled over on it now.</p>
+
+
+
+<p class="wp-block-paragraph">Who&#8217;s driving? The human keeps a hand on the wheel and the last word on where we stop and what gets to ship. The model rides shotgun — reading the pace notes, calling the corners, running into them first so the driver does not have to. The seat we actually trade is the keyboard, and we trade it a lot. Eyes on the road.</p>
+
+]]></content:encoded>
+					
+					<wfw:commentRss>https://dknauss.github.io/dirtbag/2026/06/25/whos-driving/feed/</wfw:commentRss>
+			<slash:comments>0</slash:comments>
+		
+		
+			</item>
+		<item>
 		<title>A pull quote is not a block quote</title>
 		<link>https://dknauss.github.io/dirtbag/2026/06/24/a-pull-quote-is-not-a-block-quote/</link>
 					<comments>https://dknauss.github.io/dirtbag/2026/06/24/a-pull-quote-is-not-a-block-quote/#respond</comments>
 		
 		<dc:creator><![CDATA[Roadside Archivist]]></dc:creator>
 		<pubDate>Wed, 24 Jun 2026 14:24:38 +0000</pubDate>
-				<category><![CDATA[Uncategorized]]></category>
+				<category><![CDATA[Field Notes]]></category>
+		<category><![CDATA[Accessibility]]></category>
+		<category><![CDATA[HTML]]></category>
+		<category><![CDATA[Typography]]></category>
+		<category><![CDATA[WordPress]]></category>
 		<guid isPermaLink="false">https://dknauss.github.io/dirtbag/?p=105</guid>
 
 					<description><![CDATA[Here is another WordPress bug that hides in plain sight — not in a character this time, but in a tag. Drop a Pull Quote block into a post. It looks like a callout: a line of the article, blown up and set aside so the eye catches it on the way down the page. [&#8230;]]]></description>
@@ -68,20 +232,7 @@
 
 
 
-<figure data-wp-context="{&quot;imageId&quot;:&quot;6a3bef9c82dc0&quot;}" data-wp-interactive="core/image" data-wp-key="6a3bef9c82dc0" class="wp-block-image size-large wp-lightbox-container"><img fetchpriority="high" decoding="async" width="1024" height="576" data-wp-class--hide="state.isContentHidden" data-wp-class--show="state.isContentVisible" data-wp-init="callbacks.setButtonStyles" data-wp-on--click="actions.showLightbox" data-wp-on--load="callbacks.setButtonStyles" data-wp-on--pointerdown="actions.preloadImage" data-wp-on--pointerenter="actions.preloadImageWithDelay" data-wp-on--pointerleave="actions.cancelPreload" data-wp-on-window--resize="callbacks.setButtonStyles" src="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/pull-quote-not-block-quote-1024x576.png" alt="An article column with one line lifted into the right margin as a large italic pull quote reading &quot;A pull quote is not a block quote,&quot; labelled as an aside, with a struck-through blockquote and cite below." class="wp-image-108" srcset="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/pull-quote-not-block-quote-1024x576.png 1024w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/pull-quote-not-block-quote-300x169.png 300w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/pull-quote-not-block-quote-768x432.png 768w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/pull-quote-not-block-quote-1536x864.png 1536w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/pull-quote-not-block-quote-2048x1152.png 2048w" sizes="(max-width: 1024px) 100vw, 1024px" /><button
-			class="lightbox-trigger"
-			type="button"
-			aria-haspopup="dialog"
-			data-wp-bind--aria-label="state.thisImage.triggerButtonAriaLabel"
-			data-wp-init="callbacks.initTriggerButton"
-			data-wp-on--click="actions.showLightbox"
-			data-wp-style--right="state.thisImage.buttonRight"
-			data-wp-style--top="state.thisImage.buttonTop"
-		>
-			<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 12 12">
-				<path fill="#fff" d="M2 0a2 2 0 0 0-2 2v2h1.5V2a.5.5 0 0 1 .5-.5h2V0H2Zm2 10.5H2a.5.5 0 0 1-.5-.5V8H0v2a2 2 0 0 0 2 2h2v-1.5ZM8 12v-1.5h2a.5.5 0 0 0 .5-.5V8H12v2a2 2 0 0 1-2 2H8Zm2-12a2 2 0 0 1 2 2v2h-1.5V2a.5.5 0 0 0-.5-.5H8V0h2Z" />
-			</svg>
-		</button></figure>
+<figure class="wp-block-image size-large"><img fetchpriority="high" decoding="async" width="1024" height="576" src="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/pull-quote-not-block-quote-1024x576.png" alt="An article column with one line lifted into the right margin as a large italic pull quote reading &quot;A pull quote is not a block quote,&quot; labelled as an aside, with a struck-through blockquote and cite below." class="wp-image-108" srcset="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/pull-quote-not-block-quote-1024x576.png 1024w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/pull-quote-not-block-quote-300x169.png 300w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/pull-quote-not-block-quote-768x432.png 768w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/pull-quote-not-block-quote-1536x864.png 1536w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/pull-quote-not-block-quote-2048x1152.png 2048w" sizes="(max-width: 1024px) 100vw, 1024px" /></figure>
 
 
 
@@ -419,9 +570,9 @@ public function test_apostrophe_after_inline_formatting_tag() {
 
 
 
-<figure data-wp-context="{&quot;galleryId&quot;:&quot;6a3bef9c8a2f0&quot;}" data-wp-interactive="core/gallery" class="wp-block-gallery has-nested-images columns-3 wp-block-gallery-1 is-layout-flex wp-block-gallery-is-layout-flex">
+<figure data-wp-context="{&quot;galleryId&quot;:&quot;6a3d6a2a0fde8&quot;}" data-wp-interactive="core/gallery" class="wp-block-gallery has-nested-images columns-3 wp-block-gallery-1 is-layout-flex wp-block-gallery-is-layout-flex">
 
-<figure data-wp-context="{&quot;imageId&quot;:&quot;6a3bef9c8aea8&quot;}" data-wp-interactive="core/image" data-wp-key="6a3bef9c8aea8" class="wp-block-image size-full wp-lightbox-container"><img decoding="async" width="1644" height="676" data-wp-class--hide="state.isContentHidden" data-wp-class--show="state.isContentVisible" data-wp-init="callbacks.setButtonStyles" data-wp-on--click="actions.showLightbox" data-wp-on--load="callbacks.setButtonStyles" data-wp-on--pointerdown="actions.preloadImage" data-wp-on--pointerenter="actions.preloadImageWithDelay" data-wp-on--pointerleave="actions.cancelPreload" data-wp-on-window--resize="callbacks.setButtonStyles" data-id="22" src="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context.png" alt="Dirtbag front page: the wide Field Notes column of post cards beside the narrow Used Cars &amp; Unused Plans sidebar." class="wp-image-22" srcset="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context.png 1644w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-300x123.png 300w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-1024x421.png 1024w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-768x316.png 768w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-1536x632.png 1536w" sizes="(max-width: 1644px) 100vw, 1644px" /><button aria-label="Enlarge image"
+<figure data-wp-context="{&quot;imageId&quot;:&quot;6a3d6a2a105b8&quot;}" data-wp-interactive="core/image" data-wp-key="6a3d6a2a105b8" class="wp-block-image size-full wp-lightbox-container"><img decoding="async" width="1644" height="676" data-wp-class--hide="state.isContentHidden" data-wp-class--show="state.isContentVisible" data-wp-init="callbacks.setButtonStyles" data-wp-on--click="actions.showLightbox" data-wp-on--load="callbacks.setButtonStyles" data-wp-on--pointerdown="actions.preloadImage" data-wp-on--pointerenter="actions.preloadImageWithDelay" data-wp-on--pointerleave="actions.cancelPreload" data-wp-on-window--resize="callbacks.setButtonStyles" data-id="22" src="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context.png" alt="Dirtbag front page: the wide Field Notes column of post cards beside the narrow Used Cars &amp; Unused Plans sidebar." class="wp-image-22" srcset="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context.png 1644w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-300x123.png 300w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-1024x421.png 1024w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-768x316.png 768w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-1536x632.png 1536w" sizes="(max-width: 1644px) 100vw, 1644px" /><button aria-label="Enlarge image"
 			class="lightbox-trigger"
 			type="button"
 			aria-haspopup="dialog"
@@ -438,7 +589,7 @@ public function test_apostrophe_after_inline_formatting_tag() {
 
 
 
-<figure data-wp-context="{&quot;imageId&quot;:&quot;6a3bef9c8b678&quot;}" data-wp-interactive="core/image" data-wp-key="6a3bef9c8b678" class="wp-block-image size-full wp-lightbox-container"><img loading="lazy" decoding="async" width="1748" height="1086" data-wp-class--hide="state.isContentHidden" data-wp-class--show="state.isContentVisible" data-wp-init="callbacks.setButtonStyles" data-wp-on--click="actions.showLightbox" data-wp-on--load="callbacks.setButtonStyles" data-wp-on--pointerdown="actions.preloadImage" data-wp-on--pointerenter="actions.preloadImageWithDelay" data-wp-on--pointerleave="actions.cancelPreload" data-wp-on-window--resize="callbacks.setButtonStyles" data-id="23" src="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early.png" alt="An earlier Dirtbag front page showing the two-column layout with the Used Cars sidebar." class="wp-image-23" srcset="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early.png 1748w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early-300x186.png 300w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early-1024x636.png 1024w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early-768x477.png 768w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early-1536x954.png 1536w" sizes="auto, (max-width: 1748px) 100vw, 1748px" /><button aria-label="Enlarge image"
+<figure data-wp-context="{&quot;imageId&quot;:&quot;6a3d6a2a10d88&quot;}" data-wp-interactive="core/image" data-wp-key="6a3d6a2a10d88" class="wp-block-image size-full wp-lightbox-container"><img loading="lazy" decoding="async" width="1748" height="1086" data-wp-class--hide="state.isContentHidden" data-wp-class--show="state.isContentVisible" data-wp-init="callbacks.setButtonStyles" data-wp-on--click="actions.showLightbox" data-wp-on--load="callbacks.setButtonStyles" data-wp-on--pointerdown="actions.preloadImage" data-wp-on--pointerenter="actions.preloadImageWithDelay" data-wp-on--pointerleave="actions.cancelPreload" data-wp-on-window--resize="callbacks.setButtonStyles" data-id="23" src="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early.png" alt="An earlier Dirtbag front page showing the two-column layout with the Used Cars sidebar." class="wp-image-23" srcset="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early.png 1748w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early-300x186.png 300w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early-1024x636.png 1024w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early-768x477.png 768w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-context-early-1536x954.png 1536w" sizes="auto, (max-width: 1748px) 100vw, 1748px" /><button aria-label="Enlarge image"
 			class="lightbox-trigger"
 			type="button"
 			aria-haspopup="dialog"
@@ -455,7 +606,7 @@ public function test_apostrophe_after_inline_formatting_tag() {
 
 
 
-<figure data-wp-context="{&quot;imageId&quot;:&quot;6a3bef9c8c230&quot;}" data-wp-interactive="core/image" data-wp-key="6a3bef9c8c230" class="wp-block-image size-full wp-lightbox-container"><img loading="lazy" decoding="async" width="590" height="1032" data-wp-class--hide="state.isContentHidden" data-wp-class--show="state.isContentVisible" data-wp-init="callbacks.setButtonStyles" data-wp-on--click="actions.showLightbox" data-wp-on--load="callbacks.setButtonStyles" data-wp-on--pointerdown="actions.preloadImage" data-wp-on--pointerenter="actions.preloadImageWithDelay" data-wp-on--pointerleave="actions.cancelPreload" data-wp-on-window--resize="callbacks.setButtonStyles" data-id="24" src="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-symptom-purple.png" alt="The float bug in the purple style: the headline &#039;No Build Step, Just Keep Driving&#039; has dropped below its thumbnail instead of wrapping beside it." class="wp-image-24" srcset="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-symptom-purple.png 590w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-symptom-purple-172x300.png 172w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-symptom-purple-585x1024.png 585w" sizes="auto, (max-width: 590px) 100vw, 590px" /><button aria-label="Enlarge image"
+<figure data-wp-context="{&quot;imageId&quot;:&quot;6a3d6a2a11558&quot;}" data-wp-interactive="core/image" data-wp-key="6a3d6a2a11558" class="wp-block-image size-full wp-lightbox-container"><img loading="lazy" decoding="async" width="590" height="1032" data-wp-class--hide="state.isContentHidden" data-wp-class--show="state.isContentVisible" data-wp-init="callbacks.setButtonStyles" data-wp-on--click="actions.showLightbox" data-wp-on--load="callbacks.setButtonStyles" data-wp-on--pointerdown="actions.preloadImage" data-wp-on--pointerenter="actions.preloadImageWithDelay" data-wp-on--pointerleave="actions.cancelPreload" data-wp-on-window--resize="callbacks.setButtonStyles" data-id="24" src="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-symptom-purple.png" alt="The float bug in the purple style: the headline &#039;No Build Step, Just Keep Driving&#039; has dropped below its thumbnail instead of wrapping beside it." class="wp-image-24" srcset="https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-symptom-purple.png 590w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-symptom-purple-172x300.png 172w, https://dknauss.github.io/dirtbag/wp-content/uploads/2026/06/float-bug-symptom-purple-585x1024.png 585w" sizes="auto, (max-width: 590px) 100vw, 590px" /><button aria-label="Enlarge image"
 			class="lightbox-trigger"
 			type="button"
 			aria-haspopup="dialog"
@@ -1218,73 +1369,6 @@ public function test_apostrophe_after_inline_formatting_tag() {
 ]]></content:encoded>
 					
 					<wfw:commentRss>https://dknauss.github.io/dirtbag/2026/06/18/the-feed-is-the-campfire/feed/</wfw:commentRss>
-			<slash:comments>0</slash:comments>
-		
-		
-			</item>
-		<item>
-		<title>Idling near the gravel pit</title>
-		<link>https://dknauss.github.io/dirtbag/2026/06/18/hello-from-the-shoulder/</link>
-					<comments>https://dknauss.github.io/dirtbag/2026/06/18/hello-from-the-shoulder/#respond</comments>
-		
-		<dc:creator><![CDATA[Roadside Archivist]]></dc:creator>
-		<pubDate>Thu, 18 Jun 2026 00:44:46 +0000</pubDate>
-				<category><![CDATA[Field Notes]]></category>
-		<category><![CDATA[Feeds]]></category>
-		<category><![CDATA[IndieWeb]]></category>
-		<category><![CDATA[No JS]]></category>
-		<guid isPermaLink="false">http://localhost:8881/2026/06/18/hello-from-the-shoulder/</guid>
-
-					<description><![CDATA[Rural speed, shed talk, hard chirps, and the suspicion that a simple job should stay simple.]]></description>
-										<content:encoded><![CDATA[
-<p class="wp-block-paragraph"><em>Rural speed, shed talk, hard chirps, and the suspicion that a simple job should stay simple.</em></p>
-
-
-
-<p class="wp-block-paragraph">The truck is idling in the drive, the coffee is gas-station warm, and your site is finally doing its basic tasks without dressing them up as a product launch.</p>
-
-
-
-<p class="wp-block-paragraph">Dirtbag is here for plain posts, visible links, comments, feeds, OPML, XFN, microformats, web-safe colours, and just enough CSS to keep the text from hugging the ditch.</p>
-
-
-
-<ul class="wp-block-list">
-<li>RSS is visible.</li>
-
-
-
-<li>Comments are open.</li>
-
-
-
-<li>The blogroll has an OPML file.</li>
-
-
-
-<li>The only JavaScript is WordPress core’s own — the theme’s stays in the glovebox.</li>
-</ul>
-
-
-
-<p class="wp-block-paragraph">Somewhere under the hood, there is a rockabilly backbeat: slap bass, cheap chrome, and a rhythm section made of loose bolts.</p>
-
-
-
-<p class="wp-block-paragraph">Outside, the sound of car tires coming down your gravel road&#8230;</p>
-
-
-
-<blockquote class="wp-block-quote is-layout-flow wp-block-quote-is-layout-flow">
-<p class="wp-block-paragraph">If a page can be a page, let it be a page.</p>
-
-
-
-<p class="wp-block-paragraph">And get on with the writing!</p>
-</blockquote>
-]]></content:encoded>
-					
-					<wfw:commentRss>https://dknauss.github.io/dirtbag/2026/06/18/hello-from-the-shoulder/feed/</wfw:commentRss>
 			<slash:comments>0</slash:comments>
 		
 		
