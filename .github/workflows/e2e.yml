@@ -54,9 +54,21 @@ jobs:
           # Pinned to 3.1.42, the release that fixes the intermittent EBADF /
           # connection-refused boot crash (WordPress/wordpress-playground#3830,
           # fixed by PR #3833 — stale SQLite WAL .ht.sqlite-shm lock cleanup).
-          # The boot retry is kept as belt-and-suspenders while we confirm the
-          # fix across the parallel CI matrix; a clean boot should now land on
-          # attempt 1.
+          # With the crash fixed a clean boot lands on attempt 1; the retry
+          # remains as a guard against the residual file-lock contention the CLI
+          # warns about on small (<6-worker) runners.
+          free_port() {
+            # The server's worker children can outlive a kill of the npx wrapper
+            # and keep port 9400 bound, so a naive retry dies with EADDRINUSE.
+            # Kill by name and by port, then wait until 9400 is actually free.
+            for _ in $(seq 1 15); do
+              pkill -f "@wp-playground/cli" 2>/dev/null || true
+              { command -v fuser >/dev/null && fuser -k 9400/tcp 2>/dev/null; } || true
+              (exec 3<>/dev/tcp/127.0.0.1/9400) 2>/dev/null || return 0
+              sleep 1
+            done
+            return 0
+          }
           boot() {
             npx @wp-playground/cli@3.1.42 server --port 9400 --blueprint=tests/blueprint.ci.json &
             echo $! > /tmp/pg.pid
@@ -75,8 +87,7 @@ jobs:
             echo "boot attempt $attempt failed (EBADF/timeout); retrying" >&2
             echo "::endgroup::"
             kill "$(cat /tmp/pg.pid)" 2>/dev/null || true
-            pkill -f "@wp-playground/cli" 2>/dev/null || true
-            sleep 3
+            free_port
           done
           echo "::error::Playground failed to boot (wp-post-image) after 3 attempts; aborting so the suite does not run against an unseeded site."
           exit 1
@@ -130,9 +141,21 @@ jobs:
           # Pinned to 3.1.42, the release that fixes the intermittent EBADF /
           # connection-refused boot crash (WordPress/wordpress-playground#3830,
           # fixed by PR #3833 — stale SQLite WAL .ht.sqlite-shm lock cleanup).
-          # The boot retry is kept as belt-and-suspenders while we confirm the
-          # fix across the parallel CI matrix; a clean boot should now land on
-          # attempt 1.
+          # With the crash fixed a clean boot lands on attempt 1; the retry
+          # remains as a guard against the residual file-lock contention the CLI
+          # warns about on small (<6-worker) runners.
+          free_port() {
+            # The server's worker children can outlive a kill of the npx wrapper
+            # and keep port 9400 bound, so a naive retry dies with EADDRINUSE.
+            # Kill by name and by port, then wait until 9400 is actually free.
+            for _ in $(seq 1 15); do
+              pkill -f "@wp-playground/cli" 2>/dev/null || true
+              { command -v fuser >/dev/null && fuser -k 9400/tcp 2>/dev/null; } || true
+              (exec 3<>/dev/tcp/127.0.0.1/9400) 2>/dev/null || return 0
+              sleep 1
+            done
+            return 0
+          }
           boot() {
             npx @wp-playground/cli@3.1.42 server --port 9400 --blueprint=tests/blueprint.ci.json &
             echo $! > /tmp/pg.pid
@@ -151,8 +174,7 @@ jobs:
             echo "boot attempt $attempt failed (EBADF/timeout); retrying" >&2
             echo "::endgroup::"
             kill "$(cat /tmp/pg.pid)" 2>/dev/null || true
-            pkill -f "@wp-playground/cli" 2>/dev/null || true
-            sleep 3
+            free_port
           done
           echo "::error::Playground failed to boot (wp-post-image) after 3 attempts; aborting so the suite does not run against an unseeded site."
           exit 1
