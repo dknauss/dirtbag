@@ -51,11 +51,14 @@ jobs:
 
       - name: Boot WordPress Playground (theme + seeded content)
         run: |
-          # Pinned, not @latest: the Playground CLI has an intermittent EBADF /
-          # connection-refused crash that almost always strikes at boot. Pin a
-          # known build and retry the boot — a clean boot then runs reliably.
+          # Pinned to 3.1.42, the release that fixes the intermittent EBADF /
+          # connection-refused boot crash (WordPress/wordpress-playground#3830,
+          # fixed by PR #3833 — stale SQLite WAL .ht.sqlite-shm lock cleanup).
+          # The boot retry is kept as belt-and-suspenders while we confirm the
+          # fix across the parallel CI matrix; a clean boot should now land on
+          # attempt 1.
           boot() {
-            npx @wp-playground/cli@3.1.41 server --port 9400 --blueprint=tests/blueprint.ci.json &
+            npx @wp-playground/cli@3.1.42 server --port 9400 --blueprint=tests/blueprint.ci.json &
             echo $! > /tmp/pg.pid
             # Ready only when the homepage renders the seeded featured image (a
             # bare 200 can precede the seed import). Bail early if the server died.
@@ -124,11 +127,14 @@ jobs:
 
       - name: Boot WordPress Playground (theme + seed + style)
         run: |
-          # Pinned, not @latest: the Playground CLI has an intermittent EBADF /
-          # connection-refused crash that almost always strikes at boot. Pin a
-          # known build and retry the boot — a clean boot then runs reliably.
+          # Pinned to 3.1.42, the release that fixes the intermittent EBADF /
+          # connection-refused boot crash (WordPress/wordpress-playground#3830,
+          # fixed by PR #3833 — stale SQLite WAL .ht.sqlite-shm lock cleanup).
+          # The boot retry is kept as belt-and-suspenders while we confirm the
+          # fix across the parallel CI matrix; a clean boot should now land on
+          # attempt 1.
           boot() {
-            npx @wp-playground/cli@3.1.41 server --port 9400 --blueprint=tests/blueprint.ci.json &
+            npx @wp-playground/cli@3.1.42 server --port 9400 --blueprint=tests/blueprint.ci.json &
             echo $! > /tmp/pg.pid
             # Ready only when the homepage renders the seeded featured image (a
             # bare 200 can precede the seed import). Bail early if the server died.
