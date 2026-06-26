@@ -51,11 +51,26 @@ jobs:
 
       - name: Boot WordPress Playground (theme + seeded content)
         run: |
-          # Pinned, not @latest: the Playground CLI has an intermittent EBADF /
-          # connection-refused crash that almost always strikes at boot. Pin a
-          # known build and retry the boot — a clean boot then runs reliably.
+          # Pinned to 3.1.42, the release that fixes the intermittent EBADF /
+          # connection-refused boot crash (WordPress/wordpress-playground#3830,
+          # fixed by PR #3833 — stale SQLite WAL .ht.sqlite-shm lock cleanup).
+          # With the crash fixed a clean boot lands on attempt 1; the retry
+          # remains as a guard against the residual file-lock contention the CLI
+          # warns about on small (<6-worker) runners.
+          free_port() {
+            # The server's worker children can outlive a kill of the npx wrapper
+            # and keep port 9400 bound, so a naive retry dies with EADDRINUSE.
+            # Kill by name and by port, then wait until 9400 is actually free.
+            for _ in $(seq 1 15); do
+              pkill -f "@wp-playground/cli" 2>/dev/null || true
+              { command -v fuser >/dev/null && fuser -k 9400/tcp 2>/dev/null; } || true
+              (exec 3<>/dev/tcp/127.0.0.1/9400) 2>/dev/null || return 0
+              sleep 1
+            done
+            return 0
+          }
           boot() {
-            npx @wp-playground/cli@3.1.41 server --port 9400 --blueprint=tests/blueprint.ci.json &
+            npx @wp-playground/cli@3.1.42 server --port 9400 --blueprint=tests/blueprint.ci.json &
             echo $! > /tmp/pg.pid
             # Ready only when the homepage renders the seeded featured image (a
             # bare 200 can precede the seed import). Bail early if the server died.
@@ -72,8 +87,7 @@ jobs:
             echo "boot attempt $attempt failed (EBADF/timeout); retrying" >&2
             echo "::endgroup::"
             kill "$(cat /tmp/pg.pid)" 2>/dev/null || true
-            pkill -f "@wp-playground/cli" 2>/dev/null || true
-            sleep 3
+            free_port
           done
           echo "::error::Playground failed to boot (wp-post-image) after 3 attempts; aborting so the suite does not run against an unseeded site."
           exit 1
@@ -124,11 +138,26 @@ jobs:
 
       - name: Boot WordPress Playground (theme + seed + style)
         run: |
-          # Pinned, not @latest: the Playground CLI has an intermittent EBADF /
-          # connection-refused crash that almost always strikes at boot. Pin a
-          # known build and retry the boot — a clean boot then runs reliably.
+          # Pinned to 3.1.42, the release that fixes the intermittent EBADF /
+          # connection-refused boot crash (WordPress/wordpress-playground#3830,
+          # fixed by PR #3833 — stale SQLite WAL .ht.sqlite-shm lock cleanup).
+          # With the crash fixed a clean boot lands on attempt 1; the retry
+          # remains as a guard against the residual file-lock contention the CLI
+          # warns about on small (<6-worker) runners.
+          free_port() {
+            # The server's worker children can outlive a kill of the npx wrapper
+            # and keep port 9400 bound, so a naive retry dies with EADDRINUSE.
+            # Kill by name and by port, then wait until 9400 is actually free.
+            for _ in $(seq 1 15); do
+              pkill -f "@wp-playground/cli" 2>/dev/null || true
+              { command -v fuser >/dev/null && fuser -k 9400/tcp 2>/dev/null; } || true
+              (exec 3<>/dev/tcp/127.0.0.1/9400) 2>/dev/null || return 0
+              sleep 1
+            done
+            return 0
+          }
           boot() {
-            npx @wp-playground/cli@3.1.41 server --port 9400 --blueprint=tests/blueprint.ci.json &
+            npx @wp-playground/cli@3.1.42 server --port 9400 --blueprint=tests/blueprint.ci.json &
             echo $! > /tmp/pg.pid
             # Ready only when the homepage renders the seeded featured image (a
             # bare 200 can precede the seed import). Bail early if the server died.
@@ -145,8 +174,7 @@ jobs:
             echo "boot attempt $attempt failed (EBADF/timeout); retrying" >&2
             echo "::endgroup::"
             kill "$(cat /tmp/pg.pid)" 2>/dev/null || true
-            pkill -f "@wp-playground/cli" 2>/dev/null || true
-            sleep 3
+            free_port
           done
           echo "::error::Playground failed to boot (wp-post-image) after 3 attempts; aborting so the suite does not run against an unseeded site."
           exit 1
