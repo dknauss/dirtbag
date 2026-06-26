@@ -123,11 +123,16 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU General Public License for more details.
 
 Third-party resources retain their own licences, listed below with licence type,
-licence URL, and source URL. The only third-party asset in the distributed theme
-package is the pickup-truck SVG (and the icon variants generated from it). The
-photographs are Playground demo media, bundled only with the demo seed under
-/playground, which is excluded from the theme package (.gitattributes
-export-ignore) and is not shipped with the theme.
+licence URL, and source URL. The only third-party asset files shipped in the
+theme package are the pickup-truck SVG and the icon variants generated from it
+(all CC0 1.0). No standalone photograph files are shipped: the photographs are
+Playground demo media, bundled only with the demo seed under /playground, which
+is excluded from the theme package (.gitattributes export-ignore).
+
+The one exception is the bundled screenshot.png, which depicts the demo front
+page and therefore incorporates some of those demo photographs as a packaged
+derivative. They are CC0 1.0 except "Potluck" (CC BY 2.0); all are listed and
+attributed under Resources below.
 
 == Resources ==
 
@@ -136,8 +141,9 @@ In the theme package:
 * Pickup Truck SVG Vector, SVG Repo, CC0 1.0, licence: https://creativecommons.org/publicdomain/zero/1.0/, source: https://www.svgrepo.com/svg/452616/pickup-truck
 * Dirtbag pickup truck icon variants are adapted from the SVG Repo pickup truck icon with small CC0-compatible grit marks added by the theme author; released under CC0 1.0, https://creativecommons.org/publicdomain/zero/1.0/.
 * Dirtbag site icon PNG variants are generated from the local pickup truck SVG variants; released under CC0 1.0, https://creativecommons.org/publicdomain/zero/1.0/.
+* screenshot.png is a packaged derivative depicting the demo front page; it incorporates demo photographs listed under "Playground demo media" below (all CC0 1.0, except "Potluck", CC BY 2.0, attributed there).
 
-Playground demo media (not shipped in the theme package):
+Playground demo media (shipped only in the demo seed, except as incorporated into screenshot.png above):
 
 * Potluck, La.Catholique, CC BY 2.0, licence: https://creativecommons.org/licenses/by/2.0/, source: https://www.flickr.com/photos/38559542@N02/8167936623
 * Abandoned rusty Ford pickup truck, Jonathan Desrosiers, CC0 1.0, licence: https://creativecommons.org/publicdomain/zero/1.0/, source: https://wordpress.org/photos/photo/3526751dbe/
