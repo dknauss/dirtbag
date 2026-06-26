@@ -3,7 +3,7 @@ Contributors: dpknauss
 Requires at least: 7.0
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 0.1.15
+Stable tag: 0.1.16
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: full-site-editing, one-column, block-patterns, style-variations, translation-ready, microformats, blog
@@ -36,9 +36,12 @@ Open Appearance > Editor > Styles and choose a style variation.
 
 == Changelog ==
 
+= 0.1.16 =
+* Theme review (themes.trac #277839): refresh the front-page screenshot to match the current two-column masthead and dynamic Query Loop sections (the shipped screenshot still showed the pre-0.1.10 layout). Version bump for the WordPress.org resubmission.
+
 = 0.1.15 =
 * Theme review (themes.trac #277839): replace the real external links in the Blogroll with XFN pattern with example.com placeholders and generic relationship labels, so the theme ships no hard-coded third-party URLs.
-* Theme review: make every user-facing string in patterns/front-page.php translation-ready (esc_html_e / esc_attr_e), and replace the hard-coded demo post links in the masthead with a dynamic Latest Posts block so the front page works on a fresh install. Regenerate languages/dirtbag.pot.
+* Theme review: make every user-facing string in patterns/front-page.php translation-ready (esc_html_e / esc_attr_e), and replace the hard-coded demo post links with dynamic Query Loop blocks — a sticky-only featured loop, a non-sticky masthead loop, and a non-sticky sidebar loop with a page offset — so the sections show distinct posts and the front page works on a fresh install. Regenerate languages/dirtbag.pot.
 * Theme review: add an explicit licence type and licence URL to every entry in the Resources list, clarify that the photographs are Playground demo media (excluded from the theme package) while the only bundled third-party asset is the pickup-truck SVG, and drop the Butterick's Practical Typography line (a design influence, not a bundled or licensed asset).
 
 = 0.1.14 =
