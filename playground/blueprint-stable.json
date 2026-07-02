@@ -2,9 +2,9 @@
   "$schema": "https://playground.wordpress.net/blueprint-schema.json",
   "landingPage": "/",
   "meta": {
-    "title": "Dirtbag Theme — Stable Tag",
+    "title": "Dirtbag Theme — Demo Snapshot",
     "author": "Dan Knauss",
-    "description": "Preview the Dirtbag WordPress block theme pinned to the v0.1.14 release.",
+    "description": "Preview the Dirtbag WordPress block theme from a pinned demo bundle (theme plus seed content).",
     "categories": [
       "theme",
       "block-theme"
@@ -19,11 +19,8 @@
     {
       "step": "installTheme",
       "themeData": {
-        "resource": "git:directory",
-        "url": "https://github.com/dknauss/dirtbag",
-        "ref": "5c228a8e22b1e2fc86a98957bd3fc7a92bc215c7",
-        "refType": "commit",
-        "path": "/"
+        "resource": "url",
+        "url": "https://wordpress-playground-cors-proxy.net/?https://github.com/dknauss/dirtbag/releases/download/playground-demo/dirtbag-playground-demo.zip"
       },
       "options": {
         "activate": true,
