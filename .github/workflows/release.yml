@@ -1,13 +1,20 @@
 name: Release
 
-# Builds a clean theme ZIP on every v* tag and attaches it to the GitHub
-# Release under a FIXED asset name (dirtbag.zip). That makes
-#   https://github.com/dknauss/dirtbag/releases/latest/download/dirtbag.zip
-# a stable, always-latest URL — so the Playground "stable" demo can install
-# from it (via the CORS proxy) and never needs a per-release tag bump.
+# On every v* tag, builds and attaches TWO assets to the GitHub Release under
+# fixed asset names, so both have stable always-latest URLs:
 #
-# The archive contents are defined by the `export-ignore` rules in
-# .gitattributes (git archive honours them), and validated by bin/package-check.
+#   1. dirtbag.zip — the CLEAN theme distribution package. `git archive` honours
+#      the `export-ignore` rules in .gitattributes, so dev/demo files are stripped.
+#      Validated by bin/package-check. This is the wp.org / installer package.
+#        https://github.com/dknauss/dirtbag/releases/latest/download/dirtbag.zip
+#
+#   2. dirtbag-playground-demo.zip — the DEMO BUNDLE for the "Try in Playground"
+#      links: the theme PLUS the playground/ seed payload (seed-content.php/json
+#      and media images) that the demo blueprints' runPHP step requires. Built with
+#      `git checkout-index`, which — unlike `git archive` — ignores export-ignore.
+#      A clean theme ZIP cannot run the demo, because the seed files are
+#      export-ignored; that is why this second asset exists.
+#        https://github.com/dknauss/dirtbag/releases/latest/download/dirtbag-playground-demo.zip
 
 on:
   push:
@@ -39,14 +46,26 @@ jobs:
       - name: Package hygiene check
         run: bash bin/package-check
 
-      - name: Build theme ZIP (honours .gitattributes export-ignore)
+      - name: Build clean theme ZIP (honours .gitattributes export-ignore)
         run: |
           git archive --format=zip --prefix=dirtbag/ -o dirtbag.zip HEAD
           unzip -tq dirtbag.zip
 
-      - name: Create GitHub Release + attach ZIP
+      - name: Build Playground demo bundle (theme + playground/ seed payload)
+        run: |
+          rm -rf .demo-bundle
+          mkdir -p .demo-bundle/dirtbag
+          # checkout-index writes all tracked files, ignoring export-ignore, so the
+          # export-ignored playground/ seed payload (PHP, JSON, media) is included.
+          git checkout-index -a -f --prefix=.demo-bundle/dirtbag/
+          ( cd .demo-bundle && zip -rqX ../dirtbag-playground-demo.zip dirtbag )
+          unzip -tq dirtbag-playground-demo.zip
+
+      - name: Create GitHub Release + attach ZIPs
         uses: softprops/action-gh-release@v2
         with:
-          files: dirtbag.zip
+          files: |
+            dirtbag.zip
+            dirtbag-playground-demo.zip
           generate_release_notes: true
           fail_on_unmatched_files: true
