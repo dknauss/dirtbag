@@ -20,7 +20,7 @@
       "step": "installTheme",
       "themeData": {
         "resource": "url",
-        "url": "https://wordpress-playground-cors-proxy.net/?https://github.com/dknauss/dirtbag/archive/refs/heads/main.zip"
+        "url": "https://wordpress-playground-cors-proxy.net/?https://github.com/dknauss/dirtbag/releases/download/playground-demo/dirtbag-playground-demo.zip"
       },
       "options": {
         "activate": true,
